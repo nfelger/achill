@@ -1,4 +1,6 @@
 <script>
+  import { onMount } from "svelte";
+
   import NewTroiEntryFormRow from "./NewTroiEntryFormRow.svelte";
 
   export let calculationPositionId;
@@ -7,11 +9,20 @@
   export let troiApi;
 
   let entriesPromise;
+
   $: entriesPromise = troiApi.getTimeEntries(
     calculationPositionId,
     startDate,
     endDate
   );
+
+  async function refresh() {
+    entriesPromise = troiApi.getTimeEntries(
+      calculationPositionId,
+      startDate,
+      endDate
+    );
+  }
 </script>
 
 <div class="overflow-x-auto">
@@ -46,7 +57,11 @@
             <td />
           </tr>
         {/each}
-        <NewTroiEntryFormRow {calculationPositionId} {troiApi} />
+        <NewTroiEntryFormRow
+          on:submit={refresh}
+          {calculationPositionId}
+          {troiApi}
+        />
       </tbody>
     </table>
   {/await}

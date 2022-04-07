@@ -1,4 +1,8 @@
 <script>
+  import { createEventDispatcher } from "svelte";
+
+  const dispatch = createEventDispatcher();
+
   export let calculationPositionId;
   export let troiApi;
 
@@ -7,7 +11,13 @@
   let description;
 
   let submitHandler = async () => {
-    troiApi.postTimeEntry(calculationPositionId, date, hours, description);
+    await troiApi.postTimeEntry(
+      calculationPositionId,
+      date,
+      hours,
+      description
+    );
+    dispatch("submit");
   };
 </script>
 
