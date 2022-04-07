@@ -1,4 +1,4 @@
-import md5 from "crypto-js/md5";
+import md5 from "crypto-js/md5.js";
 
 export class AuthenticationFailed extends Error {
   constructor() {
@@ -7,9 +7,9 @@ export class AuthenticationFailed extends Error {
   }
 }
 
-export default class TroiApiService {
-  baseUrl = "https://digitalservice.troi.software/api/v2/rest";
+const baseUrl = "https://digitalservice.troi.software/api/v2/rest";
 
+export default class TroiApiService {
   constructor(userName, password) {
     this.userName = userName;
     let passwordMd5 = md5(password);
@@ -113,7 +113,7 @@ export default class TroiApiService {
     const { url, method, params, headers, body } = options;
 
     const response = await fetch(
-      `${this.baseUrl}${url}?${new URLSearchParams(params)}`,
+      `${baseUrl}${url}?${new URLSearchParams(params)}`,
       {
         method: method,
         headers: { ...this.authHeader, ...headers },

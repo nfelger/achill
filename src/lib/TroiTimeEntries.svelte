@@ -1,6 +1,4 @@
 <script>
-  import { onMount } from "svelte";
-
   import NewTroiEntryFormRow from "./NewTroiEntryFormRow.svelte";
 
   export let calculationPositionId;

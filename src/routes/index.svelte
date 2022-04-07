@@ -1,7 +1,6 @@
 <script>
-  import "./lib/Tailwind.css";
-  import Auth, { states } from "./lib/Auth.svelte";
-  import Troi from "./lib/Troi.svelte";
+  import Auth, { states } from "../lib/Auth.svelte";
+  import Troi from "../lib/Troi.svelte";
 
   let userName;
   let password;
