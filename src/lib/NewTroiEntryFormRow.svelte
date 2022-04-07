@@ -8,7 +8,7 @@
 
   let submitHandler = async () => {
     troiApi.postTimeEntry(calculationPositionId, date, hours, description);
-  }
+  };
 </script>
 
 <tr>
@@ -17,7 +17,7 @@
       bind:value={date}
       type="text"
       id="date"
-      class="w-full px-2 py-1 text-sm border-gray-200 rounded-lg shadow-sm"
+      class="w-full rounded-lg border-gray-200 px-2 py-1 text-sm shadow-sm"
       placeholder="2022-01-01"
     />
   </td>
@@ -27,7 +27,7 @@
       bind:value={hours}
       type="text"
       id="hours"
-      class="w-full px-2 py-1 text-sm border-gray-200 rounded-lg shadow-sm"
+      class="w-full rounded-lg border-gray-200 px-2 py-1 text-sm shadow-sm"
       placeholder="2.25"
     />
   </td>
@@ -37,13 +37,16 @@
       bind:value={description}
       type="text"
       id="description"
-      class="w-full px-2 py-1 text-sm border-gray-200 rounded-lg shadow-sm"
+      class="w-full rounded-lg border-gray-200 px-2 py-1 text-sm shadow-sm"
       placeholder="Working the work"
     />
   </td>
 
   <td>
-    <button on:click={submitHandler} class="inline-block px-2 py-1 text-sm font-medium text-white bg-indigo-600 border border-indigo-600 rounded active:text-indigo-500 hover:bg-transparent hover:text-indigo-600 focus:outline-none focus:ring">
+    <button
+      on:click={submitHandler}
+      class="inline-block rounded border border-indigo-600 bg-indigo-600 px-2 py-1 text-sm font-medium text-white hover:bg-transparent hover:text-indigo-600 focus:outline-none focus:ring active:text-indigo-500"
+    >
       Add
     </button>
   </td>

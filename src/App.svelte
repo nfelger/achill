@@ -1,7 +1,7 @@
 <script>
-  import './lib/Tailwind.css';
-  import Auth, { states } from './lib/Auth.svelte';
-  import Troi from './lib/Troi.svelte';
+  import "./lib/Tailwind.css";
+  import Auth, { states } from "./lib/Auth.svelte";
+  import Troi from "./lib/Troi.svelte";
 
   let userName;
   let password;
@@ -17,7 +17,7 @@
     userName = undefined;
     password = undefined;
     loginState = states.LOGGED_OUT;
-  }
+  };
 </script>
 
 <div class="container mx-auto mt-8">
@@ -29,10 +29,14 @@
 
   {#if loginState === states.LOGGED_IN || loginState === states.LOGIN_PENDING}
     <Troi
-      userName={userName}
-      password={password}
-      on:finishedLoading={() => { loginState = states.LOGGED_IN }}
-      on:authenticationFailed={() => { loginState = states.LOGIN_FAILED }}
+      {userName}
+      {password}
+      on:finishedLoading={() => {
+        loginState = states.LOGGED_IN;
+      }}
+      on:authenticationFailed={() => {
+        loginState = states.LOGIN_FAILED;
+      }}
     />
   {/if}
 </div>

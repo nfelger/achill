@@ -1,4 +1,4 @@
-import md5 from 'crypto-js/md5';
+import md5 from "crypto-js/md5";
 
 export class AuthenticationFailed extends Error {
   constructor() {
@@ -13,7 +13,9 @@ export default class TroiApiService {
   constructor(userName, password) {
     this.userName = userName;
     let passwordMd5 = md5(password);
-    this.authHeader = {'Authorization': 'Basic ' + btoa(`${userName}:${passwordMd5}`)};
+    this.authHeader = {
+      Authorization: "Basic " + btoa(`${userName}:${passwordMd5}`),
+    };
   }
 
   async initialize() {
@@ -52,7 +54,7 @@ export default class TroiApiService {
       return {
         name: obj.DisplayPath,
         id: obj.Id,
-      }
+      };
     });
   }
 
@@ -72,32 +74,32 @@ export default class TroiApiService {
         date: obj.Date,
         hours: obj.Quantity,
         description: obj.Remark,
-      }
+      };
     });
   }
 
   async postTimeEntry(calculationPositionId, date, hours, description) {
     const payload = {
       Client: {
-          Path: `/clients/${this.clientId}`
+        Path: `/clients/${this.clientId}`,
       },
       CalculationPosition: {
-          Path: `/calculationPositions/${calculationPositionId}`
+        Path: `/calculationPositions/${calculationPositionId}`,
       },
       Employee: {
-          Path: `/employees/${this.employeeId}`
+        Path: `/employees/${this.employeeId}`,
       },
       Date: date,
       Quantity: hours,
-      Remark: description
-    }
+      Remark: description,
+    };
 
     await this.makeRequest({
       url: "/billings/hours",
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
       method: "post",
       body: JSON.stringify(payload),
-    })
+    });
   }
 
   async makeRequest(options) {
@@ -106,9 +108,9 @@ export default class TroiApiService {
       params: {},
       headers: {},
       body: undefined,
-    }
-    options = { ...defaultOptions, ...options }
-    const { url, method, params, headers, body } = options
+    };
+    options = { ...defaultOptions, ...options };
+    const { url, method, params, headers, body } = options;
 
     const response = await fetch(
       `${this.baseUrl}${url}?${new URLSearchParams(params)}`,
@@ -117,13 +119,13 @@ export default class TroiApiService {
         headers: { ...this.authHeader, ...headers },
         body: body,
       }
-    )
+    );
 
     if (response.status === 401) {
       throw new AuthenticationFailed();
     }
 
-    const responseObjects = await response.json()
+    const responseObjects = await response.json();
 
     if (!("predicate" in options)) {
       return responseObjects;
@@ -135,6 +137,6 @@ export default class TroiApiService {
       }
     }
 
-    throw new Error("predicate provided, but no responseObject fulfills it")
+    throw new Error("predicate provided, but no responseObject fulfills it");
   }
 }

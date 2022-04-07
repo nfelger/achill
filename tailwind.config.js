@@ -1,9 +1,7 @@
 module.exports = {
-  content: ['./index.html', './src/**/*.{svelte,js,ts}'],
+  content: ["./index.html", "./src/**/*.{svelte,js,ts}"],
   theme: {
     extend: {},
   },
-  plugins: [
-    require('@tailwindcss/forms'),
-  ],
-}
+  plugins: [require("@tailwindcss/forms")],
+};

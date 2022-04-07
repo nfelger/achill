@@ -7,11 +7,14 @@
   export let troiApi;
 
   let entriesPromise;
-  $: entriesPromise = troiApi.getTimeEntries(calculationPositionId, startDate, endDate);
+  $: entriesPromise = troiApi.getTimeEntries(
+    calculationPositionId,
+    startDate,
+    endDate
+  );
 </script>
 
 <div class="overflow-x-auto">
-
   {#await entriesPromise}
     <span>Loading...</span>
   {:then entries}
@@ -31,16 +34,19 @@
       <tbody class="divide-y divide-gray-200">
         {#each entries as entry}
           <tr>
-            <td class="px-4 py-2 text-gray-900 whitespace-nowrap">{entry.date}</td>
-            <td class="px-4 py-2 text-gray-700 whitespace-nowrap">{entry.hours}</td>
-            <td class="px-4 py-2 text-gray-700 whitespace-nowrap">{entry.description}</td>
-            <td></td>
+            <td class="px-4 py-2 text-gray-900 whitespace-nowrap"
+              >{entry.date}</td
+            >
+            <td class="px-4 py-2 text-gray-700 whitespace-nowrap"
+              >{entry.hours}</td
+            >
+            <td class="px-4 py-2 text-gray-700 whitespace-nowrap"
+              >{entry.description}</td
+            >
+            <td />
           </tr>
         {/each}
-          <NewTroiEntryFormRow
-            calculationPositionId={calculationPositionId}
-            troiApi={troiApi}
-          />
+        <NewTroiEntryFormRow {calculationPositionId} {troiApi} />
       </tbody>
     </table>
   {/await}
