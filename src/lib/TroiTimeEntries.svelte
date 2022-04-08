@@ -21,6 +21,11 @@
       endDate
     );
   }
+
+  async function deleteEntry(id) {
+    await troiApi.deleteTimeEntryViaServerSideProxy(id);
+    refresh();
+  }
 </script>
 
 <div class="overflow-x-auto">
@@ -51,7 +56,12 @@
             >
             <td class="px-4 py-2 text-gray-700 whitespace-nowrap"
               >{entry.description}</td
+            ><button
+              on:click={() => deleteEntry(entry.id)}
+              class="inline-block rounded border border-indigo-600 bg-white px-2 py-1 text-sm font-medium hover:bg-transparent hover:text-indigo-600 focus:outline-none focus:ring text-indigo-500"
             >
+              Delete
+            </button>
             <td />
           </tr>
         {/each}

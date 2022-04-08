@@ -12,6 +12,7 @@ const baseUrl = "https://digitalservice.troi.software/api/v2/rest";
 export default class TroiApiService {
   constructor(userName, password) {
     this.userName = userName;
+    this.password = password;
     let passwordMd5 = md5(password);
     this.authHeader = {
       Authorization: "Basic " + btoa(`${userName}:${passwordMd5}`),
@@ -71,6 +72,7 @@ export default class TroiApiService {
     });
     return timeEntries.map((obj) => {
       return {
+        id: obj.id,
         date: obj.Date,
         hours: obj.Quantity,
         description: obj.Remark,
@@ -99,6 +101,23 @@ export default class TroiApiService {
       headers: { "Content-Type": "application/json" },
       method: "post",
       body: JSON.stringify(payload),
+    });
+  }
+
+  async deleteTimeEntry(id) {
+    await this.makeRequest({
+      url: `/billings/hours/${id}`,
+      method: "delete",
+    });
+  }
+
+  async deleteTimeEntryViaServerSideProxy(id) {
+    await fetch(`/time_entries/${id}`, {
+      method: "delete",
+      headers: {
+        "X-Troi-Username": this.userName,
+        "X-Troi-Password": this.password,
+      },
     });
   }
 
