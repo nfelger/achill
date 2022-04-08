@@ -124,21 +124,24 @@ export default class TroiApiService {
   async makeRequest(options) {
     const defaultOptions = {
       method: "get",
-      params: {},
+      params: undefined,
       headers: {},
       body: undefined,
     };
     options = { ...defaultOptions, ...options };
     const { url, method, params, headers, body } = options;
 
-    const response = await fetch(
-      `${baseUrl}${url}?${new URLSearchParams(params)}`,
-      {
-        method: method,
-        headers: { ...this.authHeader, ...headers },
-        body: body,
-      }
-    );
+    const requestUrl = `${baseUrl}${url}${
+      params ? `?${new URLSearchParams(params)}` : ""
+    }`;
+    const requestOptions = {
+      method: method,
+      headers: { ...this.authHeader, ...headers },
+      body: body,
+    };
+
+    console.debug("Requesting", requestUrl, requestOptions);
+    const response = await fetch(requestUrl, requestOptions);
 
     if (response.status === 401) {
       throw new AuthenticationFailed();
