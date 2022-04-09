@@ -9,6 +9,7 @@
 
 <script>
   import { createEventDispatcher } from "svelte";
+  import Input from "./Input.svelte";
 
   export let state;
   let userName;
@@ -35,9 +36,7 @@
     class="mx-auto w-full max-w-sm overflow-hidden rounded-sm bg-white shadow-md "
   >
     <div class="px-8 py-6">
-      <h2
-        class="text-center mt-4 mb-8 text-3xl font-bold text-fuchsia-600"
-      >
+      <h2 class="mt-4 mb-8 text-center text-3xl font-bold text-fuchsia-600">
         Enter. Time.
       </h2>
 
@@ -63,34 +62,27 @@
 
       <form on:submit|preventDefault={handleSubmit}>
         <div class="mt-4 w-full">
-          <label
-            for="username"
-            class="mb-2 block text-sm text-gray-600"
+          <label for="username" class="mb-2 block text-sm text-gray-600"
             >Troi username</label
           >
-          <input
+          <Input
             bind:value={userName}
-            type="username"
             name="username"
-            id="username"
             placeholder="firstName.lastName"
-            class="mt-2 block w-full rounded-sm border border-gray-200 bg-white px-4 py-2 text-gray-700 placeholder-gray-400 focus:border-fuchsia-400 focus:outline-none focus:ring focus:ring-fuchsia-400 focus:ring-opacity-40"
+            extraClasses="mt-2 block w-full px-4 py-2"
           />
         </div>
 
         <div class="mt-4 w-full">
-          <label
-            for="password"
-            class="mb-2 block text-sm text-gray-600"
+          <label for="password" class="mb-2 block text-sm text-gray-600"
             >Troi password</label
           >
-          <input
+          <Input
             bind:value={password}
             type="password"
             name="password"
-            id="password"
             placeholder="hunter2"
-            class="mt-2 block w-full rounded-sm border border-gray-200 bg-white px-4 py-2 text-gray-700 placeholder-gray-400 focus:border-fuchsia-400 focus:outline-none focus:ring focus:ring-fuchsia-400 focus:ring-opacity-40"
+            extraClasses="mt-2 block w-full px-4 py-2"
           />
         </div>
 

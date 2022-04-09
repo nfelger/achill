@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher } from "svelte";
+  import Input from "./Input.svelte";
   import TroiApiService, { AuthenticationFailed } from "./troiApiService";
   import TroiTimeEntries from "./TroiTimeEntries.svelte";
 
@@ -48,26 +49,20 @@
       <h2 class="text-lg font-bold text-gray-800">Select dates</h2>
 
       <div class="py-4">
-        <label
-          >From:
-          <input
-            bind:value={startDate}
-            type="text"
-            id="startDate"
-            class="text-sm border-gray-200 rounded-lg shadow-sm"
-            placeholder="20220101"
-          />
-        </label>
-        <label
-          >To:
-          <input
-            bind:value={endDate}
-            type="text"
-            id="endDate"
-            class="text-sm border-gray-200 rounded-lg shadow-sm"
-            placeholder="20220201"
-          />
-        </label>
+        <label for="startDate">From: </label>
+        <Input
+          bind:value={startDate}
+          name="startDate"
+          placeholder="20220101"
+          extraClasses="w-28"
+        />
+        <label for="endData">To: </label>
+        <Input
+          bind:value={endDate}
+          name="endDate"
+          placeholder="20220201"
+          extraClasses="w-28"
+        />
       </div>
     </div>
   </section>
