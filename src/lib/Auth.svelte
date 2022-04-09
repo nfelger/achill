@@ -32,17 +32,17 @@
 
 {#if state === states.LOGGED_OUT || state === states.LOGIN_FAILED}
   <div
-    class="mx-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-md dark:bg-gray-800"
+    class="mx-auto w-full max-w-sm overflow-hidden rounded-sm bg-white shadow-md "
   >
-    <div class="px-6 py-4">
+    <div class="px-8 py-6">
       <h2
-        class="text-center text-3xl font-bold text-indigo-600 dark:text-white"
+        class="text-center mt-4 mb-8 text-3xl font-bold text-fuchsia-600"
       >
         Enter. Time.
       </h2>
 
       {#if state === states.LOGIN_FAILED}
-        <div class="mt-4 w-full rounded-lg bg-red-500 text-white">
+        <div class="mt-4 w-full rounded-sm bg-red-500 text-white">
           <div
             class="container mx-auto flex items-center justify-between px-6 py-4"
           >
@@ -65,7 +65,7 @@
         <div class="mt-4 w-full">
           <label
             for="username"
-            class="mb-2 block text-sm text-gray-600 dark:text-gray-200"
+            class="mb-2 block text-sm text-gray-600"
             >Troi username</label
           >
           <input
@@ -74,14 +74,14 @@
             name="username"
             id="username"
             placeholder="firstName.lastName"
-            class="mt-2 block w-full rounded-md border border-gray-200 bg-white px-4 py-2 text-gray-700 placeholder-gray-400 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-400 focus:ring-opacity-40 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:placeholder-gray-600 dark:focus:border-blue-400"
+            class="mt-2 block w-full rounded-sm border border-gray-200 bg-white px-4 py-2 text-gray-700 placeholder-gray-400 focus:border-fuchsia-400 focus:outline-none focus:ring focus:ring-fuchsia-400 focus:ring-opacity-40"
           />
         </div>
 
         <div class="mt-4 w-full">
           <label
             for="password"
-            class="mb-2 block text-sm text-gray-600 dark:text-gray-200"
+            class="mb-2 block text-sm text-gray-600"
             >Troi password</label
           >
           <input
@@ -90,13 +90,13 @@
             name="password"
             id="password"
             placeholder="hunter2"
-            class="mt-2 block w-full rounded-md border border-gray-200 bg-white px-4 py-2 text-gray-700 placeholder-gray-400 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-400 focus:ring-opacity-40 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:placeholder-gray-600 dark:focus:border-blue-400"
+            class="mt-2 block w-full rounded-sm border border-gray-200 bg-white px-4 py-2 text-gray-700 placeholder-gray-400 focus:border-fuchsia-400 focus:outline-none focus:ring focus:ring-fuchsia-400 focus:ring-opacity-40"
           />
         </div>
 
-        <div class="mt-6 mb-4">
+        <div class="mt-8 mb-4">
           <button
-            class="w-full transform rounded-md bg-blue-500 px-4 py-2 tracking-wide text-white transition-colors duration-200 hover:bg-blue-400 focus:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50"
+            class="w-full transform rounded-sm bg-fuchsia-600 px-4 py-2 tracking-wide text-white transition-colors duration-200 hover:bg-fuchsia-400 focus:bg-fuchsia-400 focus:outline-none focus:ring focus:ring-fuchsia-300 focus:ring-opacity-50"
           >
             Sign in
           </button>
