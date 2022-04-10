@@ -1,14 +1,11 @@
 <script>
-  import { createEventDispatcher } from "svelte";
+  import { user, login_complete, login_fail } from "../lib/auth.js";
+
   import Input from "./Input.svelte";
   import TroiApiService, { AuthenticationFailed } from "./troiApiService";
   import TroiTimeEntries from "./TroiTimeEntries.svelte";
 
-  export let userName;
-  export let password;
   export let loading = true;
-
-  const dispatch = createEventDispatcher();
 
   let calculationPositions;
   let today = new Date();
@@ -20,7 +17,7 @@
 
   let troiApi;
   $: {
-    troiApi = new TroiApiService(userName, password);
+    troiApi = new TroiApiService($user.name, $user.password);
     load();
   }
 
@@ -30,10 +27,10 @@
       await troiApi.initialize();
       calculationPositions = await troiApi.getCalculationPositions();
       loading = false;
-      dispatch("finishedLoading");
+      login_complete();
     } catch (e) {
       if (e instanceof AuthenticationFailed) {
-        dispatch("authenticationFailed");
+        login_fail();
       } else {
         throw e;
       }

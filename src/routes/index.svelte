@@ -1,41 +1,21 @@
 <script>
-  import Auth, { states } from "../lib/Auth.svelte";
+  import { authState, authStates, user, logout } from "../lib/auth.js";
+  import Login from "../lib/Login.svelte";
   import Troi from "../lib/Troi.svelte";
-
-  let userName;
-  let password;
-  let loginState = states.LOGGED_OUT;
-
-  const loginSubmittedHandler = (event) => {
-    userName = event.detail.userName;
-    password = event.detail.password;
-    loginState = states.LOGIN_PENDING;
-  };
-
-  const logoutHandler = () => {
-    userName = undefined;
-    password = undefined;
-    loginState = states.LOGGED_OUT;
-  };
 </script>
 
+<nav class:invisible={$authState !== authStates.LOGGED_IN}>
+  <div class="container mx-auto py-2 text-gray-600">
+    Logged in as {$user.name}.
+    <a href="/" class="text-gray-800 underline" on:click|preventDefault={logout}
+      >Log out</a
+    >.
+  </div>
+</nav>
 <div class="container mx-auto mt-8">
-  <Auth
-    state={loginState}
-    on:loginSubmitted={loginSubmittedHandler}
-    on:logout={logoutHandler}
-  />
-
-  {#if loginState === states.LOGGED_IN || loginState === states.LOGIN_PENDING}
-    <Troi
-      {userName}
-      {password}
-      on:finishedLoading={() => {
-        loginState = states.LOGGED_IN;
-      }}
-      on:authenticationFailed={() => {
-        loginState = states.LOGIN_FAILED;
-      }}
-    />
+  {#if $authState === authStates.LOGGED_OUT || $authState === authStates.LOGIN_FAILED}
+    <Login />
+  {:else}
+    <Troi />
   {/if}
 </div>
