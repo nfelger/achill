@@ -1,19 +1,22 @@
 <script>
   import { user, login_complete, login_fail } from "../lib/auth.js";
+  import { DateInput } from "date-picker-svelte";
 
-  import Input from "./Input.svelte";
   import TroiApiService, { AuthenticationFailed } from "./troiApiService";
   import TroiTimeEntries from "./TroiTimeEntries.svelte";
 
   export let loading = true;
 
+  const dateFormat = (date) => {
+    let year = date.getFullYear();
+    let month = String(date.getMonth() + 1).padStart(2, "0");
+    let day = String(date.getDate()).padStart(2, "0");
+    return `${year}${month}${day}`;
+  };
+
   let calculationPositions;
-  let today = new Date();
-  let year = today.getFullYear();
-  let month = String(today.getMonth() + 1).padStart(2, "0");
-  let day = String(today.getDate()).padStart(2, "0");
-  let startDate = `${year}${month}01`;
-  let endDate = `${year}${month}${day}`;
+  let endDate = new Date();
+  let startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
 
   let troiApi;
   $: {
@@ -41,25 +44,30 @@
 {#if loading}
   <p>Loading…</p>
 {:else}
-  <section class="bg-white">
-    <div class="container pt-4 pb-2  mx-auto">
-      <h2 class="text-lg font-bold text-gray-800">Select dates</h2>
-
+  <section>
+    <div class="flex gap-4">
       <div class="py-4">
-        <label for="startDate">From: </label>
-        <Input
-          bind:value={startDate}
-          name="startDate"
-          placeholder="20220101"
-          extraClasses="w-28"
-        />
-        <label for="endData">To: </label>
-        <Input
-          bind:value={endDate}
-          name="endDate"
-          placeholder="20220201"
-          extraClasses="w-28"
-        />
+        <!-- svelte-ignore a11y-label-has-associated-control -->
+        <label class="text-sm"
+          >Show from:
+          <DateInput
+            bind:value={startDate}
+            format="yyyy-MM-dd"
+            closeOnSelection={true}
+          />
+        </label>
+      </div>
+
+      <div class="py-4 inline-block">
+        <!-- svelte-ignore a11y-label-has-associated-control -->
+        <label class="text-sm"
+          >To:
+          <DateInput
+            bind:value={endDate}
+            format="yyyy-MM-dd"
+            closeOnSelection={true}
+          />
+        </label>
       </div>
     </div>
   </section>
@@ -67,16 +75,29 @@
   {#each calculationPositions as calculationPosition}
     <section class="bg-white">
       <div class="container pt-4 pb-2 mx-auto">
-        <h2 class="text-lg font-bold text-gray-800">
+        <h2 class="text-lg font-medium">
           {calculationPosition.name}
         </h2>
         <TroiTimeEntries
           calculationPositionId={calculationPosition.id}
-          {startDate}
-          {endDate}
+          startDate={dateFormat(startDate)}
+          endDate={dateFormat(endDate)}
           {troiApi}
         />
       </div>
     </section>
   {/each}
 {/if}
+
+<style>
+  div :global(.date-time-field input) {
+    color: rgb(31 41 55);
+    font-feature-settings: "kern" 1, "tnum" 1;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  :root {
+    --date-input-width: 6.5rem;
+  }
+</style>

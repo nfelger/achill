@@ -28,41 +28,38 @@
   }
 </script>
 
-<div class="overflow-x-auto">
+<div>
   {#await entriesPromise}
     <span>Loading...</span>
   {:then entries}
-    <table class="min-w-full mt-4 text-sm divide-y-2 divide-gray-200">
+    <table class="min-w-full mt-4 text-sm border-collapse">
       <thead>
         <tr>
-          {#each ["Date", "Hours worked", "Description", "Action"] as title}
-            <th
-              class="px-4 py-2 font-medium text-left text-gray-900 whitespace-nowrap"
-            >
-              {title}
-            </th>
-          {/each}
+          <th class="pr-2 font-medium pb-2 text-left w-16"> Date </th>
+          <th class="px-2 font-medium pb-2 text-left w-8"> Hours </th>
+          <th class="px-2 font-medium pb-2 text-left"> Description </th>
+          <th class="pl-2 font-medium pb-2 text-center w-14"> Action </th>
         </tr>
       </thead>
 
-      <tbody class="divide-y divide-gray-200">
+      <tbody>
         {#each entries as entry}
-          <tr>
-            <td class="px-4 py-2 text-gray-900 whitespace-nowrap"
-              >{entry.date}</td
+          <tr class="align-top">
+            <td class="pr-2 py-1">{entry.date}</td>
+            <td class="px-2 py-1"
+              >{Math.floor(entry.hours)}:{String(
+                Math.floor((entry.hours - Math.floor(entry.hours)) * 60)
+              ).padStart(2, "0")}</td
             >
-            <td class="px-4 py-2 text-gray-700 whitespace-nowrap"
-              >{entry.hours}</td
-            >
-            <td class="px-4 py-2 text-gray-700 whitespace-nowrap"
-              >{entry.description}</td
-            ><button
-              on:click={() => deleteEntry(entry.id)}
-              class="inline-block rounded border border-indigo-600 bg-white px-2 py-1 text-sm font-medium hover:bg-transparent hover:text-indigo-600 focus:outline-none focus:ring text-indigo-500"
-            >
-              Delete
-            </button>
-            <td />
+            <td class="px-2 py-1">{entry.description}</td>
+            <td class="pl-2 py-1"
+              ><button
+                on:click={() => deleteEntry(entry.id)}
+                class="inline-block w-14 text-sm font-medium underline hover:text-indigo-700 hover:no-underline text-indigo-500"
+              >
+                Delete
+              </button>
+            </td>
           </tr>
         {/each}
         <NewTroiEntryFormRow
@@ -74,3 +71,9 @@
     </table>
   {/await}
 </div>
+
+<style>
+  td {
+    font-feature-settings: "kern" 1, "tnum" 1;
+  }
+</style>

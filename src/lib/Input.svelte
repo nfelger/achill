@@ -6,7 +6,7 @@
   export let extraClasses = "";
 
   const classes = [
-    "rounded-sm border border-gray-200 bg-white text-gray-700 placeholder-gray-400 focus:border-fuchsia-400 focus:outline-none focus:ring focus:ring-fuchsia-400 focus:ring-opacity-40",
+    "rounded-sm border border-gray-200 bg-white text-gray-800 placeholder-gray-400 focus:border-fuchsia-400 focus:outline-none focus:ring focus:ring-fuchsia-400 focus:ring-opacity-40",
     extraClasses,
   ].join(" ");
 </script>
