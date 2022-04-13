@@ -28,7 +28,7 @@ const mockData = {
   calculationPosition: {
     DisplayPath: "My Project",
     Id: 789,
-  }
+  },
 };
 
 class TroiApiStub {
@@ -41,8 +41,7 @@ class TroiApiStub {
   }
 
   addEntry(entry) {
-    this.entries.push(entry)
-
+    this.entries.push(entry);
   }
 
   deleteEntry(id) {
@@ -50,39 +49,39 @@ class TroiApiStub {
   }
 
   isAuthorized(authnHeader) {
-    return authnHeader === this.correctAuthnHeader
+    return authnHeader === this.correctAuthnHeader;
   }
 
   unauthorizedResponse() {
-    return this._response({ status: 401 })
+    return this._response({ status: 401 });
   }
 
   match(method, pathname, params, postData) {
     if (method === "GET" && pathname.endsWith("/clients")) {
-      return this._response({jsonBody: [mockData.client] });
+      return this._response({ jsonBody: [mockData.client] });
     } else if (
       method === "GET" &&
       pathname.endsWith("/employees") &&
       params.get("clientId") === mockData.client.Id.toString() &&
       params.get("employeeLoginName") === correctUser
     ) {
-      return this._response({jsonBody:[mockData.employee]});
+      return this._response({ jsonBody: [mockData.employee] });
     } else if (
       method === "GET" &&
       pathname.endsWith("/calculationPositions") &&
       params.get("clientId") === mockData.client.Id.toString() &&
       params.get("favoritesOnly") === "true"
     ) {
-      return this._response({jsonBody:[mockData.calculationPosition]});
+      return this._response({ jsonBody: [mockData.calculationPosition] });
     } else if (
       method === "GET" &&
       pathname.endsWith("/billings/hours") &&
       params.get("clientId") === mockData.client.Id.toString() &&
       params.get("employeeId") === mockData.employee.Id.toString() &&
       params.get("calculationPositionId") ===
-      mockData.calculationPosition.Id.toString()
+        mockData.calculationPosition.Id.toString()
     ) {
-      return this._response({jsonBody:this.entries});
+      return this._response({ jsonBody: this.entries });
     } else if (method === "POST" && pathname.endsWith("/billings/hours")) {
       this.addEntry({
         id: 1,
@@ -100,15 +99,15 @@ class TroiApiStub {
     return {
       status: status,
       headers: { "Access-Control-Allow-Origin": "*" },
-      body: JSON.stringify(jsonBody)
-    }
+      body: JSON.stringify(jsonBody),
+    };
   }
 }
 
 let apiStub;
 
 test.beforeEach(async ({ context }) => {
-  apiStub = new TroiApiStub()
+  apiStub = new TroiApiStub();
 
   await context.route(
     "https://digitalservice.troi.software/api/v2/rest/**",
@@ -116,16 +115,16 @@ test.beforeEach(async ({ context }) => {
       const authnHeader = await route.request().headerValue("Authorization");
       if (!apiStub.isAuthorized(authnHeader)) {
         route.fulfill(apiStub.unauthorizedResponse());
-        return
+        return;
       }
 
       const method = route.request().method();
       const { pathname, searchParams: params } = new URL(route.request().url());
       const postData = route.request().postDataJSON();
-      const matchedResponse = apiStub.match(method, pathname, params, postData)
+      const matchedResponse = apiStub.match(method, pathname, params, postData);
 
       if (matchedResponse !== null) {
-        route.fulfill(matchedResponse)
+        route.fulfill(matchedResponse);
       } else {
         route.abort();
       }
@@ -139,7 +138,7 @@ test.beforeEach(async ({ context }) => {
     const id = parseInt(pathname.split("/").at(-1));
 
     if (method === "DELETE") {
-      apiStub.deleteEntry(id)
+      apiStub.deleteEntry(id);
       route.fulfill(apiStub._response({}));
     } else {
       route.continue();
