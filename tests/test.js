@@ -1,6 +1,19 @@
 import { expect, test } from "@playwright/test";
 import md5 from "crypto-js/md5.js";
 
+class LoginPage {
+  constructor(page) {
+    this.page = page;
+  }
+
+  async logIn(username, password) {
+    await this.page.goto("/");
+    await this.page.locator("#username").fill(username);
+    await this.page.locator("#password").fill(password);
+    await this.page.locator("text=Sign in").click();
+  }
+}
+
 const correctUser = "user.name";
 const correctPassword = "s3cr3t";
 const correctAuthnHeader = `Basic ${btoa(
@@ -98,21 +111,17 @@ test.beforeEach(async ({ context }) => {
 
 test.describe("Auth", async () => {
   test("failed log in", async ({ page }) => {
-    await page.goto("/");
-    await page.locator("#username").fill(correctUser);
-    await page.locator("#password").fill("wrong password");
-    await page.locator("text=Sign in").click();
+    await new LoginPage(page).logIn(correctUser, "wrong password");
+
     expect(await page.textContent("p")).toContain("Login failed");
   });
 
   test("log in and back out", async ({ page }) => {
-    await page.goto("/");
-    await page.locator("#username").fill(correctUser);
-    await page.locator("#password").fill(correctPassword);
-    await page.locator("text=Sign in").click();
+    await new LoginPage(page).logIn(correctUser, correctPassword);
     expect(await page.textContent("nav div")).toContain(
       "Logged in as user.name"
     );
+
     await page.locator("text=Log out").click();
     expect(await page.textContent("h2")).toBe("Enter. Time.");
   });
@@ -120,10 +129,7 @@ test.describe("Auth", async () => {
 
 test.describe("Time entries", async () => {
   test("add entry", async ({ page }) => {
-    await page.goto("/");
-    await page.locator("#username").fill(correctUser);
-    await page.locator("#password").fill(correctPassword);
-    await page.locator("text=Sign in").click();
+    await new LoginPage(page).logIn(correctUser, correctPassword);
 
     await page.locator('[placeholder="2022-01-01"]').click();
     await page.locator("select").first().selectOption("0");
@@ -147,10 +153,7 @@ test.describe("Time entries", async () => {
   });
 
   test("delete entry", async ({ page }) => {
-    await page.goto("/");
-    await page.locator("#username").fill(correctUser);
-    await page.locator("#password").fill(correctPassword);
-    await page.locator("text=Sign in").click();
+    await new LoginPage(page).logIn(correctUser, correctPassword);
 
     entries.push({
       id: 1,
