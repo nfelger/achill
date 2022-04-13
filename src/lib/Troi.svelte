@@ -1,4 +1,5 @@
 <script>
+  import moment from "moment";
   import { user, login_complete, login_fail } from "../lib/auth.js";
   import { DateInput } from "date-picker-svelte";
 
@@ -6,13 +7,6 @@
   import TroiTimeEntries from "./TroiTimeEntries.svelte";
 
   export let loading = true;
-
-  const dateFormat = (date) => {
-    let year = date.getFullYear();
-    let month = String(date.getMonth() + 1).padStart(2, "0");
-    let day = String(date.getDate()).padStart(2, "0");
-    return `${year}${month}${day}`;
-  };
 
   let calculationPositions;
   let endDate = new Date();
@@ -80,8 +74,8 @@
         </h2>
         <TroiTimeEntries
           calculationPositionId={calculationPosition.id}
-          startDate={dateFormat(startDate)}
-          endDate={dateFormat(endDate)}
+          startDate={moment(startDate).format("YYYYMMDD")}
+          endDate={moment(endDate).format("YYYYMMDD")}
           {troiApi}
         />
       </div>
