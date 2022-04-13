@@ -16,78 +16,116 @@ class LoginPage {
 
 const correctUser = "user.name";
 const correctPassword = "s3cr3t";
-const correctAuthnHeader = `Basic ${btoa(
-  `${correctUser}:${md5(correctPassword)}`
-)}`;
 
-const clientMock = {
-  Name: "DigitalService4Germany GmbH",
-  Id: 123,
+const mockData = {
+  client: {
+    Name: "DigitalService4Germany GmbH",
+    Id: 123,
+  },
+  employee: {
+    Id: 456,
+  },
+  calculationPosition: {
+    DisplayPath: "My Project",
+    Id: 789,
+  }
 };
 
-const employeeMock = {
-  Id: 456,
-};
+class TroiApiStub {
+  constructor() {
+    this.entries = [];
 
-const calculationPositionMock = {
-  DisplayPath: "My Project",
-  Id: 789,
-};
+    this.correctAuthnHeader = `Basic ${btoa(
+      `${correctUser}:${md5(correctPassword)}`
+    )}`;
+  }
 
-let entries = [];
+  addEntry(entry) {
+    this.entries.push(entry)
 
-const apiResponse = (object) => {
-  return {
-    body: JSON.stringify(object),
-    headers: { "Access-Control-Allow-Origin": "*" },
-  };
-};
+  }
+
+  deleteEntry(id) {
+    this.entries = this.entries.filter((entry) => entry.id !== id);
+  }
+
+  isAuthorized(authnHeader) {
+    return authnHeader === this.correctAuthnHeader
+  }
+
+  unauthorizedResponse() {
+    return this._response({ status: 401 })
+  }
+
+  match(method, pathname, params, postData) {
+    if (method === "GET" && pathname.endsWith("/clients")) {
+      return this._response({jsonBody: [mockData.client] });
+    } else if (
+      method === "GET" &&
+      pathname.endsWith("/employees") &&
+      params.get("clientId") === mockData.client.Id.toString() &&
+      params.get("employeeLoginName") === correctUser
+    ) {
+      return this._response({jsonBody:[mockData.employee]});
+    } else if (
+      method === "GET" &&
+      pathname.endsWith("/calculationPositions") &&
+      params.get("clientId") === mockData.client.Id.toString() &&
+      params.get("favoritesOnly") === "true"
+    ) {
+      return this._response({jsonBody:[mockData.calculationPosition]});
+    } else if (
+      method === "GET" &&
+      pathname.endsWith("/billings/hours") &&
+      params.get("clientId") === mockData.client.Id.toString() &&
+      params.get("employeeId") === mockData.employee.Id.toString() &&
+      params.get("calculationPositionId") ===
+      mockData.calculationPosition.Id.toString()
+    ) {
+      return this._response({jsonBody:this.entries});
+    } else if (method === "POST" && pathname.endsWith("/billings/hours")) {
+      this.addEntry({
+        id: 1,
+        Date: postData.Date,
+        Quantity: postData.Quantity,
+        Remark: postData.Remark,
+      });
+      return this._response({});
+    } else {
+      return null;
+    }
+  }
+
+  _response({ status = 200, jsonBody = {} }) {
+    return {
+      status: status,
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify(jsonBody)
+    }
+  }
+}
+
+let apiStub;
 
 test.beforeEach(async ({ context }) => {
+  apiStub = new TroiApiStub()
+
   await context.route(
     "https://digitalservice.troi.software/api/v2/rest/**",
     async (route) => {
-      const { pathname, searchParams: params } = new URL(route.request().url());
-      const method = route.request().method();
       const authnHeader = await route.request().headerValue("Authorization");
-      if (authnHeader !== correctAuthnHeader) {
-        route.fulfill({
-          status: 401,
-          headers: { "Access-Control-Allow-Origin": "*" },
-        });
-      } else if (method === "GET" && pathname.endsWith("/clients")) {
-        route.fulfill(apiResponse([clientMock]));
-      } else if (
-        method === "GET" &&
-        pathname.endsWith("/employees") &&
-        params.get("clientId") === clientMock.Id.toString() &&
-        params.get("employeeLoginName") === correctUser
-      ) {
-        route.fulfill(apiResponse([employeeMock]));
-      } else if (
-        method === "GET" &&
-        pathname.endsWith("/calculationPositions") &&
-        params.get("clientId") === clientMock.Id.toString() &&
-        params.get("favoritesOnly") === "true"
-      ) {
-        route.fulfill(apiResponse([calculationPositionMock]));
-      } else if (
-        method === "GET" &&
-        pathname.endsWith("/billings/hours") &&
-        params.get("clientId") === clientMock.Id.toString() &&
-        params.get("employeeId") === employeeMock.Id.toString() &&
-        params.get("calculationPositionId") ===
-          calculationPositionMock.Id.toString()
-      ) {
-        route.fulfill(apiResponse(entries));
-      } else if (method === "POST" && pathname.endsWith("/billings/hours")) {
-        entries.push({
-          id: 1,
-          Date: route.request().postDataJSON().Date,
-          Quantity: route.request().postDataJSON().Quantity,
-          Remark: route.request().postDataJSON().Remark,
-        });
-        route.fulfill(apiResponse({}));
+      if (!apiStub.isAuthorized(authnHeader)) {
+        route.fulfill(apiStub.unauthorizedResponse());
+        return
+      }
+
+      const method = route.request().method();
+      const { pathname, searchParams: params } = new URL(route.request().url());
+      const postData = route.request().postDataJSON();
+      const matchedResponse = apiStub.match(method, pathname, params, postData)
+
+      if (matchedResponse !== null) {
+        route.fulfill(matchedResponse)
       } else {
         route.abort();
       }
@@ -101,8 +139,8 @@ test.beforeEach(async ({ context }) => {
     const id = parseInt(pathname.split("/").at(-1));
 
     if (method === "DELETE") {
-      entries = entries.filter((entry) => entry.id !== id);
-      route.fulfill(apiResponse({}));
+      apiStub.deleteEntry(id)
+      route.fulfill(apiStub._response({}));
     } else {
       route.continue();
     }
@@ -155,7 +193,7 @@ test.describe("Time entries", async () => {
   test("delete entry", async ({ page }) => {
     await new LoginPage(page).logIn(correctUser, correctPassword);
 
-    entries.push({
+    apiStub.addEntry({
       id: 1,
       Date: "2022-01-22",
       Quantity: 1.25,
