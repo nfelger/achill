@@ -1,5 +1,6 @@
 <script>
   import { DateInput } from "date-picker-svelte";
+  import moment from "moment";
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
@@ -12,9 +13,13 @@
   let description;
 
   let submitHandler = async () => {
+    if (hours.includes(":")) {
+      const [hoursStr, minutesStr] = hours.split(":");
+      hours = parseInt(hoursStr) + parseInt(minutesStr) / 60;
+    }
     await troiApi.postTimeEntry(
       calculationPositionId,
-      date,
+      moment(date).format("YYYY-MM-DD"),
       hours,
       description
     );
