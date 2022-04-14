@@ -55,7 +55,7 @@
       <div class="py-4 inline-block">
         <!-- svelte-ignore a11y-label-has-associated-control -->
         <label class="text-sm"
-          >To:
+          >to:
           <DateInput
             bind:value={endDate}
             format="yyyy-MM-dd"
@@ -81,6 +81,10 @@
       </div>
     </section>
   {/each}
+
+  <section class="text-xs mt-8 text-gray-600">
+    <p>Project not showing up? Make sure it's available in Troi and marked as a "favorite".</p>
+  </section>
 {/if}
 
 <style>
