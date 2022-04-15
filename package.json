@@ -29,7 +29,8 @@
   },
   "dependencies": {
     "crypto-js": "^4.1.1",
-    "moment": "^2.29.2"
+    "moment": "^2.29.2",
+    "yup": "^0.32.11"
   },
   "type": "module"
 }

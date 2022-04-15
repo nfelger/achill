@@ -14,6 +14,24 @@ class LoginPage {
   }
 }
 
+class TimeEntriesPage {
+  constructor(page) {
+    this.page = page;
+  }
+
+  async addEntry(year, month, date, hours, description) {
+    await this.page.locator('[placeholder="2022-01-01"]').click();
+    await this.page.locator("select").first().selectOption({ label: month });
+    await this.page.locator("select").nth(2).selectOption(year);
+    await this.page.locator(`span >> text="${date}"`).click();
+    await this.page.locator('[placeholder="2:15"]').fill(hours);
+    await this.page
+      .locator('[placeholder="Working the work…"]')
+      .fill(description);
+    await this.page.locator("text=Add").click();
+  }
+}
+
 const correctUser = "user.name";
 const correctPassword = "s3cr3t";
 
@@ -168,13 +186,13 @@ test.describe("Time entries", async () => {
   test("add entry", async ({ page }) => {
     await new LoginPage(page).logIn(correctUser, correctPassword);
 
-    await page.locator('[placeholder="2022-01-01"]').click();
-    await page.locator("select").first().selectOption("0");
-    await page.locator("select").nth(2).selectOption("2022");
-    await page.locator('span >> text="17"').click();
-    await page.locator('[placeholder="2:15"]').fill("4:45");
-    await page.locator('[placeholder="Working the work…"]').fill("a task");
-    await page.locator("text=Add").click();
+    await new TimeEntriesPage(page).addEntry(
+      "2022",
+      "January",
+      "17",
+      "4:45",
+      "a task"
+    );
 
     await expect(page.locator("tr")).toHaveCount(3);
 
@@ -187,6 +205,30 @@ test.describe("Time entries", async () => {
     await expect(newEntryRow.locator("td >> nth=0")).toBeEmpty();
     await expect(newEntryRow.locator("td >> nth=1")).toBeEmpty();
     await expect(newEntryRow.locator("td >> nth=2")).toBeEmpty();
+  });
+
+  test("add entry - invalid data", async ({ page }) => {
+    await new LoginPage(page).logIn(correctUser, correctPassword);
+
+    await new TimeEntriesPage(page).addEntry(
+      "2022",
+      "January",
+      "17",
+      "4:5t",
+      ""
+    );
+
+    await expect(page.locator("tr")).toHaveCount(2);
+
+    const newEntryRow = page.locator("tr >> nth=-1");
+    await expect(newEntryRow.locator("td >> nth=1 >> input")).toHaveCSS(
+      "border-color",
+      "rgb(239, 68, 68)"
+    );
+    await expect(newEntryRow.locator("td >> nth=2 >> input")).toHaveCSS(
+      "border-color",
+      "rgb(239, 68, 68)"
+    );
   });
 
   test("delete entry", async ({ page }) => {

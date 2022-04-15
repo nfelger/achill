@@ -83,7 +83,10 @@
   {/each}
 
   <section class="text-xs mt-8 text-gray-600">
-    <p>Project not showing up? Make sure it's available in Troi and marked as a "favorite".</p>
+    <p>
+      Project not showing up? Make sure it's available in Troi and marked as a
+      "favorite".
+    </p>
   </section>
 {/if}
 

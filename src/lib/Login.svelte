@@ -66,7 +66,10 @@
       >
         Sign in
       </button>
-      <p class="text-xs mt-2 px-2 text-gray-600">Your password isn't stored anywhere and is deleted when you close this tab.</p>
+      <p class="mt-2 px-2 text-xs text-gray-600">
+        Your password isn't stored anywhere and is deleted when you close this
+        tab.
+      </p>
     </div>
   </form>
 </div>

@@ -1,29 +1,50 @@
 <script>
   import { DateInput } from "date-picker-svelte";
   import moment from "moment";
+  import * as yup from "yup";
   import { createEventDispatcher } from "svelte";
-
-  const dispatch = createEventDispatcher();
 
   export let calculationPositionId;
   export let troiApi;
 
-  let date;
-  let hours;
-  let description;
+  const dispatch = createEventDispatcher();
+
+  const schema = yup.object().shape({
+    date: yup.date().required("Date is required"),
+    hours: yup
+      .string()
+      .required("Hours are required, must be hh:mm")
+      .matches(/\d?\d:\d\d/),
+    description: yup.string().required("Description is required"),
+  });
+
+  let values = {};
+  let errors = {};
 
   let submitHandler = async () => {
-    if (hours.includes(":")) {
-      const [hoursStr, minutesStr] = hours.split(":");
-      hours = parseInt(hoursStr) + parseInt(minutesStr) / 60;
+    try {
+      // `abortEarly: false` to get all the errors
+      await schema.validate(values, { abortEarly: false });
+      errors = {};
+    } catch (err) {
+      errors = err.inner.reduce((acc, err) => {
+        return { ...acc, [err.path]: err.message };
+      }, {});
     }
-    await troiApi.postTimeEntry(
-      calculationPositionId,
-      moment(date).format("YYYY-MM-DD"),
-      hours,
-      description
-    );
-    dispatch("submit");
+
+    if (Object.keys(errors).length === 0) {
+      if (values.hours.includes(":")) {
+        const [hoursStr, minutesStr] = values.hours.split(":");
+        values.hours = parseInt(hoursStr) + parseInt(minutesStr) / 60;
+      }
+      await troiApi.postTimeEntry(
+        calculationPositionId,
+        moment(values.date).format("YYYY-MM-DD"),
+        values.hours,
+        values.description
+      );
+      dispatch("submit");
+    }
   };
 </script>
 
@@ -31,7 +52,7 @@
   <td class="pr-2">
     <!-- svelte-ignore a11y-label-has-associated-control -->
     <DateInput
-      bind:value={date}
+      bind:value={values.date}
       format="yyyy-MM-dd"
       placeholder="2022-01-01"
       closeOnSelection={true}
@@ -40,20 +61,28 @@
 
   <td class="px-2">
     <input
-      bind:value={hours}
+      bind:value={values.hours}
       type="text"
       id="hours"
-      class="w-full border-t-0 border-r-0 border-l-0 border-gray-400 px-0 py-0.5 text-sm placeholder:italic placeholder:text-gray-400"
+      class={`w-full px-0 py-0.5 text-sm placeholder:italic placeholder:text-gray-400 ${
+        errors.hours
+          ? "border border-b-2 border-red-500"
+          : "border-0 border-b-[1px] border-gray-400"
+      }`}
       placeholder="2:15"
     />
   </td>
 
   <td class="px-2">
     <input
-      bind:value={description}
+      bind:value={values.description}
       type="text"
       id="description"
-      class="w-full border-t-0 border-r-0 border-l-0 border-gray-400 px-0 py-0.5 text-sm placeholder:italic placeholder:text-gray-400"
+      class={`w-full px-0 py-0.5 text-sm placeholder:italic placeholder:text-gray-400 ${
+        errors.description
+          ? "border border-b-2 border-red-500"
+          : "border-0 border-b-[1px] border-gray-400"
+      }`}
       placeholder="Working the work…"
     />
   </td>
