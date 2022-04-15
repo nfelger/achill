@@ -18,7 +18,9 @@
     description: yup.string().required("Description is required"),
   });
 
-  let values = {};
+  let values = {
+    date: new Date(),
+  };
   let errors = {};
 
   let submitHandler = async () => {
