@@ -1,21 +1,23 @@
 <script>
+  import { troiApi } from "./troiApiService";
   import NewTroiEntryFormRow from "./NewTroiEntryFormRow.svelte";
 
   export let calculationPositionId;
   export let startDate;
   export let endDate;
-  export let troiApi;
 
   let entriesPromise;
 
-  $: entriesPromise = troiApi.getTimeEntries(
-    calculationPositionId,
-    startDate,
-    endDate
-  );
+  $: {
+    entriesPromise = $troiApi.getTimeEntries(
+      calculationPositionId,
+      startDate,
+      endDate
+    );
+  }
 
   async function refresh() {
-    entriesPromise = troiApi.getTimeEntries(
+    entriesPromise = $troiApi.getTimeEntries(
       calculationPositionId,
       startDate,
       endDate
@@ -23,53 +25,50 @@
   }
 
   async function deleteEntry(id) {
-    await troiApi.deleteTimeEntryViaServerSideProxy(id);
+    await $troiApi.deleteTimeEntryViaServerSideProxy(id);
     refresh();
   }
 </script>
 
 <div>
-  {#await entriesPromise}
-    <span>Loading...</span>
-  {:then entries}
-    <table class="min-w-full mt-4 text-sm border-collapse">
-      <thead>
-        <tr>
-          <th class="pr-2 font-medium pb-2 text-left w-16"> Date </th>
-          <th class="px-2 font-medium pb-2 text-left w-8"> Hours </th>
-          <th class="px-2 font-medium pb-2 text-left"> Description </th>
-          <th class="pl-2 font-medium pb-2 text-center w-14"> Action </th>
-        </tr>
-      </thead>
+  <table class="mt-4 min-w-full border-collapse text-sm">
+    <thead>
+      <tr>
+        <th class="w-16 pr-2 pb-2 text-left font-medium"> Date </th>
+        <th class="w-8 px-2 pb-2 text-left font-medium"> Hours </th>
+        <th class="px-2 pb-2 text-left font-medium"> Description </th>
+        <th class="w-14 pl-2 pb-2 text-center font-medium"> Action </th>
+      </tr>
+    </thead>
 
-      <tbody>
+    <tbody>
+      {#await entriesPromise}
+        <p>Loading…</p>
+      {:then entries}
         {#each entries as entry}
           <tr class="align-top">
-            <td class="pr-2 py-1">{entry.date}</td>
+            <td class="py-1 pr-2">{entry.date}</td>
             <td class="px-2 py-1"
               >{Math.floor(entry.hours)}:{String(
                 Math.floor((entry.hours - Math.floor(entry.hours)) * 60)
               ).padStart(2, "0")}</td
             >
             <td class="px-2 py-1">{entry.description}</td>
-            <td class="pl-2 py-1"
+            <td class="py-1 pl-2"
               ><button
                 on:click={() => deleteEntry(entry.id)}
-                class="inline-block w-14 text-sm font-medium underline hover:text-indigo-700 hover:no-underline text-indigo-500"
+                class="inline-block w-14 text-sm font-medium text-indigo-500 underline hover:text-indigo-700 hover:no-underline"
               >
                 Delete
               </button>
             </td>
           </tr>
         {/each}
-        <NewTroiEntryFormRow
-          on:submit={refresh}
-          {calculationPositionId}
-          {troiApi}
-        />
-      </tbody>
-    </table>
-  {/await}
+      {/await}
+      <!-- TODO: work with slots for cell styling -->
+      <NewTroiEntryFormRow on:submit={refresh} {calculationPositionId} />
+    </tbody>
+  </table>
 </div>
 
 <style>

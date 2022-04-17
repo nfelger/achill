@@ -4,8 +4,9 @@
   import * as yup from "yup";
   import { createEventDispatcher } from "svelte";
 
+  import { troiApi } from "./troiApiService";
+
   export let calculationPositionId;
-  export let troiApi;
 
   const dispatch = createEventDispatcher();
 
@@ -39,7 +40,7 @@
         const [hoursStr, minutesStr] = values.hours.split(":");
         values.hours = parseInt(hoursStr) + parseInt(minutesStr) / 60;
       }
-      await troiApi.postTimeEntry(
+      await $troiApi.postTimeEntry(
         calculationPositionId,
         moment(values.date).format("YYYY-MM-DD"),
         values.hours,

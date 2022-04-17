@@ -1,4 +1,7 @@
 import md5 from "crypto-js/md5.js";
+import { writable } from "svelte/store";
+
+export const troiApi = writable(null);
 
 export class AuthenticationFailed extends Error {
   constructor() {

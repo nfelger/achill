@@ -1,10 +1,32 @@
 <script>
-  import { authState, authStates, login_initiate } from "../lib/auth.js";
-
-  import Input from "./Input.svelte";
+  import { goto } from "$app/navigation";
+  import { login } from "../../lib/auth";
+  import TroiApiService, {
+    AuthenticationFailed,
+    troiApi,
+  } from "../../lib/troiApiService";
+  import Input from "./../../lib/Input.svelte";
 
   let userName = "";
   let password = "";
+
+  let failed = false;
+
+  async function handleSubmit() {
+    failed = false;
+    $troiApi = new TroiApiService(userName, password);
+    try {
+      await $troiApi.initialize();
+      login(userName, password);
+      goto("/");
+    } catch (error) {
+      if (error instanceof AuthenticationFailed) {
+        failed = true;
+      } else {
+        throw error;
+      }
+    }
+  }
 </script>
 
 <div
@@ -14,7 +36,7 @@
     Enter. Time.
   </h2>
 
-  {#if $authState === authStates.LOGIN_FAILED}
+  {#if failed}
     <div class="mt-4 w-full rounded-sm bg-red-500 text-white">
       <div
         class="container mx-auto flex items-center justify-between px-6 py-4"
@@ -34,7 +56,7 @@
     </div>
   {/if}
 
-  <form on:submit|preventDefault={() => login_initiate(userName, password)}>
+  <form on:submit|preventDefault={handleSubmit}>
     <div class="mt-4 w-full">
       <label for="username" class="mb-2 block text-sm text-gray-600"
         >Troi username</label

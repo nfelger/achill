@@ -168,17 +168,17 @@ test.describe("Auth", async () => {
   test("failed log in", async ({ page }) => {
     await new LoginPage(page).logIn(correctUser, "wrong password");
 
-    expect(await page.textContent("p")).toContain("Login failed");
+    await expect(page.locator("text=Login failed")).toBeVisible();
   });
 
   test("log in and back out", async ({ page }) => {
     await new LoginPage(page).logIn(correctUser, correctPassword);
-    expect(await page.textContent("nav div")).toContain(
-      "Logged in as user.name"
-    );
+    await expect(
+      page.locator("nav div >> text=Logged in as user.name")
+    ).toBeVisible();
 
     await page.locator("text=Log out").click();
-    expect(await page.textContent("h2")).toBe("Enter. Time.");
+    await expect(page.locator("h2 >> text=Enter. Time.")).toBeVisible();
   });
 });
 

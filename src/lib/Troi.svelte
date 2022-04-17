@@ -1,94 +1,73 @@
 <script>
-  import moment from "moment";
-  import { user, login_complete, login_fail } from "../lib/auth.js";
   import { DateInput } from "date-picker-svelte";
+  import moment from "moment";
+  import { onMount } from "svelte";
 
-  import TroiApiService, { AuthenticationFailed } from "./troiApiService";
+  import { troiApi } from "./troiApiService";
   import TroiTimeEntries from "./TroiTimeEntries.svelte";
 
-  export let loading = true;
-
-  let calculationPositions;
   let endDate = new Date();
   let startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
 
-  let troiApi;
-  $: {
-    troiApi = new TroiApiService($user.name, $user.password);
-    load();
-  }
+  let projects = [];
 
-  export const load = async () => {
-    try {
-      loading = true;
-      await troiApi.initialize();
-      calculationPositions = await troiApi.getCalculationPositions();
-      loading = false;
-      login_complete();
-    } catch (e) {
-      if (e instanceof AuthenticationFailed) {
-        login_fail();
-      } else {
-        throw e;
-      }
-    }
-  };
+  onMount(async () => {
+    projects = await $troiApi.getCalculationPositions();
+  });
 </script>
 
-{#if loading}
-  <p>Loading…</p>
-{:else}
-  <section>
-    <div class="flex gap-4">
-      <div class="py-4">
-        <!-- svelte-ignore a11y-label-has-associated-control -->
-        <label class="text-sm"
-          >Show from:
-          <DateInput
-            bind:value={startDate}
-            format="yyyy-MM-dd"
-            closeOnSelection={true}
-          />
-        </label>
-      </div>
+<section>
+  <div class="flex gap-4">
+    <div class="py-4">
+      <!-- svelte-ignore a11y-label-has-associated-control -->
+      <label class="text-sm"
+        >Show from:
+        <DateInput
+          bind:value={startDate}
+          format="yyyy-MM-dd"
+          closeOnSelection={true}
+        />
+      </label>
+    </div>
 
-      <div class="py-4 inline-block">
-        <!-- svelte-ignore a11y-label-has-associated-control -->
-        <label class="text-sm"
-          >to:
-          <DateInput
-            bind:value={endDate}
-            format="yyyy-MM-dd"
-            closeOnSelection={true}
-          />
-        </label>
-      </div>
+    <div class="inline-block py-4">
+      <!-- svelte-ignore a11y-label-has-associated-control -->
+      <label class="text-sm"
+        >to:
+        <DateInput
+          bind:value={endDate}
+          format="yyyy-MM-dd"
+          closeOnSelection={true}
+        />
+      </label>
+    </div>
+  </div>
+</section>
+
+{#each projects as project}
+  <!-- TODO: make into single component Project -->
+  <section class="bg-white">
+    <div class="container mx-auto pt-4 pb-2">
+      <h2 class="text-lg font-medium">
+        {project.name}
+      </h2>
+      <TroiTimeEntries
+        calculationPositionId={project.id}
+        startDate={moment(startDate).format("YYYYMMDD")}
+        endDate={moment(endDate).format("YYYYMMDD")}
+      />
     </div>
   </section>
+{:else}
+  <p>Loading…</p>
+{/each}
 
-  {#each calculationPositions as calculationPosition}
-    <section class="bg-white">
-      <div class="container pt-4 pb-2 mx-auto">
-        <h2 class="text-lg font-medium">
-          {calculationPosition.name}
-        </h2>
-        <TroiTimeEntries
-          calculationPositionId={calculationPosition.id}
-          startDate={moment(startDate).format("YYYYMMDD")}
-          endDate={moment(endDate).format("YYYYMMDD")}
-          {troiApi}
-        />
-      </div>
-    </section>
-  {/each}
-
-  <section class="text-xs mt-8 text-gray-600">
-    <p>
-      Project not showing up? Make sure it's available in Troi and marked as a
-      "favorite".
-    </p>
-  </section>
-{/if}
+<section class="mt-8 text-xs text-gray-600">
+  <p>
+    Project not showing up? Make sure it's available in Troi and marked as a
+    "favorite".
+  </p>
+</section>
 
 <style>
   div :global(.date-time-field input) {
