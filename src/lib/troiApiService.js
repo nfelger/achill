@@ -146,7 +146,7 @@ export default class TroiApiService {
     console.debug("Requesting", requestUrl, requestOptions);
     const response = await fetch(requestUrl, requestOptions);
 
-    if ([401, 403].includes(response.status)`) {
+    if ([401, 403].includes(response.status)) {
       throw new AuthenticationFailed();
     }
 
