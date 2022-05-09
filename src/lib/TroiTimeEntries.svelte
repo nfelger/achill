@@ -59,7 +59,7 @@
     <tbody>
       {#each entries as entry, index}
         {#if editEntryIndex === index}
-          <NewTroiEntryFormRow on:submit={refresh} {calculationPositionId} entry={entry} cancelEditCallback={cancelEdit} />
+          <NewTroiEntryFormRow on:submit={refresh} on:cancelEdit={cancelEdit} {calculationPositionId} entry={entry} editMode={true} deleteEntryCallback={deleteEntry} />
         {:else}
           <tr class="align-top">
             <td class="py-1 pr-2 min-w-[140px] flex justify-between"

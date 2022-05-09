@@ -9,7 +9,8 @@
 
   export let calculationPositionId;
   export let entry;
-  export let cancelEditCallback;
+  export let editMode;
+  export let deleteEntryCallback;
 
   const dispatch = createEventDispatcher();
 
@@ -57,6 +58,18 @@
       dispatch("submit");
     }
   };
+
+  let editSubmitHandler = async () => {
+    await submitHandler();
+    if (Object.keys(errors).length === 0) {
+      deleteEntryCallback(entry.id);
+      cancelEditHandler();
+    }
+  }
+
+  let cancelEditHandler = () => {
+    dispatch("cancelEdit");
+  }
 
   let generateHandler = () => {
     const randomChoice = (list) => {
@@ -168,21 +181,28 @@
   </td>
 
   <td class="flex flex-row pl-2 flex">
-    <button
-            on:click={submitHandler}
-            class="mr-2 block rounded-sm border border-indigo-600 bg-indigo-600 px-1 py-0.5 text-sm font-medium text-white hover:bg-transparent hover:text-indigo-600 focus:outline-none focus:ring active:text-indigo-500"
-    >
-      Add
+    {#if !editMode}
+      <button
+              on:click={submitHandler}
+              class="mr-2 block rounded-sm border border-indigo-600 bg-indigo-600 px-1 py-0.5 text-sm font-medium text-white hover:bg-transparent hover:text-indigo-600 focus:outline-none focus:ring active:text-indigo-500"
+      >
+        Add
     </button>
     <button
       on:click={generateHandler}
       class="mx-auto block whitespace-nowrap rounded-sm border border-indigo-600 p-0.5 text-sm font-medium text-indigo-500 hover:bg-transparent hover:text-indigo-600 focus:outline-none focus:ring active:text-indigo-500"
     >
       I'm lazy
-    </button>
-    {#if cancelEditCallback != null}
+      </button>
+    {:else}
       <button
-              on:click={cancelEditCallback}
+              on:click={editSubmitHandler}
+              class="mx-auto block w-12 rounded-sm border border-indigo-600 bg-indigo-600 py-0.5 text-sm font-medium text-white hover:bg-transparent hover:text-indigo-600 focus:outline-none focus:ring active:text-indigo-500"
+      >
+        Submit
+      </button>
+      <button
+              on:click={cancelEditHandler}
               class="inline-block w-14 text-sm font-medium text-indigo-500 underline hover:text-indigo-700 hover:no-underline"
       >
         Cancel
