@@ -5,6 +5,7 @@
   import { createEventDispatcher } from "svelte";
 
   import { troiApi } from "./troiApiService";
+  import { formatHours } from "./formatHours.js";
 
   export let calculationPositionId;
 
@@ -25,6 +26,7 @@
   let errors = {};
 
   let submitHandler = async () => {
+    values.hours = formatHours(values.hours);
     try {
       // `abortEarly: false` to get all the errors
       await schema.validate(values, { abortEarly: false });
@@ -46,6 +48,8 @@
         values.hours,
         values.description
       );
+
+      values.hours = formatHours(values.hours);
       dispatch("submit");
     }
   };

@@ -207,6 +207,21 @@ test.describe("Time entries", async () => {
     await expect(newEntryRow.locator("td >> nth=2")).toBeEmpty();
   });
 
+  test("add entry with secondary hour fraction format", async ({ page }) => {
+    await new LoginPage(page).logIn(correctUser, correctPassword);
+
+    await new TimeEntriesPage(page).addEntry(
+      "2022",
+      "January",
+      "17",
+      "2.333333333333333",
+      "a task"
+    );
+
+    const firstRow = page.locator("tr >> nth=1");
+    await expect(firstRow.locator("td >> nth=1")).toHaveText("2:20");
+  });
+
   test("add entry - invalid data", async ({ page }) => {
     await new LoginPage(page).logIn(correctUser, correctPassword);
 
