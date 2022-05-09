@@ -8,6 +8,8 @@
   import { formatHours } from "./formatHours.js";
 
   export let calculationPositionId;
+  export let entry;
+  export let cancelEditCallback;
 
   const dispatch = createEventDispatcher();
 
@@ -21,7 +23,9 @@
   });
 
   let values = {
-    date: new Date(),
+    date: entry?.date ? new Date(entry.date) : new Date(),
+    description: entry?.description ? entry.description : "",
+    hours: entry?.hours ? entry.hours : "",
   };
   let errors = {};
 
@@ -163,10 +167,10 @@
     />
   </td>
 
-  <td class="flex flex-row pl-2">
+  <td class="flex flex-row pl-2 flex">
     <button
-      on:click={submitHandler}
-      class="mr-2 block rounded-sm border border-indigo-600 bg-indigo-600 px-1 py-0.5 text-sm font-medium text-white hover:bg-transparent hover:text-indigo-600 focus:outline-none focus:ring active:text-indigo-500"
+            on:click={submitHandler}
+            class="mr-2 block rounded-sm border border-indigo-600 bg-indigo-600 px-1 py-0.5 text-sm font-medium text-white hover:bg-transparent hover:text-indigo-600 focus:outline-none focus:ring active:text-indigo-500"
     >
       Add
     </button>
@@ -176,6 +180,14 @@
     >
       I'm lazy
     </button>
+    {#if cancelEditCallback != null}
+      <button
+              on:click={cancelEditCallback}
+              class="inline-block w-14 text-sm font-medium text-indigo-500 underline hover:text-indigo-700 hover:no-underline"
+      >
+        Cancel
+      </button>
+    {/if}
   </td>
 </tr>
 
