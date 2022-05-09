@@ -30,8 +30,8 @@
   }
 
   function getWeekday(dayIndex) {
-    const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-    return weekdays[dayIndex]
+    const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    return weekdays[dayIndex];
   }
 </script>
 
@@ -52,7 +52,10 @@
       {:then entries}
         {#each entries as entry}
           <tr class="align-top">
-            <td class="py-1 pr-2 min-w-[140px] flex justify-between"><div>{getWeekday(new Date(entry.date).getDay())}</div><div>{entry.date}</div></td>
+            <td class="py-1 pr-2 min-w-[140px] flex justify-between"
+              ><div>{getWeekday(new Date(entry.date).getDay())}</div>
+              <div>{entry.date}</div></td
+            >
             <td class="px-2 py-1"
               >{Math.floor(entry.hours)}:{String(
                 Math.floor((entry.hours - Math.floor(entry.hours)) * 60)

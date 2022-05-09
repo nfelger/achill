@@ -8,7 +8,6 @@ on:
   # Allow to run this workflow manually
   workflow_dispatch:
 
-
 jobs:
   build-app:
     runs-on: ubuntu-latest
