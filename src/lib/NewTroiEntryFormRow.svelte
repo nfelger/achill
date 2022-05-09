@@ -199,7 +199,7 @@
               on:click={editSubmitHandler}
               class="mx-auto block w-12 rounded-sm border border-indigo-600 bg-indigo-600 py-0.5 text-sm font-medium text-white hover:bg-transparent hover:text-indigo-600 focus:outline-none focus:ring active:text-indigo-500"
       >
-        Submit
+        Save
       </button>
       <button
               on:click={cancelEditHandler}

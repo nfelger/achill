@@ -19,16 +19,34 @@ class TimeEntriesPage {
     this.page = page;
   }
 
+  async setFromTo(from, to) {
+    await this.page.locator('label:has-text("Show from:")').fill(from);
+    await this.page.locator('label:has-text("to:")').fill(to);
+  }
+
   async addEntry(year, month, date, hours, description) {
+    await this.page.locator('[placeholder="2022-01-01"]').click();
+    await this.page.locator('[placeholder="2022-01-01"] + .picker >> select').first().selectOption({ label: month });
+    await this.page.locator('[placeholder="2022-01-01"] + .picker >> select').nth(2).selectOption(year);
+    await this.page.locator(`[placeholder="2022-01-01"] + .picker >> span >> text="${date}"`).nth(0).click();
+    await this.page.locator('[placeholder="2:15"]').fill(hours);
+    await this.page
+      .locator('[placeholder="Working the work…"]')
+      .fill(description);
+    await this.page.locator("text=Add").click();
+  }
+
+  async editEntry(year, month, date, hours, description) {
+    await this.page.locator('text=Edit').nth(0).click();
     await this.page.locator('[placeholder="2022-01-01"]').click();
     await this.page.locator("select").first().selectOption({ label: month });
     await this.page.locator("select").nth(2).selectOption(year);
     await this.page.locator(`span >> text="${date}"`).click();
     await this.page.locator('[placeholder="2:15"]').fill(hours);
     await this.page
-      .locator('[placeholder="Working the work…"]')
-      .fill(description);
-    await this.page.locator("text=Add").click();
+        .locator('[placeholder="Working the work…"]')
+        .fill(description);
+    await this.page.locator("text=Save").click();
   }
 }
 
@@ -102,7 +120,7 @@ class TroiApiStub {
       return this._response({ jsonBody: this.entries });
     } else if (method === "POST" && pathname.endsWith("/billings/hours")) {
       this.addEntry({
-        id: 1,
+        id: this.entries.length,
         Date: postData.Date,
         Quantity: postData.Quantity,
         Remark: postData.Remark,
@@ -244,6 +262,32 @@ test.describe("Time entries", async () => {
       "border-color",
       "rgb(239, 68, 68)"
     );
+  });
+
+  test("edit entry", async ({ page }) => {
+    await new LoginPage(page).logIn(correctUser, correctPassword);
+    await new TimeEntriesPage(page).setFromTo("2022-01-01", "2022-12-31");
+    await new TimeEntriesPage(page).addEntry(
+        "2022",
+        "January",
+        "17",
+        "1:00",
+        "a task"
+    );
+    await new TimeEntriesPage(page).editEntry(
+        "2022",
+        "January",
+        "18",
+        "2:00",
+        "a task - edited"
+    );
+
+    await expect(page.locator("tr")).toHaveCount(3);
+
+    const firstRow = page.locator("tr >> nth=1");
+    await expect(firstRow.locator("td >> nth=0")).toHaveText("Tue 2022-01-18");
+    await expect(firstRow.locator("td >> nth=1")).toHaveText("2:00");
+    await expect(firstRow.locator("td >> nth=2")).toHaveText("a task - edited");
   });
 
   test("delete entry", async ({ page }) => {
