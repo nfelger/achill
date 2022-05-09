@@ -52,13 +52,14 @@
 </script>
 
 <tr>
-  <td class="pr-2">
+  <td class="pr-2 min-w-[140px]">
     <!-- svelte-ignore a11y-label-has-associated-control -->
     <DateInput
       bind:value={values.date}
       format="yyyy-MM-dd"
       placeholder="2022-01-01"
       closeOnSelection={true}
+      class="w-full"
     />
   </td>
 
@@ -114,8 +115,9 @@
     padding-top: 0.125rem;
     padding-bottom: 0.125rem;
     padding-left: 0;
-    padding-right: 0.5rem;
-    --date-input-width: 5.75rem;
+    padding-right: 0;
+    text-align: right;
+    --date-input-width: 100%;
   }
 
   td :global(.date-time-field input::placeholder) {

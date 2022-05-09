@@ -197,7 +197,7 @@ test.describe("Time entries", async () => {
     await expect(page.locator("tr")).toHaveCount(3);
 
     const firstRow = page.locator("tr >> nth=1");
-    await expect(firstRow.locator("td >> nth=0")).toHaveText("2022-01-17");
+    await expect(firstRow.locator("td >> nth=0")).toHaveText("Mon2022-01-17");
     await expect(firstRow.locator("td >> nth=1")).toHaveText("4:45");
     await expect(firstRow.locator("td >> nth=2")).toHaveText("a task");
 
