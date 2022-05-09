@@ -65,7 +65,7 @@
             <td class="py-1 pl-2"
               ><button
                 on:click={() => deleteEntry(entry.id)}
-                class="inline-block w-14 text-sm font-medium text-indigo-500 underline hover:text-indigo-700 hover:no-underline"
+                class="inline-block text-sm font-medium text-indigo-500 underline hover:text-indigo-700 hover:no-underline"
               >
                 Delete
               </button>

@@ -261,4 +261,20 @@ test.describe("Time entries", async () => {
     await expect(page.locator("tr")).toHaveCount(2);
     await expect(page.locator("table")).not.toContainText("delete me");
   });
+
+  test("generate entry", async ({ page }) => {
+    await new LoginPage(page).logIn(correctUser, correctPassword);
+
+    const inputField = page.locator("tr >> nth=-1");
+    await expect(
+      inputField.locator('[placeholder="Working the work…"]')
+    ).toBeEmpty();
+    await page.screenshot({ path: "screenshot0.png" });
+    await page.click('text="I\'m lazy"');
+    await page.screenshot({ path: "screenshot1.png" });
+
+    await expect(
+      inputField.locator('[placeholder="Working the work…"]')
+    ).not.toBeEmpty();
+  });
 });

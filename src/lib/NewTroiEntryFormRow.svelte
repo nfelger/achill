@@ -53,6 +53,74 @@
       dispatch("submit");
     }
   };
+
+  let generateHandler = () => {
+    const randomChoice = (list) => {
+      return list[Math.floor(list.length * Math.random())];
+    };
+
+    const subjectList = [
+      "Code",
+      "Architektur",
+      "Backlog",
+      "Roadmap",
+      "Wireframes",
+      "Designs",
+      "Figma",
+      "Review",
+      "Planning",
+      "Refinement",
+      "User Tests",
+      "Supportanfragen",
+      "Skizzen",
+      "User Needs",
+      "Stakeholder",
+      "Däumchen",
+      "Bugs",
+      "Stackoverflow",
+      "Probleme",
+      "Herausforderungen",
+      "Software",
+      "Quellcode",
+      "Besprechung",
+    ];
+    const verbList = [
+      "analysieren",
+      "refactorn",
+      "reinzeichnen",
+      "organisieren",
+      "vorbereiten",
+      "definieren",
+      "durchführen",
+      "untersuchen",
+      "verstehen",
+      "drehen",
+      "bauen",
+      "festlegen",
+      "spezifizieren",
+      "iterieren",
+      "nachbereiten",
+      "diskutieren",
+      "anpassen",
+      "fixen",
+      "beantworten",
+      "lesen",
+      "ideaten",
+      "brainstormen",
+      "abhalten",
+      "verfassen",
+      "kreieren",
+      "lösen",
+      "überstehen",
+      "retten",
+    ];
+
+    const generatedEntry =
+      randomChoice(subjectList) + " " + randomChoice(verbList);
+    values.description = values.description
+      ? values.description + ", " + generatedEntry
+      : generatedEntry;
+  };
 </script>
 
 <tr>
@@ -95,12 +163,18 @@
     />
   </td>
 
-  <td class="pl-2">
+  <td class="flex flex-row pl-2">
     <button
       on:click={submitHandler}
-      class="mx-auto block w-12 rounded-sm border border-indigo-600 bg-indigo-600 py-0.5 text-sm font-medium text-white hover:bg-transparent hover:text-indigo-600 focus:outline-none focus:ring active:text-indigo-500"
+      class="mr-2 block rounded-sm border border-indigo-600 bg-indigo-600 px-1 py-0.5 text-sm font-medium text-white hover:bg-transparent hover:text-indigo-600 focus:outline-none focus:ring active:text-indigo-500"
     >
       Add
+    </button>
+    <button
+      on:click={generateHandler}
+      class="mx-auto block whitespace-nowrap rounded-sm border border-indigo-600 p-0.5 text-sm font-medium text-indigo-500 hover:bg-transparent hover:text-indigo-600 focus:outline-none focus:ring active:text-indigo-500"
+    >
+      I'm lazy
     </button>
   </td>
 </tr>
@@ -116,10 +190,7 @@
     font-feature-settings: "kern" 1, "tnum" 1;
     font-size: 0.875rem;
     line-height: 1.25rem;
-    padding-top: 0.125rem;
-    padding-bottom: 0.125rem;
-    padding-left: 0;
-    padding-right: 0;
+    padding: 0.125rem 0;
     text-align: right;
     --date-input-width: 100%;
   }

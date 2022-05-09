@@ -65,7 +65,8 @@
 <section class="mt-8 text-xs text-gray-600">
   <p>
     Project not showing up? Make sure it's available in Troi and marked as a
-    "favorite".
+    "favorite". <br />
+    The "I'm lazy" function is not intended for actual use, it is just a fun feature.
   </p>
 </section>
 
