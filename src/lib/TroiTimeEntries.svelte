@@ -1,7 +1,7 @@
 <script>
   import { troiApi } from "./troiApiService";
   import NewTroiEntryFormRow from "./NewTroiEntryFormRow.svelte";
-  import { onMount } from 'svelte';
+  import { onMount } from "svelte";
 
   export let calculationPositionId;
   export let startDate;
@@ -12,9 +12,9 @@
 
   onMount(async () => {
     entries = await $troiApi.getTimeEntries(
-            calculationPositionId,
-            startDate,
-            endDate
+      calculationPositionId,
+      startDate,
+      endDate
     );
   });
 
@@ -59,7 +59,14 @@
     <tbody>
       {#each entries as entry, index}
         {#if editEntryIndex === index}
-          <NewTroiEntryFormRow on:submit={refresh} on:cancelEdit={cancelEdit} {calculationPositionId} entry={entry} editMode={true} deleteEntryCallback={deleteEntry} />
+          <NewTroiEntryFormRow
+            on:submit={refresh}
+            on:cancelEdit={cancelEdit}
+            {calculationPositionId}
+            {entry}
+            editMode={true}
+            deleteEntryCallback={deleteEntry}
+          />
         {:else}
           <tr class="align-top">
             <td class="py-1 pr-2 min-w-[140px] flex justify-between"
@@ -67,22 +74,21 @@
               <div>{entry.date}</div></td
             >
             <td class="px-2 py-1"
-            >{Math.floor(entry.hours)}:{String(
-                    Math.floor((entry.hours - Math.floor(entry.hours)) * 60)
-            ).padStart(2, "0")}</td
+              >{Math.floor(entry.hours)}:{String(
+                Math.floor((entry.hours - Math.floor(entry.hours)) * 60)
+              ).padStart(2, "0")}</td
             >
             <td class="px-2 py-1">{entry.description}</td>
-            <td class="py-1 pl-2 flex"
-            >
+            <td class="py-1 pl-2 flex">
               <button
-                      on:click={() => editEntry(index)}
-                      class="inline-block w-14 text-sm font-medium text-indigo-500 underline hover:text-indigo-700 hover:no-underline"
+                on:click={() => editEntry(index)}
+                class="inline-block w-14 text-sm font-medium text-indigo-500 underline hover:text-indigo-700 hover:no-underline"
               >
                 Edit
               </button>
               <button
-                      on:click={() => deleteEntry(entry.id)}
-                      class="inline-block text-sm font-medium text-indigo-500 underline hover:text-indigo-700 hover:no-underline"
+                on:click={() => deleteEntry(entry.id)}
+                class="inline-block text-sm font-medium text-indigo-500 underline hover:text-indigo-700 hover:no-underline"
               >
                 Delete
               </button>

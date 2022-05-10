@@ -26,9 +26,18 @@ class TimeEntriesPage {
 
   async addEntry(year, month, date, hours, description) {
     await this.page.locator('[placeholder="2022-01-01"]').click();
-    await this.page.locator('[placeholder="2022-01-01"] + .picker >> select').first().selectOption({ label: month });
-    await this.page.locator('[placeholder="2022-01-01"] + .picker >> select').nth(2).selectOption(year);
-    await this.page.locator(`[placeholder="2022-01-01"] + .picker >> span >> text="${date}"`).nth(0).click();
+    await this.page
+      .locator('[placeholder="2022-01-01"] + .picker >> select')
+      .first()
+      .selectOption({ label: month });
+    await this.page
+      .locator('[placeholder="2022-01-01"] + .picker >> select')
+      .nth(2)
+      .selectOption(year);
+    await this.page
+      .locator(`[placeholder="2022-01-01"] + .picker >> span >> text="${date}"`)
+      .nth(0)
+      .click();
     await this.page.locator('[placeholder="2:15"]').fill(hours);
     await this.page
       .locator('[placeholder="Working the work…"]')
@@ -37,15 +46,15 @@ class TimeEntriesPage {
   }
 
   async editEntry(year, month, date, hours, description) {
-    await this.page.locator('text=Edit').nth(0).click();
+    await this.page.locator("text=Edit").nth(0).click();
     await this.page.locator('[placeholder="2022-01-01"]').click();
     await this.page.locator("select").first().selectOption({ label: month });
     await this.page.locator("select").nth(2).selectOption(year);
     await this.page.locator(`span >> text="${date}"`).click();
     await this.page.locator('[placeholder="2:15"]').fill(hours);
     await this.page
-        .locator('[placeholder="Working the work…"]')
-        .fill(description);
+      .locator('[placeholder="Working the work…"]')
+      .fill(description);
     await this.page.locator("text=Save").click();
   }
 }
@@ -268,18 +277,18 @@ test.describe("Time entries", async () => {
     await new LoginPage(page).logIn(correctUser, correctPassword);
     await new TimeEntriesPage(page).setFromTo("2022-01-01", "2022-12-31");
     await new TimeEntriesPage(page).addEntry(
-        "2022",
-        "January",
-        "17",
-        "1:00",
-        "a task"
+      "2022",
+      "January",
+      "17",
+      "1:00",
+      "a task"
     );
     await new TimeEntriesPage(page).editEntry(
-        "2022",
-        "January",
-        "18",
-        "2:00",
-        "a task - edited"
+      "2022",
+      "January",
+      "18",
+      "2:00",
+      "a task - edited"
     );
 
     await expect(page.locator("tr")).toHaveCount(3);
