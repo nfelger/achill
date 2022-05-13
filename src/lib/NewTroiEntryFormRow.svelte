@@ -71,6 +71,16 @@
     dispatch("cancelEdit");
   };
 
+  let keydownHandler = (event) => {
+    if (event.key === "Enter") {
+      if (editMode) {
+        editSubmitHandler();
+      } else {
+        submitHandler();
+      }
+    }
+  };
+
   let generateHandler = () => {
     const randomChoice = (list) => {
       return list[Math.floor(list.length * Math.random())];
@@ -155,6 +165,7 @@
   <td class="px-2">
     <input
       bind:value={values.hours}
+      on:keydown={keydownHandler}
       type="text"
       id="hours"
       class={`w-full px-0 py-0.5 text-sm placeholder:italic placeholder:text-gray-400 ${
@@ -168,6 +179,7 @@
 
   <td class="px-2">
     <input
+      on:keydown={keydownHandler}
       bind:value={values.description}
       type="text"
       id="description"
