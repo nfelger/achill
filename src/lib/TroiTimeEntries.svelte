@@ -46,7 +46,7 @@
   }
 </script>
 
-<div>
+<div data-test="time-entries">
   {#await entriesPromise}
     <p>Loading…</p>
   {:then entries}
@@ -61,7 +61,7 @@
           editMode={true}
           deleteEntryCallback={deleteEntry}
         />{:else}
-        <div class="flex justify-center my-2">
+        <div data-test="entry-card" class="flex justify-center my-2">
           <div class="block p-4 rounded-lg shadow-lg bg-white w-full">
             <div class="flex flex-row">
               <div class="basis-3/4 p-1">

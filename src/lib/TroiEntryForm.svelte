@@ -56,6 +56,8 @@
 
       values.hours = formatHours(values.hours);
       dispatch("submit");
+      values.hours = "";
+      values.description = "";
     }
   };
 
@@ -150,7 +152,7 @@
   };
 </script>
 
-<div class="my-2 flex justify-center">
+<div data-test="entry-form" class="my-2 flex justify-center">
   <div class="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
     <div class="flex flex-row">
       <div class="basis-3/4 p-1">
@@ -158,10 +160,11 @@
           {#if editMode}Edit Entry{:else}Add an entry{/if}
         </h5>
         <div class="flex place-items-center justify-start">
-          <label class="basis-1/4">Date</label>
+          <label for="date" class="basis-1/4">Date</label>
           <DateInput
             bind:value={values.date}
             format="yyyy-MM-dd"
+            id="date"
             placeholder="2022-01-01"
             closeOnSelection={true}
           />
@@ -173,6 +176,7 @@
             on:keydown={keydownHandler}
             type="text"
             id="hours"
+            data-test-id="hours"
             class={`w-auto basis-1/4 rounded px-1 py-0.5 text-sm placeholder:italic placeholder:text-gray-400 ${
               errors.hours
                 ? "border border-b-2 border-red-500"
