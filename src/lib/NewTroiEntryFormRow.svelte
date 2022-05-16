@@ -151,7 +151,7 @@
 </script>
 
 <tr>
-  <td class="min-w-[140px] pr-2">
+  <td class="min-w-[100px] pr-2">
     <!-- svelte-ignore a11y-label-has-associated-control -->
     <DateInput
       bind:value={values.date}

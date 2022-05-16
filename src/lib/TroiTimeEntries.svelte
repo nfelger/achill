@@ -49,7 +49,7 @@
   <table class="mt-4 min-w-full border-collapse text-sm">
     <thead>
       <tr>
-        <th class="w-16 pr-2 pb-2 text-left font-medium"> Date </th>
+        <th class="w-12 pr-2 pb-2 text-left font-medium"> Date </th>
         <th class="w-8 px-2 pb-2 text-left font-medium"> Hours </th>
         <th class="px-2 pb-2 text-left font-medium"> Description </th>
         <th class="w-14 pl-2 pb-2 text-center font-medium"> Actions </th>
@@ -72,7 +72,7 @@
             />
           {:else}
             <tr class="align-top">
-              <td class="py-1 pr-2 min-w-[140px] flex justify-between"
+              <td class="py-1 pr-2 min-w-[120px] flex justify-between"
                 ><div>{getWeekday(new Date(entry.date).getDay())}</div>
                 <div>{entry.date}</div></td
               >

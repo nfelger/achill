@@ -7,6 +7,7 @@
   } from "../../lib/troiApiService";
   import Input from "./../../lib/Input.svelte";
 
+  const troiBaseUrl = "https://digitalservice.troi.software/api/v2/rest";
   let userName = "";
   let password = "";
 
@@ -14,7 +15,7 @@
 
   async function handleSubmit() {
     failed = false;
-    $troiApi = new TroiApiService(userName, password);
+    $troiApi = new TroiApiService(troiBaseUrl, userName, password);
     try {
       await $troiApi.initialize();
       login(userName, password);

@@ -17,7 +17,7 @@
   }
 </script>
 
-<div class="rounded-sm bg-white px-8 py-6 shadow-md">
+<div class="rounded-sm bg-white px-8 py-6 shadow-md sm:w-full">
   <nav class="float-right">
     <div class=" text-sm  text-gray-600">
       Logged in as {$user.name}.
