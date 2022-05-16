@@ -18,8 +18,8 @@
 </script>
 
 <div class="rounded-sm bg-white px-2 py-2 shadow-md sm:w-full md:px-8 md:py-6">
-  <nav class="float-right">
-    <div class=" text-sm  text-gray-600">
+  <nav class="border-1 w-full border-b pb-1 text-center md:text-right">
+    <div class="text-sm text-gray-600">
       Logged in as {$user.name}.
       <a
         href="/"

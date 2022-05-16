@@ -196,26 +196,26 @@
     {#if !editMode}
       <button
         on:click={submitHandler}
-        class="mr-2 block rounded-sm border border-indigo-600 bg-indigo-600 px-1 py-0.5 text-sm font-medium text-white hover:bg-transparent hover:text-indigo-600 focus:outline-none focus:ring active:text-indigo-500"
+        class="mr-2 block rounded-sm border border-blue-600 bg-blue-600 px-1 py-0.5 text-sm font-medium text-white hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-600"
       >
         Add
       </button>
       <button
         on:click={generateHandler}
-        class="mx-auto block whitespace-nowrap rounded-sm border border-indigo-600 p-0.5 text-sm font-medium text-indigo-500 hover:bg-transparent hover:text-indigo-600 focus:outline-none focus:ring active:text-indigo-500"
+        class="mx-auto block whitespace-nowrap rounded-sm border border-blue-600 p-0.5 text-sm font-medium text-blue-600 hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-600"
       >
         I'm lazy
       </button>
     {:else}
       <button
         on:click={editSubmitHandler}
-        class="mx-auto block w-12 rounded-sm border border-indigo-600 bg-indigo-600 py-0.5 text-sm font-medium text-white hover:bg-transparent hover:text-indigo-600 focus:outline-none focus:ring active:text-indigo-500"
+        class="mx-auto block w-12 rounded-sm border border-blue-600 bg-blue-600 py-0.5 text-sm font-medium text-white hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-600"
       >
         Save
       </button>
       <button
         on:click={cancelEditHandler}
-        class="inline-block w-14 text-sm font-medium text-indigo-500 underline hover:text-indigo-700 hover:no-underline"
+        class="inline-block w-14 text-sm font-medium text-blue-600 underline hover:text-blue-700 hover:no-underline"
       >
         Cancel
       </button>
