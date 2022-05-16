@@ -1,6 +1,7 @@
 <script>
   import { troiApi } from "./troiApiService";
-  import NewTroiEntryFormRow from "./NewTroiEntryFormRow.svelte";
+  import moment from "moment";
+  import TroiEntryForm from "./TroiEntryForm.svelte";
 
   export let calculationPositionId;
   export let startDate;
@@ -46,70 +47,57 @@
 </script>
 
 <div>
-  <table class="mt-4 min-w-full border-collapse text-sm">
-    <thead>
-      <tr>
-        <th class="w-12 pr-2 pb-2 text-left font-medium"> Date </th>
-        <th class="w-8 px-2 pb-2 text-left font-medium"> Hours </th>
-        <th class="px-2 pb-2 text-left font-medium"> Description </th>
-        <th class="w-14 pl-2 pb-2 text-center font-medium"> Actions </th>
-      </tr>
-    </thead>
+  {#await entriesPromise}
+    <p>Loading…</p>
+  {:then entries}
+    <TroiEntryForm on:submit={refresh} {calculationPositionId} />
+    {#each entries as entry, index}
+      {#if editEntryIndex === index}
+        <TroiEntryForm
+          on:submit={refresh}
+          on:cancelEdit={cancelEdit}
+          {calculationPositionId}
+          {entry}
+          editMode={true}
+          deleteEntryCallback={deleteEntry}
+        />{:else}
+        <div class="flex justify-center my-2">
+          <div class="block p-4 rounded-lg shadow-lg bg-white w-full">
+            <div class="flex flex-row">
+              <div class="basis-3/4 p-1">
+                <h5
+                  class="text-gray-900 text-base leading-tight font-normal mb-2"
+                >
+                  {getWeekday(new Date(entry.date).getDay())}
+                  {moment(entry.date).format("DD.MM.YYYY")} -
+                  {Math.floor(entry.hours)}:{String(
+                    Math.floor((entry.hours - Math.floor(entry.hours)) * 60)
+                  ).padStart(2, "0")} Hours
+                </h5>
+                <p class="text-gray-700 text-base">
+                  {entry.description}
+                </p>
+              </div>
+              <div class="basis-1/4 flex justify-end">
+                <div class="flex flex-col justify-center gap-1">
+                  <button
+                    on:click={() => editEntry(index)}
+                    class="h-auto inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                  >
+                    Edit
+                  </button>
 
-    <tbody>
-      {#await entriesPromise}
-        <p>Loading…</p>
-      {:then entries}
-        {#each entries as entry, index}
-          {#if editEntryIndex === index}
-            <NewTroiEntryFormRow
-              on:submit={refresh}
-              on:cancelEdit={cancelEdit}
-              {calculationPositionId}
-              {entry}
-              editMode={true}
-              deleteEntryCallback={deleteEntry}
-            />
-          {:else}
-            <tr class="align-top">
-              <td class="py-1 pr-2 min-w-[120px] flex justify-between"
-                ><div>{getWeekday(new Date(entry.date).getDay())}</div>
-                <div>{entry.date}</div></td
-              >
-              <td class="px-2 py-1"
-                >{Math.floor(entry.hours)}:{String(
-                  Math.floor((entry.hours - Math.floor(entry.hours)) * 60)
-                ).padStart(2, "0")}</td
-              >
-              <td class="px-2 py-1">{entry.description}</td>
-              <td class="py-1 pl-2 flex">
-                <button
-                  on:click={() => editEntry(index)}
-                  class="inline-block w-14 text-sm font-medium text-indigo-500 underline hover:text-indigo-700 hover:no-underline"
-                >
-                  Edit
-                </button>
-                <button
-                  on:click={() => deleteEntry(entry.id)}
-                  class="inline-block text-sm font-medium text-indigo-500 underline hover:text-indigo-700 hover:no-underline"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          {/if}
-        {/each}
-      {/await}
-      {#if editEntryIndex == null}
-        <!-- TODO: work with slots for cell styling -->
-        <NewTroiEntryFormRow on:submit={refresh} {calculationPositionId} />
-      {/if}
-    </tbody>
-  </table>
+                  <button
+                    on:click={() => deleteEntry(entry.id)}
+                    class="inline-block px-6 py-2.5 bg-white text-red-600 font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-100 hover:shadow-lg focus:bg-red-100 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-200 active:shadow-lg transition duration-150 ease-in-out"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>{/if}
+    {/each}
+  {/await}
 </div>
-
-<style>
-  td {
-    font-feature-settings: "kern" 1, "tnum" 1;
-  }
-</style>
