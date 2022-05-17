@@ -51,7 +51,7 @@
     <p>Loading…</p>
   {:then entries}
     <TroiEntryForm on:submit={refresh} {calculationPositionId} />
-    {#each entries as entry, index}
+    {#each entries.sort((a, b) => (a.date > b.date ? -1 : 1)) as entry, index}
       {#if editEntryIndex === index}
         <TroiEntryForm
           on:submit={refresh}

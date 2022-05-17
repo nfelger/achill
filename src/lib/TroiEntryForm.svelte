@@ -220,7 +220,7 @@
           {:else}
             <button
               on:click={editSubmitHandler}
-              class="mx-auto block w-12 rounded-sm border border-blue-600 bg-blue-600 py-0.5 text-sm font-medium text-white hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-600"
+              class="inline-block h-auto rounded bg-blue-600 px-6 py-2.5 text-xs font-medium uppercase leading-tight text-white shadow-md transition duration-150 ease-in-out hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg"
             >
               Save
             </button>
