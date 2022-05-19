@@ -153,7 +153,12 @@
   };
 </script>
 
-<div data-test="entry-form" class="my-2 flex justify-center" class:opacity-50={disabled} class:pointer-events-none={disabled}>
+<div
+  data-test="entry-form"
+  class="my-2 flex justify-center"
+  class:opacity-50={disabled}
+  class:pointer-events-none={disabled}
+>
   <div class="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
     <div class="flex flex-row">
       <div class="basis-3/4 p-1">

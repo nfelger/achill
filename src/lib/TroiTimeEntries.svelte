@@ -47,7 +47,11 @@
 </script>
 
 <div data-test="time-entries">
-  <TroiEntryForm disabled={editEntryIndex != null} on:submit={refresh} {calculationPositionId} />
+  <TroiEntryForm
+    disabled={editEntryIndex != null}
+    on:submit={refresh}
+    {calculationPositionId}
+  />
   {#await entriesPromise}
     <p>Loading…</p>
   {:then entries}
