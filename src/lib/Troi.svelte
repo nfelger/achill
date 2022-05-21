@@ -74,7 +74,10 @@
   <!-- TODO: make into single component Project -->
   <section class="bg-white">
     <div class="container mx-auto pt-4 pb-2">
-      <h2 class="text-lg font-semibold text-gray-900" title="Position ID: {project.id}">
+      <h2
+        class="text-lg font-semibold text-gray-900"
+        title="Position ID: {project.id}"
+      >
         {project.name}
       </h2>
       <TroiTimeEntries
