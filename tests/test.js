@@ -73,7 +73,7 @@ const correctPassword = "s3cr3t";
 
 const mockData = {
   client: {
-    Name: "DigitalService4Germany GmbH",
+    Name: "DigitalService GmbH des Bundes",
     Id: 123,
   },
   employee: {
