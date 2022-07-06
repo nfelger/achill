@@ -63,7 +63,7 @@
           {calculationPositionId}
           {entry}
           editMode={true}
-          deleteEntryCallback={deleteEntry}
+          updateEntryCallback={refresh}
         />{:else}
         <div data-test="entry-card" class="flex justify-center my-2">
           <div class="block p-4 rounded-lg shadow-lg bg-white w-full">
