@@ -20,7 +20,7 @@
     hours: yup
       .string()
       .required("Hours are required, must be hh:mm")
-      .matches(/\d?\d:\d\d/),
+      .matches(/\d?\d?:\d\d/),
     description: yup.string().required("Description is required"),
   });
 
@@ -46,7 +46,7 @@
     if (Object.keys(errors).length === 0) {
       if (values.hours.includes(":")) {
         const [hoursStr, minutesStr] = values.hours.split(":");
-        values.hours = parseInt(hoursStr) + parseInt(minutesStr) / 60;
+        values.hours = parseInt(hoursStr || 0) + parseInt(minutesStr) / 60;
       }
       if (update) {
         await $troiApi.updateTimeEntry(

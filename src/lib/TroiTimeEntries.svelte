@@ -52,7 +52,6 @@
       .filter((e) => e.date === entry.date)
       .reduce(
         (previous, current) => {
-          console.log(previous.hours, current.hours);
           return { hours: previous.hours + current.hours };
         },
         { hours: 0 }

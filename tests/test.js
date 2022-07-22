@@ -300,6 +300,25 @@ test.describe("Time entries", async () => {
     await expect(card.locator("h5")).toHaveText("Mon 17.01.2022 - 2:20 Hours");
   });
 
+  test("add entry without a leading hour format - minutes only", async ({
+    page,
+  }) => {
+    await new LoginPage(page).logIn(correctUser, correctPassword);
+
+    await new TimeEntriesPage(page).addEntry(
+      "2022",
+      "February",
+      "14",
+      ":30",
+      "a task"
+    );
+
+    await expect(page.locator("data-test=entry-card")).toHaveCount(1);
+
+    const card = page.locator("data-test=entry-card");
+    await expect(card.locator("h5")).toHaveText("Mon 14.02.2022 - 0:30 Hours");
+  });
+
   test("add entry - invalid data", async ({ page }) => {
     await new LoginPage(page).logIn(correctUser, correctPassword);
 
