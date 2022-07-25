@@ -26,3 +26,13 @@ npm install
 ```sh
 npm run dev
 ```
+
+## Docker
+
+```sh
+# build the container
+docker build . --tag tyt
+# run the container
+docker run -p 3080:80 -it --rm tyt
+# now it is accessible at http://localhost:3080
+```
