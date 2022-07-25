@@ -15,7 +15,7 @@ Two things need to happen in your Troi account (it might already be set up corre
 
 ## Setup
 
-Install dependencies.
+Checkout the project and install the dependencies.
 
 ```sh
 npm install
@@ -29,10 +29,12 @@ npm run dev
 
 ## Docker
 
+The project is run on k8s with a container, therefore it can be build locally and tested.
+
 ```sh
 # build the container
-docker build . --tag tyt
+docker build . --tag achill
 # run the container
-docker run -p 3080:80 -it --rm tyt
+docker run -p 3080:80 -it --rm achill
 # now it is accessible at http://localhost:3080
 ```
