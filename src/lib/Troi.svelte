@@ -1,113 +1,159 @@
 <script>
-  import { DateInput } from "date-picker-svelte";
-  import moment from "moment";
+  // @ts-nocheck
+
   import { onMount } from "svelte";
+  import { troiApi } from "./apis/troiApiService";
+  import TroiTimeEntries from "$lib/components/TroiTimeEntries.svelte";
+  import WeekView from "$lib/components/WeekView.svelte";
+  import LoadingOverlay from "$lib/components/LoadingOverlay.svelte";
+  import { getWeekDaysFor } from "$lib/utils/dateUtils";
+  import InfoBanner from "$lib/components/InfoBanner.svelte";
+  import TroiController from "$lib/troiController";
 
-  import { troiApi } from "./troiApiService";
-  import TroiTimeEntries from "./TroiTimeEntries.svelte";
+  const troiController = new TroiController();
 
-  let endDate = new Date();
-  let startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+  let selectedDate = new Date();
+  let selectedWeek = getWeekDaysFor(selectedDate);
 
   let projects = [];
+  let timesAndEventsOfSelectedWeek = [];
+  let selectedDayIsHoliday = false;
+  let selectedDayIsVacation = false;
+  let entriesForSelectedDate = {};
 
-  const reload = async () => {
-    projects = await $troiApi.getCalculationPositions();
-  };
+  let isLoading = true;
+  let timeEntryEditState = { id: -1 };
 
-  onMount(() => {
-    reload();
+  onMount(async () => {
+    // make sure $troiApi from store is not used before it is initialized
+    if ($troiApi == undefined) return;
+
+    await troiController.init($troiApi, showLoadingSpinner, hideLoadingSpinner);
+    projects = troiController.getProjects();
+    updateUI();
+    hideLoadingSpinner();
   });
+
+  function showLoadingSpinner() {
+    isLoading = true;
+  }
+
+  function hideLoadingSpinner() {
+    isLoading = false;
+  }
+
+  async function updateUI() {
+    entriesForSelectedDate = await troiController.getEntriesFor(selectedDate);
+    timesAndEventsOfSelectedWeek =
+      troiController.getTimesAndEventsFor(selectedWeek);
+    setSelectedDayEvents();
+  }
+
+  async function onSelectedDateChangedTo(date) {
+    selectedDate = date;
+    selectedWeek = getWeekDaysFor(selectedDate);
+    updateUI();
+  }
+
+  function setSelectedDayEvents() {
+    const selectedDayCalendarEvents = troiController.getEventsFor(selectedDate);
+
+    selectedDayIsHoliday = selectedDayCalendarEvents.some(
+      (event) => event.type === "H"
+    );
+
+    selectedDayIsVacation = selectedDayCalendarEvents.some(
+      (event) => event.type === "P"
+    );
+  }
+
+  // TODO: move to controller
+  function getProjectById(projectId) {
+    const index = projects
+      .map((project) => project.id)
+      .indexOf(Number(projectId));
+    return projects[index];
+  }
+
+  async function onDeleteEntryClicked(entry, projectId) {
+    showLoadingSpinner();
+    await troiController.deleteEntry(entry, projectId, updateUI);
+    hideLoadingSpinner();
+  }
+
+  async function onAddEntryClicked(project, hours, description) {
+    showLoadingSpinner();
+    await troiController.addEntry(
+      selectedDate,
+      project,
+      hours,
+      description,
+      updateUI
+    );
+    hideLoadingSpinner();
+  }
+
+  async function onUpdateEntryClicked(projectId, entry) {
+    showLoadingSpinner();
+    const project = getProjectById(projectId);
+    await troiController.updateEntry(project, entry, () => {
+      timeEntryEditState = { id: -1 };
+      updateUI();
+    });
+    hideLoadingSpinner();
+  }
 </script>
 
-<section>
-  <div class="flex gap-4">
-    <div class="py-4">
-      <!-- svelte-ignore a11y-label-has-associated-control -->
-      <label class="text-sm"
-        >Show from:
-        <DateInput
-          bind:value={startDate}
-          format="yyyy-MM-dd"
-          closeOnSelection={true}
-        />
-      </label>
-    </div>
-
-    <div class="inline-block py-4">
-      <!-- svelte-ignore a11y-label-has-associated-control -->
-      <label class="text-sm"
-        >to:
-        <DateInput
-          bind:value={endDate}
-          format="yyyy-MM-dd"
-          closeOnSelection={true}
-        />
-      </label>
-    </div>
-    <div class="inline-block content-center pt-8">
-      <button
-        class="rounded-sm border border-blue-500 px-2 py-1 hover:bg-blue-100"
-        on:click={() => {
-          (projects = []), reload();
-        }}
-        ><svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="#0063eb"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-          />
-        </svg></button
-      >
-    </div>
-  </div>
+{#if isLoading}
+  <LoadingOverlay message={"Please wait..."} />
+{/if}
+<section class="p-4">
+  <a
+    class="angie-link"
+    href="https://digitalservicebund.atlassian.net/wiki/spaces/DIGITALSER/pages/359301512/Time+Tracking"
+    target="_blank">Read about how to track your time in confluence</a
+  >
+</section>
+<section class="w-full bg-white md:sticky md:top-0">
+  <WeekView
+    {timesAndEventsOfSelectedWeek}
+    selectedDateChanged={onSelectedDateChangedTo}
+  />
 </section>
 
-{#each projects as project}
-  <!-- TODO: make into single component Project -->
-  <section class="bg-white">
-    <div class="container mx-auto pt-4 pb-2">
-      <h2
-        class="text-lg font-semibold text-gray-900"
-        title="Position ID: {project.id}"
-      >
-        {project.name}
-      </h2>
-      <TroiTimeEntries
-        calculationPositionId={project.id}
-        startDate={moment(startDate).format("YYYYMMDD")}
-        endDate={moment(endDate).format("YYYYMMDD")}
-      />
-    </div>
-  </section>
+{#if !selectedDayIsHoliday}
+  {#if selectedDayIsVacation}
+    <InfoBanner
+      text={"You are on vacation."}
+      symbol={"beach_access"}
+      testId={"vacation-banner"}
+    />
+  {/if}
+  <TroiTimeEntries
+    {projects}
+    entries={entriesForSelectedDate}
+    deleteClicked={onDeleteEntryClicked}
+    onUpdateEntry={onUpdateEntryClicked}
+    onAddEntry={onAddEntryClicked}
+    editState={timeEntryEditState}
+    disabled={selectedDayIsHoliday}
+  />
 {:else}
-  <p>Loading…</p>
-{/each}
+  <InfoBanner
+    text={"Public holiday, working impossible."}
+    symbol={"wb_sunny"}
+    testId={"holiday-banner"}
+  />
+{/if}
 
 <section class="mt-8 text-xs text-gray-600">
   <p>
     Project not showing up? Make sure it's available in Troi and marked as a
-    "favorite". <br />
-    The "Suggest" function is not intended for actual use, it is just a very fun
-    feature.
+    "favorite".
   </p>
 </section>
 
 <style>
-  div :global(.date-time-field input) {
-    color: rgb(31 41 55);
-    font-feature-settings: "kern" 1, "tnum" 1;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-  }
-
   :root {
     --date-input-width: 6.5rem;
   }
