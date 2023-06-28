@@ -8,6 +8,8 @@
     getWeekNumberFor,
   } from "$lib/utils/dateUtils.js";
   import { onMount } from "svelte";
+  import { CalendarEventType } from "$lib/stores/transformCalendarEvents";
+  import { getItemForEventType } from "$lib/utils/calendarEventUtils.js";
 
   // @ts-nocheck
 
@@ -49,6 +51,14 @@
     }
 
     return dateClasses;
+  }
+
+  function getIconForEvent(event) {
+    if (event === undefined) {
+      return undefined;
+    }
+
+    return getItemForEventType(event.type);
   }
 </script>
 
@@ -168,13 +178,18 @@
                         class="flex min-w-[6ch] cursor-pointer justify-center px-2 py-2"
                         on:click={() => (selectedDate = selectedWeek[index])}
                       >
-                        {#if data.events.length && data.events[0].type === "H"}
-                          <span class="material-symbols-outlined">
-                            wb_sunny
-                          </span>
-                        {:else if data.events.length && data.events[0].type === "P"}
-                          <span class="material-symbols-outlined">
-                            beach_access
+                        {#if data.events.length && getIconForEvent(data.events[0])}
+                          <span
+                            data-testid={[
+                              "event-mon",
+                              "event-tue",
+                              "event-wed",
+                              "event-thu",
+                              "event-fri",
+                            ][index]}
+                            class="material-symbols-outlined"
+                          >
+                            {getIconForEvent(data.events[0])}
                           </span>
                         {:else}
                           <p

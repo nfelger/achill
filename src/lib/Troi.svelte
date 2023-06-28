@@ -2,13 +2,14 @@
   // @ts-nocheck
 
   import { onMount } from "svelte";
-  import { troiApi } from "./apis/troiApiService";
+  import { troiApi } from "$lib/apis/troiApiService";
   import TroiTimeEntries from "$lib/components/TroiTimeEntries.svelte";
   import WeekView from "$lib/components/WeekView.svelte";
   import LoadingOverlay from "$lib/components/LoadingOverlay.svelte";
   import { getWeekDaysFor } from "$lib/utils/dateUtils";
   import InfoBanner from "$lib/components/InfoBanner.svelte";
   import TroiController from "$lib/troiController";
+  import { CalendarEventType } from "$lib/stores/transformCalendarEvents";
 
   const troiController = new TroiController();
 
@@ -17,8 +18,7 @@
 
   let projects = [];
   let timesAndEventsOfSelectedWeek = [];
-  let selectedDayIsHoliday = false;
-  let selectedDayIsVacation = false;
+  let selectedDayEvents = [];
   let entriesForSelectedDate = {};
 
   let isLoading = true;
@@ -46,25 +46,14 @@
     entriesForSelectedDate = await troiController.getEntriesFor(selectedDate);
     timesAndEventsOfSelectedWeek =
       troiController.getTimesAndEventsFor(selectedWeek);
-    setSelectedDayEvents();
+    selectedDayEvents = troiController.getEventsFor(selectedDate);
   }
 
   async function onSelectedDateChangedTo(date) {
+    selectedDayEvents = [];
     selectedDate = date;
     selectedWeek = getWeekDaysFor(selectedDate);
     updateUI();
-  }
-
-  function setSelectedDayEvents() {
-    const selectedDayCalendarEvents = troiController.getEventsFor(selectedDate);
-
-    selectedDayIsHoliday = selectedDayCalendarEvents.some(
-      (event) => event.type === "H"
-    );
-
-    selectedDayIsVacation = selectedDayCalendarEvents.some(
-      (event) => event.type === "P"
-    );
   }
 
   // TODO: move to controller
@@ -121,14 +110,11 @@
   />
 </section>
 
-{#if !selectedDayIsHoliday}
-  {#if selectedDayIsVacation}
-    <InfoBanner
-      text={"You are on vacation."}
-      symbol={"beach_access"}
-      testId={"vacation-banner"}
-    />
-  {/if}
+{#each selectedDayEvents as event}
+  <InfoBanner {event} />
+{/each}
+<!-- TODO: set disabled correctly-->
+{#if !selectedDayEvents.some((event) => event.type == CalendarEventType.Holiday)}
   <TroiTimeEntries
     {projects}
     entries={entriesForSelectedDate}
@@ -136,16 +122,9 @@
     onUpdateEntry={onUpdateEntryClicked}
     onAddEntry={onAddEntryClicked}
     editState={timeEntryEditState}
-    disabled={selectedDayIsHoliday}
-  />
-{:else}
-  <InfoBanner
-    text={"Public holiday, working impossible."}
-    symbol={"wb_sunny"}
-    testId={"holiday-banner"}
+    disabled={false}
   />
 {/if}
-
 <section class="mt-8 text-xs text-gray-600">
   <p>
     Project not showing up? Make sure it's available in Troi and marked as a

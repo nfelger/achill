@@ -46,7 +46,7 @@
 </script>
 
 {#each projects as project}
-  <section class="bg-white p-4">
+  <section class="bg-white p-4" data-testid="project-section-{project.id}">
     <div class="container mx-auto pt-4 pb-2">
       <h2
         class="mb-4 text-lg font-semibold text-gray-900"

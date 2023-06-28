@@ -5,9 +5,9 @@ import TimeEntryCache, {
 import {
   addDaysToDate,
   formatDateToYYYYMMDD,
-  getDatesBetween,
   getWeekDaysFor,
 } from "$lib/utils/dateUtils";
+import { transformCalendarEvent } from "./stores/transformCalendarEvents";
 
 const timeEntryCache = new TimeEntryCache();
 
@@ -60,6 +60,12 @@ export default class TroiController {
     }
 
     for (const project of this._projects) {
+      console.log(
+        "employeeId",
+        this._troiApi.employeeId,
+        "projectId",
+        project.id
+      );
       const entries = await this._troiApi.getTimeEntries(
         project.id,
         formatDateToYYYYMMDD(startDate),
@@ -81,25 +87,23 @@ export default class TroiController {
     );
 
     calendarEvents.forEach((calendarEvent) => {
-      let dates = getDatesBetween(
-        new Date(Math.max(new Date(calendarEvent.startDate), startDate)),
-        new Date(Math.min(new Date(calendarEvent.endDate), endDate))
+      const transformedEvents = transformCalendarEvent(
+        calendarEvent,
+        startDate,
+        endDate
       );
-
-      dates.forEach((date) => {
-        timeEntryCache.addEventForDate(
-          {
-            id: calendarEvent.id,
-            subject: calendarEvent.subject,
-            type: calendarEvent.type,
-          },
-          date
-        );
+      transformedEvents.forEach((event) => {
+        timeEntryCache.addEvent(event);
       });
     });
   }
 
   async _loadEntriesAndEventsBetween(startDate, endDate) {
+    // might be quick fix for not loading time entries if employeeId is undefined
+    if (this._troiApi.employeeId == undefined) {
+      return;
+    }
+
     await this._loadEntriesBetween(startDate, endDate);
     await this._loadCalendarEventsBetween(startDate, endDate);
 
@@ -123,7 +127,7 @@ export default class TroiController {
     week.forEach((date) => {
       timesAndEventsOfWeek.push({
         hours: timeEntryCache.totalHoursOf(date),
-        events: timeEntryCache.getEventsForDate(date),
+        events: timeEntryCache.getEventsFor(date),
       });
     });
 

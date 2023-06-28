@@ -1,5 +1,15 @@
 import moment from "moment";
 
+// Use this to make the date compareble, regardless of its time and timezone
+// see https://stackoverflow.com/a/38050824
+export function convertToUTCMidnight(date) {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+}
+
+export function utcMidnightDateFromString(dateString) {
+  return new Date(dateString.split(' ')[0] + 'T00:00:00Z')
+}
+
 // subtraction also possible
 export function addDaysToDate(date, days) {
   return new Date(date.getTime() + days * 86400000); // 24*60*60*1000
@@ -10,18 +20,10 @@ export function formatDateToYYYYMMDD(date) {
 }
 
 export function getDatesBetween(startDate, endDate) {
-  // TODO: Find a better solution??
-  // Adapt hours in respect to time zones so the timezone
-  // doesn't influence the date comparison
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  start.setHours(5, end.getTimezoneOffset(), 0, 0);
-  end.setHours(5, start.getTimezoneOffset(), 0, 0);
-
-  var dateArray = new Array();
-  var currentDate = start;
-  while (currentDate <= end) {
-    dateArray.push(new Date(currentDate));
+  var dateArray = [];
+  var currentDate = startDate
+  while (currentDate <= endDate) {
+    dateArray.push(convertToUTCMidnight(currentDate));
     currentDate = addDaysToDate(currentDate, 1);
   }
 

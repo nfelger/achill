@@ -42,11 +42,13 @@ const mockData = {
 };
 
 export default class TroiApiStub {
-  constructor() {
+  constructor(calendarEvents = []) {
     this.entries = {};
     mockData.calculationPositions.forEach((project) => {
       this.entries[project.Id] = [];
     });
+
+    this.calendarEvents = mockData.calendarEvents.concat(calendarEvents)
 
     this.correctAuthnHeader = `Basic ${btoa(`${username}:${md5(password)}`)}`;
   }
@@ -150,7 +152,7 @@ export default class TroiApiStub {
       const endDate = moment(params.get("end"), "YYYYMMDD").toDate();
       const type = params.get("type");
 
-      const result = mockData.calendarEvents.filter((calEvent) => {
+      const result = this.calendarEvents.filter((calEvent) => {
         const calEventStart = Date.parse(calEvent["Start"]);
         const calEventEnd = Date.parse(calEvent["Start"]);
         const isInRange =
