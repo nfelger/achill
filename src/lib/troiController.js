@@ -8,6 +8,7 @@ import {
   getDatesBetween,
   getWeekDaysFor,
 } from "$lib/utils/dateUtils";
+import {troiApi} from "$lib/apis/troiApiService.js";
 
 const timeEntryCache = new TimeEntryCache();
 
@@ -24,13 +25,26 @@ export default class TroiController {
     this._cacheBottomBorder = addDaysToDate(currentWeek[0], -intervallInDays);
     this._cacheTopBorder = addDaysToDate(currentWeek[4], intervallInDays);
 
-    this._projects = await this._troiApi.getCalculationPositions();
+    this._projects = await this._troiApi.makeRequest({
+      url: "/calculationPositions",
+      params: {
+        clientId:  this._troiApi.getClientId(),
+        favoritesOnly: true,
+      },
+    }).then((response) => response.map((obj) => {
+      return {
+        name: obj.DisplayPath,
+        id: obj.Id,
+        subproject: obj.Subproject.id,
+      };
+    }))
 
     await this._loadEntriesAndEventsBetween(
       this._cacheBottomBorder,
       this._cacheTopBorder
     );
   }
+
 
   // --------- private functions ---------
 

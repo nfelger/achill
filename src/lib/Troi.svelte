@@ -9,13 +9,14 @@
   import { getWeekDaysFor } from "$lib/utils/dateUtils";
   import InfoBanner from "$lib/components/InfoBanner.svelte";
   import TroiController from "$lib/troiController";
+  import nocodbApi from "./nocodbClient";
 
   const troiController = new TroiController();
 
   let selectedDate = new Date();
   let selectedWeek = getWeekDaysFor(selectedDate);
 
-  let projects = [];
+  let positions = [];
   let timesAndEventsOfSelectedWeek = [];
   let selectedDayIsHoliday = false;
   let selectedDayIsVacation = false;
@@ -24,14 +25,29 @@
   let isLoading = true;
   let timeEntryEditState = { id: -1 };
 
+  let phaseTasks;
+  let recurringTasks;
+  async function getDefaultTasks() {
+    let tasks = await nocodbApi.dbTableRow.list(
+            "v1",
+            "ds4g-data",
+            "Tracky-Task"
+    );
+    phaseTasks = tasks.list.filter((keyword) => keyword.type === "PHASE");
+    recurringTasks = tasks.list.filter((keyword) => keyword.type === "RECURRING"
+    );
+  }
+
+
   onMount(async () => {
     // make sure $troiApi from store is not used before it is initialized
-    if ($troiApi == undefined) return;
+    if ($troiApi === undefined) return;
 
     await troiController.init($troiApi, showLoadingSpinner, hideLoadingSpinner);
-    projects = troiController.getProjects();
-    updateUI();
+    positions = troiController.getProjects();
+    await updateUI();
     hideLoadingSpinner();
+    await getDefaultTasks()
   });
 
   function showLoadingSpinner() {
@@ -69,10 +85,10 @@
 
   // TODO: move to controller
   function getProjectById(projectId) {
-    const index = projects
+    const index = positions
       .map((project) => project.id)
       .indexOf(Number(projectId));
-    return projects[index];
+    return positions[index];
   }
 
   async function onDeleteEntryClicked(entry, projectId) {
@@ -130,7 +146,9 @@
     />
   {/if}
   <TroiTimeEntries
-    {projects}
+    {positions}
+    {recurringTasks}
+    {phaseTasks}
     entries={entriesForSelectedDate}
     deleteClicked={onDeleteEntryClicked}
     onUpdateEntry={onUpdateEntryClicked}

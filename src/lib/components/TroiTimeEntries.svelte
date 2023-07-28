@@ -13,7 +13,9 @@
   import { validateForm } from "./EntryForm/timeEntryFormValidator";
   import NewTimeEntryForm from "$lib/components/NewTimeEntryForm.svelte";
 
-  export let projects;
+  export let positions;
+  export let recurringTasks;
+  export let phaseTasks;
   export let entries;
   export let deleteClicked;
   export let onUpdateEntry;
@@ -45,34 +47,35 @@
   }
 </script>
 
-{#each projects as project}
+{#each positions as position}
   <section class="bg-white p-4">
     <div class="container mx-auto pt-4 pb-2">
       <h2
         class="mb-4 text-lg font-semibold text-gray-900"
-        title="Position ID: {project.id}"
-        data-testid="project-heading-{project.id}"
+        title="Position ID: {position.id}"
+        data-testid="project-heading-{position.id}"
       >
-        {project.name}
+        {position.name}
       </h2>
-      {#if !entries[project.id] || entries[project.id].length == 0}
-        <NewTimeEntryForm {project} onAddClick={onAddEntry} />
+      {#if !entries[position.id] || entries[position.id].length === 0}
+        <NewTimeEntryForm {position}    {recurringTasks}
+                          {phaseTasks} onAddClick={onAddEntry} />
       {:else}
-        {#each entries[project.id] as entry}
+        {#each entries[position.id] as entry}
           <div
             class="block w-full rounded-lg bg-gray-100 p-4 shadow-lg"
-            data-testid="entryCard-{project.id}"
+            data-testid="entryCard-{position.id}"
           >
-            {#if entry.id == editState.id}
+            {#if entry.id === editState.id}
               <div data-test="entry-form" class="my-2 flex justify-center">
                 <div class="block w-full">
                   <TimeEntryForm
                     {values}
                     {errors}
-                    errorTestId={`error-${project.id}`}
-                    enterPressed={() => saveClicked(project.id, entry)}
-                    hoursTestId={"hours-" + project.id}
-                    descriptionTestId={"description-" + project.id}
+                    errorTestId={`error-${position.id}`}
+                    enterPressed={() => saveClicked(position.id, entry)}
+                    hoursTestId={"hours-" + position.id}
+                    descriptionTestId={"description-" + position.id}
                   />
                 </div>
               </div>
@@ -88,26 +91,26 @@
                 {#if entry.id == editState.id}
                   <AchillButton
                     text={"Cancel"}
-                    testId={`cancel-${project.id}`}
+                    testId={`cancel-${position.id}`}
                     onClick={() => (editState = { id: -1 })}
                     color={buttonRed}
                   />
                   <AchillButton
                     text={"Save"}
-                    testId={`save-${project.id}`}
-                    onClick={() => saveClicked(project.id, entry)}
+                    testId={`save-${position.id}`}
+                    onClick={() => saveClicked(position.id, entry)}
                     color={buttonGreen}
                   />
                 {:else}
                   <AchillButton
                     text={"Delete"}
-                    testId={`delete-${project.id}`}
-                    onClick={() => deleteClicked(entry, project.id)}
+                    testId={`delete-${position.id}`}
+                    onClick={() => deleteClicked(entry, position.id)}
                     color={buttonRed}
                   />
                   <AchillButton
                     text={"Edit"}
-                    testId={`edit-${project.id}`}
+                    testId={`edit-${position.id}`}
                     onClick={() => editClicked(entry)}
                     color={buttonBlue}
                   />
