@@ -20,3 +20,13 @@
 .material-symbols-outlined {
   font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48;
 }
+
+
+[data-accordion-item] button {
+  cursor: pointer;
+  padding-top: 1rem;
+  font-size: large;
+}
+
+
+

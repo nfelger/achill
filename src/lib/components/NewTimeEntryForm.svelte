@@ -12,32 +12,27 @@
     export let phaseTasks;
     export let onAddClick;
 
-    let phaseNames = []
-    async function pollPhases(tablename, entity, equalsTo) {
-        const phases = await nocodbApi.dbViewRow.list("noco", "ds4g-data", tablename, tablename,
-            {
-                where: `(${entity} ID,eq,${equalsTo})`,
-            }
-        )
-        for (let i = 0; i < phases.list.length; i++) {
-            const names = await nocodbApi.dbViewRow.list("noco", "ds4g-data", "Tracky-Phase", "Tracky-Phase",
-                {
-                    where: `(Phase ID,eq,${phases.list[i]["Phase ID"]})`,
-                })
-            names.list.forEach((phase) => phaseNames.push(phase["Phase Name"]))
-        }
-    }
 
+    async function pollPhaseNames(positionId, subprojectId) {
+        let whereClause = []
+        const phaseIdsForPosition = await nocodbApi.dbViewRow.list("noco", "ds4g-data", "Tracky-Position-Phase", "Tracky-Position-Phase", {
+            where: `(Position ID,eq,${positionId})`,
+        });
+        phaseIdsForPosition.list.forEach( (phaseId) => whereClause.push(`(Phase ID,eq,${phaseId["Phase ID"]})`))
 
-    async function getPhases() {
-        // get phases assigned by calculation position
-        await pollPhases("Tracky-Position-Phase", "Position", position.id)
-        // get phases assigned by subproject
-        await pollPhases("Tracky-Subproject-Phase", "Subproject", position.subproject)
+        const phaseIdsForSubproject = await nocodbApi.dbViewRow.list("noco", "ds4g-data", "Tracky-Subproject-Phase", "Tracky-Subproject-Phase", {
+            where: `(Subproject ID,eq,${subprojectId})`,
+        });
+        phaseIdsForSubproject.list.forEach( (phaseId) => whereClause.push(`(Phase ID,eq,${phaseId["Phase ID"]})`))
+
+        return nocodbApi.dbViewRow.list("noco", "ds4g-data", "Tracky-Phase", "Tracky-Phase", {
+            where: whereClause.join("~or"),
+        });
     }
+    let phaseNames
 
     onMount(async () => {
-        await getPhases()
+        phaseNames = (await pollPhaseNames( position.id, position.subproject)).list.map((phase) => phase["Phase Name"])
     })
 
     let values = {
@@ -56,6 +51,7 @@
             values.description = "";
         }
     }
+
 </script>
 
 <div data-test="entry-form" class="my-2 flex justify-center">
@@ -69,6 +65,9 @@
                         enterPressed={handleSubmit}
                         hoursTestId={"hours-" + position.id}
                         descriptionTestId={"description-" + position.id}
+                        {recurringTasks}
+                        {phaseTasks}
+                        {phaseNames}
                 />
             </div>
             <div>

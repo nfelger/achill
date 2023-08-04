@@ -1,4 +1,7 @@
 <script>
+
+  import { Accordion, AccordionItem } from "svelte-accessible-accordion";
+
   export let values = {
     hours: "",
     description: "",
@@ -9,6 +12,9 @@
   export let descriptionTestId = "description";
   export let errorTestId = "";
   export let enterPressed;
+  export let recurringTasks;
+  export let phaseTasks;
+  export let phaseNames;
 
   const inputClass =
     "w-auto basis-3/4 rounded px-1 py-0.5 text-sm placeholder:italic placeholder:text-gray-400";
@@ -23,6 +29,30 @@
       enterPressed();
     }
   }
+
+  let onRecurringTaskChange = (event) => {
+    if (event.target.checked) {
+      values.description = values.description
+              ? values.description + ", " + event.target.id
+              : event.target.id;
+    } else {
+      if (values.description.startsWith(event.target.id)) {
+        if (values.description.length > event.target.id.length) {
+          values.description = values.description.replace(
+                  event.target.id + ", ",
+                  ""
+          );
+        } else {
+          values.description = values.description.replace(event.target.id, "");
+        }
+      } else if (values.description.includes(event.target.id)) {
+        values.description = values.description.replace(
+                ", " + event.target.id,
+                ""
+        );
+      }
+    }
+  };
 </script>
 
 <div class="flex">
@@ -49,6 +79,36 @@
         class={errors.hours ? errorAppearance : normalAppearance}
         placeholder="2:15"
       />
+    </div>
+    <div class="mb-4 mt-4">
+      {#if recurringTasks}
+        <label for="recurring" class="basis-1/4">Ständige Aufgaben</label>
+        <div id = "recurring" class="mt-2 space-x-2">
+          {#each recurringTasks as entry}
+            <input
+                    id={entry.name}
+                    type="checkbox"
+                    on:change={onRecurringTaskChange}
+            />
+            <label for={entry.name}>{entry.name}</label>
+          {/each}
+        </div>
+      {/if}
+    </div>
+    <div class="mb-4">
+      {#if phaseNames}
+        <Accordion multiselect>
+          {#each phaseNames as phase}
+            <AccordionItem title={phase}>
+              {#if phaseTasks}
+                {#each phaseTasks as task}
+                  <p>{task.name}</p>
+                {/each}
+              {/if}
+            </AccordionItem>
+          {/each}
+        </Accordion>
+      {/if}
     </div>
     <div class="my-1 flex place-items-center justify-start">
       <label for="description" class="basis-1/4">Description</label>

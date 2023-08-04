@@ -46,8 +46,8 @@
     await troiController.init($troiApi, showLoadingSpinner, hideLoadingSpinner);
     positions = troiController.getProjects();
     await updateUI();
-    hideLoadingSpinner();
     await getDefaultTasks()
+    hideLoadingSpinner();
   });
 
   function showLoadingSpinner() {
