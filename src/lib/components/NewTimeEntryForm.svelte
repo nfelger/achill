@@ -4,36 +4,12 @@
     import AchillButton from "$lib/components/TroiButton.svelte";
     import {buttonBlue} from "$lib/components/colors.js";
     import {validateForm} from "$lib/components/EntryForm/timeEntryFormValidator.js";
-    import nocodbApi from "$lib/nocodbClient.js";
-    import {onMount} from "svelte";
 
     export let position;
     export let recurringTasks;
     export let phaseTasks;
     export let onAddClick;
 
-
-    async function pollPhaseNames(positionId, subprojectId) {
-        let whereClause = []
-        const phaseIdsForPosition = await nocodbApi.dbViewRow.list("noco", "ds4g-data", "Tracky-Position-Phase", "Tracky-Position-Phase", {
-            where: `(Position ID,eq,${positionId})`,
-        });
-        phaseIdsForPosition.list.forEach( (phaseId) => whereClause.push(`(Phase ID,eq,${phaseId["Phase ID"]})`))
-
-        const phaseIdsForSubproject = await nocodbApi.dbViewRow.list("noco", "ds4g-data", "Tracky-Subproject-Phase", "Tracky-Subproject-Phase", {
-            where: `(Subproject ID,eq,${subprojectId})`,
-        });
-        phaseIdsForSubproject.list.forEach( (phaseId) => whereClause.push(`(Phase ID,eq,${phaseId["Phase ID"]})`))
-
-        return nocodbApi.dbViewRow.list("noco", "ds4g-data", "Tracky-Phase", "Tracky-Phase", {
-            where: whereClause.join("~or"),
-        });
-    }
-    let phaseNames
-
-    onMount(async () => {
-        phaseNames = (await pollPhaseNames( position.id, position.subproject)).list.map((phase) => phase["Phase Name"])
-    })
 
     let values = {
         description: "",
@@ -67,7 +43,7 @@
                         descriptionTestId={"description-" + position.id}
                         {recurringTasks}
                         {phaseTasks}
-                        {phaseNames}
+                        {position}
                 />
             </div>
             <div>

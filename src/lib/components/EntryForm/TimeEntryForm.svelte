@@ -1,6 +1,8 @@
 <script>
 
   import { Accordion, AccordionItem } from "svelte-accessible-accordion";
+  import nocodbApi from "$lib/nocodbClient.js";
+  import {onMount} from "svelte";
 
   export let values = {
     hours: "",
@@ -14,7 +16,7 @@
   export let enterPressed;
   export let recurringTasks;
   export let phaseTasks;
-  export let phaseNames;
+  export let position;
 
   const inputClass =
     "w-auto basis-3/4 rounded px-1 py-0.5 text-sm placeholder:italic placeholder:text-gray-400";
@@ -53,6 +55,28 @@
       }
     }
   };
+
+  async function pollPhaseNames(positionId, subprojectId) {
+    let whereClause = []
+    const phaseIdsForPosition = await nocodbApi.dbViewRow.list("noco", "ds4g-data", "Tracky-Position-Phase", "Tracky-Position-Phase", {
+      where: `(Position ID,eq,${positionId})`,
+    });
+    phaseIdsForPosition.list.forEach( (phaseId) => whereClause.push(`(Phase ID,eq,${phaseId["Phase ID"]})`))
+
+    const phaseIdsForSubproject = await nocodbApi.dbViewRow.list("noco", "ds4g-data", "Tracky-Subproject-Phase", "Tracky-Subproject-Phase", {
+      where: `(Subproject ID,eq,${subprojectId})`,
+    });
+    phaseIdsForSubproject.list.forEach( (phaseId) => whereClause.push(`(Phase ID,eq,${phaseId["Phase ID"]})`))
+
+    return nocodbApi.dbViewRow.list("noco", "ds4g-data", "Tracky-Phase", "Tracky-Phase", {
+      where: whereClause.join("~or"),
+    });
+  }
+  let phaseNames
+
+  onMount(async () => {
+    phaseNames = (await pollPhaseNames( position.id, position.subproject)).list.map((phase) => phase["Phase Name"])
+  })
 </script>
 
 <div class="flex">

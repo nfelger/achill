@@ -76,6 +76,9 @@
                     enterPressed={() => saveClicked(position.id, entry)}
                     hoursTestId={"hours-" + position.id}
                     descriptionTestId={"description-" + position.id}
+                    {recurringTasks}
+                    {phaseTasks}
+                    {position}
                   />
                 </div>
               </div>
