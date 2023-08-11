@@ -1,6 +1,4 @@
 <script>
-
-  import { Accordion, AccordionItem } from "svelte-accessible-accordion";
   import nocodbApi from "$lib/nocodbClient.js";
   import {onMount} from "svelte";
 
@@ -18,6 +16,9 @@
   export let phaseTasks;
   export let position;
 
+  let descriptionSegments = []
+  $: localDescription = descriptionSegments.join(", ")
+
   const inputClass =
     "w-auto basis-3/4 rounded px-1 py-0.5 text-sm placeholder:italic placeholder:text-gray-400";
   const normalAppearance =
@@ -32,12 +33,16 @@
     }
   }
 
+  //TODO: remove string manipulation, replace by reactive description segments array
   let onRecurringTaskChange = (event) => {
     if (event.target.checked) {
+      descriptionSegments.push(event.target.id)
       values.description = values.description
               ? values.description + ", " + event.target.id
               : event.target.id;
     } else {
+      const index = descriptionSegments.indexOf(event.target.id)
+      if (index != -1) descriptionSegments.splice(index, 1)
       if (values.description.startsWith(event.target.id)) {
         if (values.description.length > event.target.id.length) {
           values.description = values.description.replace(
@@ -54,6 +59,7 @@
         );
       }
     }
+    console.log(descriptionSegments)
   };
 
   async function pollPhaseNames(positionId, subprojectId) {
@@ -121,23 +127,24 @@
     </div>
     <div class="mb-4">
       {#if phaseNames}
-        <Accordion multiselect>
           {#each phaseNames as phase}
-            <AccordionItem title={phase}>
-              {#if phaseTasks}
+          <details>
+            <summary class="bg-[#E5E5E5] flex flex-row items-center px-[16px] py-[20px] gap-4 w-full mb-[20px] border-solid border-b-2 border-b-[#CED4DA] rounded-t">{phase}</summary>
+            {#if phaseTasks}
                 {#each phaseTasks as task}
                   <p>{task.name}</p>
                 {/each}
               {/if}
-            </AccordionItem>
+          </details>
+            
           {/each}
-        </Accordion>
+  
       {/if}
     </div>
     <div class="my-1 flex place-items-center justify-start">
       <label for="description" class="basis-1/4">Description</label>
       <textarea
-        bind:value={values.description}
+        bind:value={localDescription}
         on:keydown={onKeyDown}
         id="description"
         data-testid={descriptionTestId}
