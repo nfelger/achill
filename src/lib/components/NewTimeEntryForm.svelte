@@ -33,7 +33,6 @@
 <div data-test="entry-form" class="my-2 flex justify-center">
     <div class="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
         <div class="flex flex-col">
-            <div class="basis-3/4 p-1">
                 <TimeEntryForm
                         {values}
                         {errors}
@@ -45,7 +44,6 @@
                         {phaseTasks}
                         {position}
                 />
-            </div>
             <div>
                 <AchillButton
                         text={"Add"}
