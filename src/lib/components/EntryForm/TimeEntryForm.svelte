@@ -1,5 +1,7 @@
 <script>
   import nocodbApi from "$lib/nocodbClient.js";
+  import AchillButton from "$lib/components/TroiButton.svelte";
+  import { buttonBlue, buttonRed } from "$lib/components/colors.js";
   import { onMount } from "svelte";
 
   export let values = {
@@ -11,7 +13,7 @@
   export let hoursTestId = "hours";
   export let descriptionTestId = "description";
   export let errorTestId = "";
-  export let enterPressed;
+  export let submit;
   export let recurringTasks;
   export let phaseTasks;
   export let position;
@@ -39,7 +41,7 @@
 
   function onKeyDown(e) {
     if (e.keyCode === 13) {
-      enterPressed();
+      submit();
     }
   }
 
@@ -224,21 +226,41 @@
     {/if}
   </div>
 
-  <div class="relative mb-4 w-4/6">
-    <pre
-      aria-hidden="true"
-      class="inherit border-box overflow-hidden p-[0.5em] leading-4"
-      style="min-height: {minHeight}; max-height: {maxHeight}">{description +
-        "\n"}</pre>
+  <div class="sapce-between flex flex-row justify-between">
+    <div class="relative mb-4 w-4/6">
+      <pre
+        aria-hidden="true"
+        class="inherit border-box overflow-hidden p-[0.5em] leading-4"
+        style="min-height: {minHeight}; max-height: {maxHeight}">{description +
+          "\n"}</pre>
 
-    <textarea
-      value={description}
-      on:keydown={onKeyDown}
-      on:input={handleDescriptionChange}
-      id="description"
-      data-testid={descriptionTestId}
-      class={textAreaClasses}
-      placeholder="Working the work…"
-    />
+      <textarea
+        value={description}
+        on:keydown={onKeyDown}
+        on:input={handleDescriptionChange}
+        id="description"
+        data-testid={descriptionTestId}
+        class={textAreaClasses}
+        placeholder="Working the work…"
+      />
+    </div>
+    <div class="flex flex-col items-end">
+      <div class="mb-2.5">
+        <AchillButton
+          text={"Save"}
+          testId={"save-" + position.id}
+          onClick={submit}
+          color={buttonBlue}
+        />
+      </div>
+      <div>
+        <AchillButton
+          text={"Cancel"}
+          testId={"cancel-" + position.id}
+          onClick={() => {}}
+          color={buttonRed}
+        />
+      </div>
+    </div>
   </div>
 </div>
