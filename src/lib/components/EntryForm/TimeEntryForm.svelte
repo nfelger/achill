@@ -127,6 +127,13 @@
 </script>
 
 <div>
+  <h2
+    class="mb-4 text-lg font-semibold text-gray-900"
+    title="Position ID: {position.id}"
+    data-testid="project-heading-{position.id}"
+  >
+    {position.name}
+  </h2>
   <div class="flex">
     {#if Object.values(errors).length > 0}
       <div class="basis-1/4" data-testid={errorTestId} />

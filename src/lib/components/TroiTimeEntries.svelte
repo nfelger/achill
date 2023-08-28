@@ -50,16 +50,13 @@
 {#each positions as position}
   <section class="bg-white p-4">
     <div class="container mx-auto pt-4 pb-2">
-      <h2
-        class="mb-4 text-lg font-semibold text-gray-900"
-        title="Position ID: {position.id}"
-        data-testid="project-heading-{position.id}"
-      >
-        {position.name}
-      </h2>
       {#if !entries[position.id] || entries[position.id].length === 0}
-        <NewTimeEntryForm {position}    {recurringTasks}
-                          {phaseTasks} onAddClick={onAddEntry} />
+        <NewTimeEntryForm
+          {position}
+          {recurringTasks}
+          {phaseTasks}
+          onAddClick={onAddEntry}
+        />
       {:else}
         {#each entries[position.id] as entry}
           <div
@@ -73,7 +70,7 @@
                     {values}
                     {errors}
                     errorTestId={`error-${position.id}`}
-                    enterPressed={() => saveClicked(position.id, entry)}
+                    submit={() => saveClicked(position.id, entry)}
                     hoursTestId={"hours-" + position.id}
                     descriptionTestId={"description-" + position.id}
                     {recurringTasks}
