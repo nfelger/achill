@@ -157,7 +157,7 @@
       placeholder="2:15"
     />
   </div>
-  <div class="mb-4 mt-4">
+  <div class="my-8">
     {#if recurringTasks}
       <label for="recurring" class="basis-1/4">Recurring tasks</label>
       <div id="recurring" class="mt-2 space-x-1">
@@ -200,15 +200,15 @@
           </summary>
           {#if phaseTasks}
             <div
-              class="flex h-auto flex-wrap border-b-2 border-solid border-b-[#CED4DA] bg-white"
+              class="flex h-auto flex-wrap border-b-2 border-solid border-b-[#CED4DA] bg-white p-2"
             >
               {#each phaseTasks as task}
                 <div
-                  class="m-4 flex cursor-pointer items-center rounded-full border py-1 px-3 text-sm transition-all duration-150 ease-in-out {descriptionSegments.includes(
+                  class="m-2 flex cursor-pointer items-center rounded-full border py-1 px-3 text-sm transition-all duration-150 ease-in-out {descriptionSegments.includes(
                     [task.name, phase.name].join(' ')
                   )
                     ? 'border-black bg-white'
-                    : 'bg-[#E5E5E5] hover:bg-gray-300'}"
+                    : 'bg-[#212121] bg-opacity-10 hover:bg-gray-300'}"
                   on:click={() =>
                     handleChipClick([task.name, phase.name].join(" "))}
                 >
