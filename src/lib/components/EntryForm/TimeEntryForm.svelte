@@ -163,6 +163,7 @@
       <div id="recurring" class="mt-2 space-x-1">
         {#each recurringTasks as entry}
           <input
+            checked={descriptionSegments.includes(entry.name) ? true : false}
             class="rounded-md border border-gray-300 bg-white p-2"
             id={entry.name}
             type="checkbox"
