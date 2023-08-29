@@ -29,15 +29,15 @@
   let recurringTasks;
   async function getDefaultTasks() {
     let tasks = await nocodbApi.dbTableRow.list(
-            "v1",
-            "ds4g-data",
-            "Tracky-Task"
+      "v1",
+      "ds4g-data",
+      "Tracky-Task"
     );
     phaseTasks = tasks.list.filter((keyword) => keyword.type === "PHASE");
-    recurringTasks = tasks.list.filter((keyword) => keyword.type === "RECURRING"
+    recurringTasks = tasks.list.filter(
+      (keyword) => keyword.type === "RECURRING"
     );
   }
-
 
   onMount(async () => {
     // make sure $troiApi from store is not used before it is initialized
@@ -46,7 +46,7 @@
     await troiController.init($troiApi, showLoadingSpinner, hideLoadingSpinner);
     positions = troiController.getProjects();
     await updateUI();
-    await getDefaultTasks()
+    await getDefaultTasks();
     hideLoadingSpinner();
   });
 
@@ -130,7 +130,7 @@
     target="_blank">Read about how to track your time in confluence</a
   >
 </section>
-<section class="w-full bg-white md:sticky md:top-0">
+<section class="z-10 w-full bg-white md:sticky md:top-0">
   <WeekView
     {timesAndEventsOfSelectedWeek}
     selectedDateChanged={onSelectedDateChangedTo}

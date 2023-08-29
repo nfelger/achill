@@ -2,6 +2,8 @@
   import TimeEntryForm from "$lib/components/EntryForm/TimeEntryForm.svelte";
   import { convertTimeStringToFloat } from "$lib/utils/timeConverter.js";
   import { validateForm } from "$lib/components/EntryForm/timeEntryFormValidator.js";
+  import AchillButton from "$lib/components/TroiButton.svelte";
+  import { buttonBlue } from "$lib/components/colors.js";
 
   export let position;
   export let recurringTasks;
@@ -28,16 +30,28 @@
 
 <div data-test="entry-form" class="my-2 flex justify-center">
   <div class="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
-    <TimeEntryForm
-      {values}
-      {errors}
-      errorTestId={`error-${position.id}`}
-      submit={handleSubmit}
-      hoursTestId={"hours-" + position.id}
-      descriptionTestId={"description-" + position.id}
-      {recurringTasks}
-      {phaseTasks}
-      {position}
-    />
+    <div class="flex flex-col">
+      <div class="basis-3/4 p-1">
+        <TimeEntryForm
+          {values}
+          {errors}
+          errorTestId={`error-${position.id}`}
+          submit={handleSubmit}
+          hoursTestId={"hours-" + position.id}
+          descriptionTestId={"description-" + position.id}
+          {recurringTasks}
+          {phaseTasks}
+          {position}
+        />
+      </div>
+      <div>
+        <AchillButton
+          text={"Add"}
+          testId={"add-" + position.id}
+          onClick={handleSubmit}
+          color={buttonBlue}
+        />
+      </div>
+    </div>
   </div>
 </div>
