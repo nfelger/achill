@@ -23,7 +23,6 @@
   let entriesForSelectedDate = {};
 
   let isLoading = true;
-  let timeEntryEditState = { id: -1 };
 
   let phaseTasks;
   let recurringTasks;
@@ -98,6 +97,7 @@
   }
 
   async function onAddEntryClicked(project, hours, description) {
+    console.log(project, hours, description);
     showLoadingSpinner();
     await troiController.addEntry(
       selectedDate,
@@ -113,7 +113,6 @@
     showLoadingSpinner();
     const project = getProjectById(projectId);
     await troiController.updateEntry(project, entry, () => {
-      timeEntryEditState = { id: -1 };
       updateUI();
     });
     hideLoadingSpinner();
@@ -150,10 +149,9 @@
     {recurringTasks}
     {phaseTasks}
     entries={entriesForSelectedDate}
-    deleteClicked={onDeleteEntryClicked}
-    onUpdateEntry={onUpdateEntryClicked}
-    onAddEntry={onAddEntryClicked}
-    editState={timeEntryEditState}
+    deleteEntry={onDeleteEntryClicked}
+    updateEntry={onUpdateEntryClicked}
+    addEntry={onAddEntryClicked}
     disabled={selectedDayIsHoliday}
   />
 {:else}
