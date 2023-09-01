@@ -36,26 +36,32 @@
     values.description = entry.description;
   }
 
-  async function saveClicked(projectId, entry) {
-    errors = await validateForm(values);
+  async function saveClicked(projectId, entry=undefined) {
 
-    if (Object.keys(errors).length === 0) {
-      entry.hours = convertTimeStringToFloat(values.hours);
-      entry.description = values.description;
-      onUpdateEntry(projectId, entry);
+    if (entry) {
+      errors = await validateForm(values);
+
+      if (Object.keys(errors).length === 0) {
+        entry.hours = convertTimeStringToFloat(values.hours);
+        entry.description = values.description;
+        onUpdateEntry(projectId, entry);
+      }
+    } else {
+      onAddEntry(projectId, values.hours, values.description)
     }
   }
+
 </script>
 
 {#each positions as position}
   <section class="bg-white p-4">
     <div class="container mx-auto pt-4 pb-2">
       {#if !entries[position.id] || entries[position.id].length === 0}
-        <NewTimeEntryForm
+        <TimeEntryForm
           {position}
           {recurringTasks}
           {phaseTasks}
-          onAddClick={onAddEntry}
+          submit={() => saveClicked(position.id)}
         />
       {:else}
         {#each entries[position.id] as entry}
@@ -69,10 +75,7 @@
                   <TimeEntryForm
                     {values}
                     {errors}
-                    errorTestId={`error-${position.id}`}
                     submit={() => saveClicked(position.id, entry)}
-                    hoursTestId={"hours-" + position.id}
-                    descriptionTestId={"description-" + position.id}
                     {recurringTasks}
                     {phaseTasks}
                     {position}
@@ -81,6 +84,13 @@
               </div>
             {:else}
               <div data-testid="entry-card-content">
+                <h2
+                        class="mb-4 text-lg font-semibold text-gray-900"
+                        title="Position ID: {position.id}"
+                        data-testid="project-heading-{position.id}"
+                >
+                  {position.name}
+                </h2>
                 <b>{convertFloatTimeToHHMM(entry.hours)} Hour(s)</b><br />
                 <p>{entry.description}</p>
                 <br />
@@ -88,7 +98,7 @@
             {/if}
             {#if !disabled}
               <div>
-                {#if entry.id == editState.id}
+                {#if entry.id === editState.id}
                   <AchillButton
                     text={"Cancel"}
                     testId={`cancel-${position.id}`}
