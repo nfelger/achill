@@ -1,5 +1,5 @@
 <script>
-  import { convertFloatTimeToHHMM } from "$lib/utils/timeConverter.js";
+  import { convertFloatTimeToHHMM, convertTimeStringToFloat } from "$lib/utils/timeConverter.js";
   import TimeEntryForm from "$lib/components/EntryForm/TimeEntryForm.svelte";
 
   export let positions;
@@ -14,20 +14,18 @@
   let errors = {};
 
   async function submitEntry(
-    projectId,
-    entry = undefined,
+    position,
+    newHours,
     newDescription,
-    newHours
+    entry = undefined,
   ) {
-    console.log(projectId, entry, newDescription, newHours);
     if (entry) {
-      console.log(typeof newHours);
-      // TODO noci: TypeError: Cannot create property 'hours' on number
       entry.hours = convertFloatTimeToHHMM(newHours);
+
       entry.description = newDescription;
-      updateEntry(projectId, entry);
+      updateEntry(position, entry);
     } else {
-      addEntry(projectId, newHours, newDescription);
+      addEntry(position, convertTimeStringToFloat(newHours), newDescription);
     }
   }
 </script>
@@ -41,7 +39,7 @@
           {recurringTasks}
           {phaseTasks}
           addClicked={(hours, description) =>
-            submitEntry(position.id, hours, description)}
+            submitEntry(position, hours, description)}
           {disabled}
         />
       {:else}
@@ -56,7 +54,7 @@
                   }}
                   {errors}
                   saveClicked={(hours, description) =>
-                    submitEntry(position.id, entry, hours, description)}
+                    submitEntry(position, hours, description, entry)}
                   deleteClicked={() => deleteEntry(entry, position.id)}
                   {recurringTasks}
                   {phaseTasks}

@@ -33,7 +33,7 @@
   let errorTestId = `error-${position.id}`;
   let hoursTestId = `hours-${position.id}`;
   let descriptionTestId = `description-${position.id}`;
-  let editMode = values.hours === "" ? true : false;
+  let editMode = values.hours === "";
 
   $: minHeight = `${1 + minRows * 1.2}em`;
   $: maxHeight = maxRows ? `${1 + maxRows * 1.2}em` : `auto`;
@@ -93,8 +93,7 @@
     errors = await validateForm(values);
 
     if (Object.keys(errors).length === 0) {
-      const convertedHours = convertTimeStringToFloat(values.hours);
-      addClicked(convertedHours, values.description);
+      addClicked(values.hours, values.description);
       values.hours = "";
       values.description = "";
     }
@@ -168,8 +167,6 @@
         >
           {position.name}
         </h2>
-        <p>{editMode}</p>
-
         {#if values.hours === "" || editMode}
           <div id="timeEntryForm">
             <div class="flex">
