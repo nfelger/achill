@@ -20,8 +20,7 @@
     entry = undefined,
   ) {
     if (entry) {
-      entry.hours = convertFloatTimeToHHMM(newHours);
-
+      entry.hours = convertTimeStringToFloat(newHours);
       entry.description = newDescription;
       updateEntry(position, entry);
     } else {
@@ -35,10 +34,11 @@
     <div class="container mx-auto pt-4 pb-2">
       {#if !entries[position.id] || entries[position.id].length === 0}
         <TimeEntryForm
+                addMode={true}
           {position}
           {recurringTasks}
           {phaseTasks}
-          addClicked={(hours, description) =>
+          addOrUpdateClicked={(hours, description) =>
             submitEntry(position, hours, description)}
           {disabled}
         />
@@ -49,11 +49,11 @@
               <div class="block w-full">
                 <TimeEntryForm
                   values={{
-                    hours: entry.hours,
+                    hours: convertFloatTimeToHHMM(entry.hours),
                     description: entry.description,
                   }}
                   {errors}
-                  saveClicked={(hours, description) =>
+                  addOrUpdateClicked={(hours, description) =>
                     submitEntry(position, hours, description, entry)}
                   deleteClicked={() => deleteEntry(entry, position.id)}
                   {recurringTasks}

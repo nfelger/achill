@@ -5,10 +5,10 @@ export const entryFormValidationScheme = yup.object().shape({
     .string()
     .required()
     .matches(/^(\d?\d|\d?\d[:,.]\d\d?)$/, {
-      message: "hours format must be either 5:30 or 5.5 or 5,5",
+      message: "Hours format must be either 5:30 or 5.5 or 5,5",
     }),
   description: yup.string().required().matches(/\w+/, {
-    message: "provide a description",
+    message: "Provide a description",
   }),
 });
 

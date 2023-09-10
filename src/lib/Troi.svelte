@@ -83,14 +83,6 @@
         );
     }
 
-    // TODO: move to controller
-    function getProjectById(projectId) {
-        const index = positions
-            .map((project) => project.id)
-            .indexOf(Number(projectId));
-        return positions[index];
-    }
-
     async function onDeleteEntryClicked(entry, projectId) {
         showLoadingSpinner();
         await troiController.deleteEntry(entry, projectId, updateUI);
@@ -109,12 +101,9 @@
         hideLoadingSpinner();
     }
 
-    async function onUpdateEntryClicked(projectId, entry) {
+    async function onUpdateEntryClicked(position, entry) {
         showLoadingSpinner();
-        const project = getProjectById(projectId);
-        await troiController.updateEntry(project, entry, () => {
-            updateUI();
-        });
+        await troiController.updateEntry(position, entry, updateUI);
         hideLoadingSpinner();
     }
 </script>
