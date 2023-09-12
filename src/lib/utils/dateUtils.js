@@ -3,11 +3,13 @@ import moment from "moment";
 // Use this to make the date compareble, regardless of its time and timezone
 // see https://stackoverflow.com/a/38050824
 export function convertToUTCMidnight(date) {
-  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  return new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+  );
 }
 
 export function utcMidnightDateFromString(dateString) {
-  return new Date(dateString.split(' ')[0] + 'T00:00:00Z')
+  return new Date(dateString.split(" ")[0] + "T00:00:00Z");
 }
 
 // subtraction also possible
@@ -21,7 +23,7 @@ export function formatDateToYYYYMMDD(date) {
 
 export function getDatesBetween(startDate, endDate) {
   var dateArray = [];
-  var currentDate = startDate
+  var currentDate = startDate;
   while (currentDate <= endDate) {
     dateArray.push(convertToUTCMidnight(currentDate));
     currentDate = addDaysToDate(currentDate, 1);

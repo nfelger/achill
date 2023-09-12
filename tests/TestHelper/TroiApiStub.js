@@ -48,7 +48,7 @@ export default class TroiApiStub {
       this.entries[project.Id] = [];
     });
 
-    this.calendarEvents = mockData.calendarEvents.concat(calendarEvents)
+    this.calendarEvents = mockData.calendarEvents.concat(calendarEvents);
 
     this.correctAuthnHeader = `Basic ${btoa(`${username}:${md5(password)}`)}`;
   }

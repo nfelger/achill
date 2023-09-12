@@ -154,7 +154,7 @@ export default class TimeEntryCache {
   addEvent(event) {
     const cacheDate = convertToCacheFormat(event.date);
     this.initStructureForDateIfNotPresent(cacheDate);
-    this.cache[cacheDate]["events"].push(event); 
+    this.cache[cacheDate]["events"].push(event);
   }
 
   initStructureForDateIfNotPresent(date) {
