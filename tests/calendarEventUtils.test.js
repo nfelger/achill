@@ -6,7 +6,7 @@ import {
 
 import { CalendarEventType } from "$lib/stores/transformCalendarEvents";
 
-test("getItemForEventType should return correct icons", async ({}) => {
+test("getItemForEventType should return correct icons", async () => {
   expect(getItemForEventType(CalendarEventType.Holiday)).toBe("wb_sunny");
   expect(getItemForEventType(CalendarEventType.Training)).toBe("school");
   expect(getItemForEventType(CalendarEventType.PaidVacation)).toBe(
@@ -22,7 +22,7 @@ test("getItemForEventType should return correct icons", async ({}) => {
   expect(getItemForEventType("NonExistentEventType")).toBe("close");
 });
 
-test("getDescriptionForEventType should return correct descriptions", async ({}) => {
+test("getDescriptionForEventType should return correct descriptions", async () => {
   expect(getDescriptionForEventType(CalendarEventType.Holiday)).toBe(
     "Public holiday, working impossible"
   );

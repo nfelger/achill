@@ -8,7 +8,6 @@
     getWeekNumberFor,
   } from "$lib/utils/dateUtils.js";
   import { onMount } from "svelte";
-  import { CalendarEventType } from "$lib/stores/transformCalendarEvents";
   import { getItemForEventType } from "$lib/utils/calendarEventUtils.js";
 
   // @ts-nocheck
