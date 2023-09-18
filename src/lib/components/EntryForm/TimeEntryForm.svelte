@@ -1,6 +1,6 @@
 <script>
   import nocodbApi from "$lib/nocodbClient.js";
-  import {onDestroy, onMount} from "svelte";
+  import { onMount } from "svelte";
   import { buttonRed, buttonBlue } from "$lib/components/colors.js";
   import AchillButton from "$lib/components/TroiButton.svelte";
   import { validateForm } from "../EntryForm/timeEntryFormValidator";
@@ -22,7 +22,6 @@
   export let addMode = false;
   export let updateMode = false;
 
-  let errorTestId = `error-${position.id}`;
   let hoursTestId = `hours-${position.id}`;
   let descriptionTestId = `description-${position.id}`;
 
