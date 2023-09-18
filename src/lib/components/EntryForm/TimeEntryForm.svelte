@@ -1,10 +1,7 @@
 <script>
   import nocodbApi from "$lib/nocodbClient.js";
   import { onMount } from "svelte";
-  import {
-    buttonRed,
-    buttonBlue,
-  } from "$lib/components/colors.js";
+  import { buttonRed, buttonBlue } from "$lib/components/colors.js";
   import AchillButton from "$lib/components/TroiButton.svelte";
   import { validateForm } from "../EntryForm/timeEntryFormValidator";
 
@@ -36,18 +33,19 @@
     values.description !== "" ? values.description.split(", ") : [];
   $: description = descriptionSegments.join(", ");
 
-
   const normalAppearance = "border-1 border-b-[1px] border-gray-300 ";
-  const errorAppearance = "border border-b-2 border-red-500 focus:ring-red-500 focus:border-red-500";
+  const errorAppearance =
+    "border border-b-2 border-red-500 focus:ring-red-500 focus:border-red-500";
 
-  const inputClass = "w-full basis-3/4 rounded px-3 py-2 text-sm placeholder:italic placeholder:text-gray-400 leading-6 ";
+  const inputClass =
+    "w-full basis-3/4 rounded px-3 py-2 text-sm placeholder:italic placeholder:text-gray-400 leading-6 ";
   const inputNormalAppearance = inputClass + normalAppearance;
-  const inputErrorAppearance = inputClass + errorAppearance
+  const inputErrorAppearance = inputClass + errorAppearance;
 
-  const textAreaClass = "inherit border-box absolute top-0 h-full w-5/6 overflow-hidden p-[0.5em] leading-4 ";
+  const textAreaClass =
+    "inherit border-box absolute top-0 h-full w-5/6 overflow-hidden p-[0.5em] leading-4 ";
   const textareaNormalAppearance = textAreaClass + normalAppearance;
-  const textareaErrorAppearance = textAreaClass + errorAppearance
-
+  const textareaErrorAppearance = textAreaClass + errorAppearance;
 
   function onKeyDown(e) {
     if (e.keyCode === 13) {
@@ -58,7 +56,9 @@
   function handleDescriptionChange(event) {
     errors = {};
     description = event.target.value;
-    descriptionSegments = event.target.value.split(", ").filter(item => item !== "");
+    descriptionSegments = event.target.value
+      .split(", ")
+      .filter((item) => item !== "");
   }
 
   function onRecurringTaskChange(event) {
@@ -98,16 +98,15 @@
     errors = await validateForm(values);
 
     if (Object.keys(errors).length === 0) {
-      addOrUpdateClicked(values.hours, values.description)
+      addOrUpdateClicked(values.hours, values.description);
       values.hours = "";
       values.description = "";
 
       // TODO noci: do like with handleAdd
       setTimeout(() => {
-          updateMode = false
-              phases.forEach(phase => phase.open = false)
-      }, 2000
-      )
+        updateMode = false;
+        phases.forEach((phase) => (phase.open = false));
+      }, 2000);
     }
   }
 
@@ -160,7 +159,7 @@
       phases = phaseNames.list
         .map((phase) => phase["Phase Name"])
         .map((value) => ({ name: value, open: false }));
-        openPhases()
+      openPhases();
     }
   });
 
@@ -169,14 +168,16 @@
   }
 
   function openPhases() {
-      for (const phase of phases) {
-          for (const phaseTask of phaseTasks) {
-              if (descriptionSegments.includes([phaseTask.name, phase.name].join(" "))) {
-                  phase.open = true;
-                  break;
-              }
-          }
+    for (const phase of phases) {
+      for (const phaseTask of phaseTasks) {
+        if (
+          descriptionSegments.includes([phaseTask.name, phase.name].join(" "))
+        ) {
+          phase.open = true;
+          break;
+        }
       }
+    }
   }
 </script>
 
@@ -193,34 +194,34 @@
         </h2>
         {#if addMode || updateMode}
           <div id="timeEntryForm">
-              <div class="relative w-full flex items-center">
-                    <div>
-                    <label for="hours" class="pr-2">Hours</label>
-                    <input
-                            bind:value={values.hours}
-                            on:keydown={onKeyDown}
-                            type="text"
-                            id="hours"
-                            data-testid={hoursTestId}
-                            class={`${
-                  errors.hours ? inputErrorAppearance : inputNormalAppearance
-                } w-3/12`}
-                            placeholder="2:15"
-                    />
-                </div>
-                  <div class="mt-1">
-                    {#if Object.values(errors).length > 0}
-                        <div class="font-bold text-red-600">
-                            <ul>
-                                {#each Object.values(errors) as error}
-                                    <li>
-                                        &#x26A0; {error}
-                                    </li>
-                                {/each}
-                            </ul>
-                        </div>
-                    {/if}
-                </div>
+            <div class="relative flex w-full items-center">
+              <div>
+                <label for="hours" class="pr-2">Hours</label>
+                <input
+                  bind:value={values.hours}
+                  on:keydown={onKeyDown}
+                  type="text"
+                  id="hours"
+                  data-testid={hoursTestId}
+                  class={`${
+                    errors.hours ? inputErrorAppearance : inputNormalAppearance
+                  } w-3/12`}
+                  placeholder="2:15"
+                />
+              </div>
+              <div class="mt-1">
+                {#if Object.values(errors).length > 0}
+                  <div class="font-bold text-red-600">
+                    <ul>
+                      {#each Object.values(errors) as error}
+                        <li>
+                          &#x26A0; {error}
+                        </li>
+                      {/each}
+                    </ul>
+                  </div>
+                {/if}
+              </div>
             </div>
             <div class="my-8">
               {#if recurringTasks && phases}
@@ -300,54 +301,56 @@
                 {/each}
               {/if}
             </div>
-            <div class="relative mb-4 w-full flex items-center justify-between">
-                <div class="w-4/6">
-                  <pre
-                    aria-hidden="true"
-                    class="inherit border-box overflow-hidden p-[0.5em] leading-4"
-                    style="min-height: {minHeight}; max-height: {maxHeight}">{description +
-                      "\n"}</pre>
+            <div class="relative mb-4 flex w-full items-center justify-between">
+              <div class="w-4/6">
+                <pre
+                  aria-hidden="true"
+                  class="inherit border-box overflow-hidden p-[0.5em] leading-4"
+                  style="min-height: {minHeight}; max-height: {maxHeight}">{description +
+                    "\n"}</pre>
 
-                  <textarea
-                    value={description}
-                    on:keydown={onKeyDown}
-                    on:input={handleDescriptionChange}
-                    id="description"
-                    data-testid={descriptionTestId}
-                    class={`${
-                  errors.description ? textareaErrorAppearance : textareaNormalAppearance
-                }`}
-                    placeholder="Working the work…"
-                  />
-                </div>
-                <div class="flex flex-col space-y-2">
+                <textarea
+                  value={description}
+                  on:keydown={onKeyDown}
+                  on:input={handleDescriptionChange}
+                  id="description"
+                  data-testid={descriptionTestId}
+                  class={`${
+                    errors.description
+                      ? textareaErrorAppearance
+                      : textareaNormalAppearance
+                  }`}
+                  placeholder="Working the work…"
+                />
+              </div>
+              <div class="flex flex-col space-y-2">
                 {#if !disabled}
                   {#if updateMode}
-                      <AchillButton
-                              text={"Save"}
-                              testId={`update-${position.id}`}
-                              onClick={handleUpdate}
-                              color={buttonBlue}
-                      />
                     <AchillButton
-                            text={"Cancel"}
-                            testId={`cancel-${position.id}`}
-                            onClick={() => {
-                  updateMode = false;
-                }}
-                            color={buttonRed}
+                      text={"Save"}
+                      testId={`update-${position.id}`}
+                      onClick={handleUpdate}
+                      color={buttonBlue}
+                    />
+                    <AchillButton
+                      text={"Cancel"}
+                      testId={`cancel-${position.id}`}
+                      onClick={() => {
+                        updateMode = false;
+                      }}
+                      color={buttonRed}
                     />
                   {/if}
                   {#if addMode}
                     <AchillButton
-                            text={"Save"}
-                            testId={"add-" + position.id}
-                            onClick={handleAdd}
-                            color={buttonBlue}
+                      text={"Save"}
+                      testId={"add-" + position.id}
+                      onClick={handleAdd}
+                      color={buttonBlue}
                     />
                   {/if}
                 {/if}
-                 </div>
+              </div>
             </div>
           </div>
         {:else}
@@ -368,7 +371,7 @@
                 text={"Edit"}
                 testId={`edit-${position.id}`}
                 onClick={() => {
-                    openPhases()
+                  openPhases();
                   updateMode = true;
                 }}
                 color={buttonBlue}

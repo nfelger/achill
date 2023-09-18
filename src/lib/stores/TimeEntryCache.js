@@ -116,7 +116,10 @@ export default class TimeEntryCache {
     }
 
     // if description already exists, delete "old entry" bc. troi api adds hours to entry and does not create new one
-    const existingEntry = this._findEntryWithSameDescription(entry, position.id);
+    const existingEntry = this._findEntryWithSameDescription(
+      entry,
+      position.id
+    );
     if (existingEntry) {
       this.deleteEntry(existingEntry, position.id);
     }

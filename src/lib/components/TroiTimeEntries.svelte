@@ -1,5 +1,8 @@
 <script>
-  import { convertFloatTimeToHHMM, convertTimeStringToFloat } from "$lib/utils/timeConverter.js";
+  import {
+    convertFloatTimeToHHMM,
+    convertTimeStringToFloat,
+  } from "$lib/utils/timeConverter.js";
   import TimeEntryForm from "$lib/components/EntryForm/TimeEntryForm.svelte";
 
   export let positions;
@@ -17,7 +20,7 @@
     position,
     newHours,
     newDescription,
-    entry = undefined,
+    entry = undefined
   ) {
     if (entry) {
       entry.hours = convertTimeStringToFloat(newHours);
@@ -34,7 +37,7 @@
     <div class="container mx-auto pt-4 pb-2">
       {#if !entries[position.id] || entries[position.id].length === 0}
         <TimeEntryForm
-                addMode={true}
+          addMode={true}
           {position}
           {recurringTasks}
           {phaseTasks}
