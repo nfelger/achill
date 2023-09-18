@@ -127,7 +127,7 @@
     deleteEntry={onDeleteEntryClicked}
     updateEntry={onUpdateEntryClicked}
     addEntry={onAddEntryClicked}
-    disabled={selectedDayIsHoliday}
+    disabled={false}
   />
 {/if}
 <section class="mt-8 text-xs text-gray-600">
