@@ -1,165 +1,144 @@
 <script>
-    // @ts-nocheck
+  // @ts-nocheck
 
-    import {onMount} from "svelte";
-    import {troiApi} from "./apis/troiApiService";
-    import TroiTimeEntries from "$lib/components/TroiTimeEntries.svelte";
-    import WeekView from "$lib/components/WeekView.svelte";
-    import LoadingOverlay from "$lib/components/LoadingOverlay.svelte";
-    import {getWeekDaysFor} from "$lib/utils/dateUtils";
-    import InfoBanner from "$lib/components/InfoBanner.svelte";
-    import TroiController from "$lib/troiController";
-    import nocodbApi from "./nocodbClient";
+  import { onMount } from "svelte";
+  import { troiApi } from "$lib/apis/troiApiService";
+  import TroiTimeEntries from "$lib/components/TroiTimeEntries.svelte";
+  import WeekView from "$lib/components/WeekView.svelte";
+  import LoadingOverlay from "$lib/components/LoadingOverlay.svelte";
+  import { getWeekDaysFor } from "$lib/utils/dateUtils";
+  import InfoBanner from "$lib/components/InfoBanner.svelte";
+  import TroiController from "$lib/troiController";
+  import nocodbApi from "./nocodbClient";
+  import { CalendarEventType } from "$lib/stores/transformCalendarEvents";
 
-    const troiController = new TroiController();
+  const troiController = new TroiController();
 
-    let selectedDate = new Date();
-    let selectedWeek = getWeekDaysFor(selectedDate);
+  let selectedDate = new Date();
+  let selectedWeek = getWeekDaysFor(selectedDate);
 
-    let positions = [];
-    let timesAndEventsOfSelectedWeek = [];
-    let selectedDayIsHoliday = false;
-    let selectedDayIsVacation = false;
-    let entriesForSelectedDate = {};
+  let positions = [];
+  let timesAndEventsOfSelectedWeek = [];
+  let selectedDayEvents = [];
+  let entriesForSelectedDate = {};
 
-    let isLoading = true;
+  let isLoading = true;
 
-    let phaseTasks;
-    let recurringTasks;
+  let phaseTasks;
+  let recurringTasks;
 
-    async function getDefaultTasks() {
-        let tasks = await nocodbApi.dbTableRow.list(
-            "v1",
-            "ds4g-data",
-            "Tracky-Task"
-        );
-        phaseTasks = tasks.list.filter((keyword) => keyword.type === "PHASE");
-        recurringTasks = tasks.list.filter(
-            (keyword) => keyword.type === "RECURRING"
-        );
-    }
+  async function getDefaultTasks() {
+    let tasks = await nocodbApi.dbTableRow.list(
+      "v1",
+      "ds4g-data",
+      "Tracky-Task"
+    );
+    phaseTasks = tasks.list.filter((keyword) => keyword.type === "PHASE");
+    recurringTasks = tasks.list.filter(
+      (keyword) => keyword.type === "RECURRING"
+    );
+  }
 
-    onMount(async () => {
-        // make sure $troiApi from store is not used before it is initialized
-        if ($troiApi === undefined) return;
+  onMount(async () => {
+    // make sure $troiApi from store is not used before it is initialized
+    if ($troiApi === undefined) return;
 
-        await troiController.init($troiApi, showLoadingSpinner, hideLoadingSpinner);
-        positions = troiController.getProjects();
-        await updateUI();
-        await getDefaultTasks();
-        hideLoadingSpinner();
-    });
+    await troiController.init($troiApi, showLoadingSpinner, hideLoadingSpinner);
+    positions = troiController.getProjects();
+    await updateUI();
+    await getDefaultTasks();
+    hideLoadingSpinner();
+  });
 
-    function showLoadingSpinner() {
-        isLoading = true;
-    }
+  async function updateUI() {
+    entriesForSelectedDate = await troiController.getEntriesFor(selectedDate);
+    timesAndEventsOfSelectedWeek =
+      troiController.getTimesAndEventsFor(selectedWeek);
+    selectedDayEvents = troiController.getEventsFor(selectedDate);
+  }
 
-    function hideLoadingSpinner() {
-        isLoading = false;
-    }
+  async function onSelectedDateChangedTo(date) {
+    selectedDayEvents = [];
+    selectedDate = date;
+    selectedWeek = getWeekDaysFor(selectedDate);
+    updateUI();
+  }
 
-    async function updateUI() {
-        entriesForSelectedDate = await troiController.getEntriesFor(selectedDate);
-        timesAndEventsOfSelectedWeek =
-            troiController.getTimesAndEventsFor(selectedWeek);
-        setSelectedDayEvents();
-    }
+  async function onAddEntryClicked(position, hours, description) {
+    showLoadingSpinner();
+    await troiController.addEntry(
+      selectedDate,
+      position,
+      hours,
+      description,
+      updateUI
+    );
+    hideLoadingSpinner();
+  }
 
-    async function onSelectedDateChangedTo(date) {
-        selectedDate = date;
-        selectedWeek = getWeekDaysFor(selectedDate);
-        updateUI();
-    }
+  async function onUpdateEntryClicked(position, entry) {
+    showLoadingSpinner();
+    await troiController.updateEntry(position, entry, updateUI);
+    hideLoadingSpinner();
+  }
 
-    function setSelectedDayEvents() {
-        const selectedDayCalendarEvents = troiController.getEventsFor(selectedDate);
+  async function onDeleteEntryClicked(entry, positionId) {
+    showLoadingSpinner();
+    await troiController.deleteEntry(entry, positionId, updateUI);
+    hideLoadingSpinner();
+  }
 
-        selectedDayIsHoliday = selectedDayCalendarEvents.some(
-            (event) => event.type === "H"
-        );
+  function showLoadingSpinner() {
+    isLoading = true;
+  }
 
-        selectedDayIsVacation = selectedDayCalendarEvents.some(
-            (event) => event.type === "P"
-        );
-    }
-
-    async function onDeleteEntryClicked(entry, projectId) {
-        showLoadingSpinner();
-        await troiController.deleteEntry(entry, projectId, updateUI);
-        hideLoadingSpinner();
-    }
-
-    async function onAddEntryClicked(position, hours, description) {
-        showLoadingSpinner();
-        await troiController.addEntry(
-            selectedDate,
-            position,
-            hours,
-            description,
-            updateUI
-        );
-        hideLoadingSpinner();
-    }
-
-    async function onUpdateEntryClicked(position, entry) {
-        showLoadingSpinner();
-        await troiController.updateEntry(position, entry, updateUI);
-        hideLoadingSpinner();
-    }
+  function hideLoadingSpinner() {
+    isLoading = false;
+  }
 </script>
 
 {#if isLoading}
-    <LoadingOverlay message={"Please wait..."}/>
+  <LoadingOverlay message={"Please wait..."} />
 {/if}
 <section class="p-4">
-    <a
-            class="angie-link"
-            href="https://digitalservicebund.atlassian.net/wiki/spaces/DIGITALSER/pages/359301512/Time+Tracking"
-            target="_blank">Read about how to track your time in confluence</a
-    >
+  <a
+    class="angie-link"
+    href="https://digitalservicebund.atlassian.net/wiki/spaces/DIGITALSER/pages/359301512/Time+Tracking"
+    target="_blank">Read about how to track your time in confluence</a
+  >
 </section>
 <section class="z-10 w-full bg-white md:sticky md:top-0">
-    <WeekView
-            {timesAndEventsOfSelectedWeek}
-            selectedDateChanged={onSelectedDateChangedTo}
-    />
+  <WeekView
+    {timesAndEventsOfSelectedWeek}
+    selectedDateChanged={onSelectedDateChangedTo}
+  />
 </section>
 
-{#if !selectedDayIsHoliday}
-    {#if selectedDayIsVacation}
-        <InfoBanner
-                text={"You are on vacation."}
-                symbol={"beach_access"}
-                testId={"vacation-banner"}
-        />
-    {/if}
-    <TroiTimeEntries
-            {positions}
-            {recurringTasks}
-            {phaseTasks}
-            entries={entriesForSelectedDate}
-            deleteEntry={onDeleteEntryClicked}
-            updateEntry={onUpdateEntryClicked}
-            addEntry={onAddEntryClicked}
-            disabled={selectedDayIsHoliday}
-    />
-{:else}
-    <InfoBanner
-            text={"Public holiday, working impossible."}
-            symbol={"wb_sunny"}
-            testId={"holiday-banner"}
-    />
+{#each selectedDayEvents as event}
+  <InfoBanner {event} />
+{/each}
+<!-- TODO: set disabled correctly-->
+{#if !selectedDayEvents.some((event) => event.type == CalendarEventType.Holiday)}
+  <TroiTimeEntries
+    {positions}
+    {recurringTasks}
+    {phaseTasks}
+    entries={entriesForSelectedDate}
+    deleteEntry={onDeleteEntryClicked}
+    updateEntry={onUpdateEntryClicked}
+    addEntry={onAddEntryClicked}
+    disabled={selectedDayIsHoliday}
+  />
 {/if}
-
 <section class="mt-8 text-xs text-gray-600">
-    <p>
-        Project not showing up? Make sure it's available in Troi and marked as a
-        "favorite".
-    </p>
+  <p>
+    Project not showing up? Make sure it's available in Troi and marked as a
+    "favorite".
+  </p>
 </section>
 
 <style>
-    :root {
-        --date-input-width: 6.5rem;
-    }
+  :root {
+    --date-input-width: 6.5rem;
+  }
 </style>

@@ -30,7 +30,7 @@
 </script>
 
 {#each positions as position}
-  <section class="bg-white p-4">
+  <section class="bg-white p-4" data-testid="project-section-{position.id}">
     <div class="container mx-auto pt-4 pb-2">
       {#if !entries[position.id] || entries[position.id].length === 0}
         <TimeEntryForm

@@ -1,4 +1,4 @@
-# 📃⏳ Achill
+# 📃⏳ Achill // Track your time
 
 Web app to help you fill out Troi. Uses the [Svelte](https://svelte.dev/) framework and the [Troi API](https://v2.troi.dev/).
 

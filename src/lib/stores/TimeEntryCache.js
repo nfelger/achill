@@ -151,19 +151,10 @@ export default class TimeEntryCache {
     successCallback();
   }
 
-  addEventForDate(event, date) {
-    const cacheDate = convertToCacheFormat(date);
+  addEvent(event) {
+    const cacheDate = convertToCacheFormat(event.date);
     this.initStructureForDateIfNotPresent(cacheDate);
     this.cache[cacheDate]["events"].push(event);
-  }
-
-  getEventsForDate(date) {
-    const cacheDate = convertToCacheFormat(date);
-    if (this.cache[cacheDate]) {
-      return this.cache[cacheDate]["events"];
-    }
-
-    return [];
   }
 
   initStructureForDateIfNotPresent(date) {
