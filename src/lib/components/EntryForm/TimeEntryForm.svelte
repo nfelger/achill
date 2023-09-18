@@ -1,6 +1,6 @@
 <script>
   import nocodbApi from "$lib/nocodbClient.js";
-  import { onMount } from "svelte";
+  import {onDestroy, onMount} from "svelte";
   import { buttonRed, buttonBlue } from "$lib/components/colors.js";
   import AchillButton from "$lib/components/TroiButton.svelte";
   import { validateForm } from "../EntryForm/timeEntryFormValidator";
@@ -43,7 +43,7 @@
   const inputErrorAppearance = inputClass + errorAppearance;
 
   const textAreaClass =
-    "inherit border-box absolute top-0 h-full w-5/6 overflow-hidden p-[0.5em] leading-4 ";
+    "inherit border-box absolute top-0 overflow-hidden p-[0.5em] leading-4 ";
   const textareaNormalAppearance = textAreaClass + normalAppearance;
   const textareaErrorAppearance = textAreaClass + errorAppearance;
 
@@ -179,6 +179,7 @@
       }
     }
   }
+
 </script>
 
 <div data-test="entry-form" class="my-2 flex justify-center">
@@ -226,8 +227,9 @@
             <div class="my-8">
               {#if recurringTasks && phases}
                 <label for="recurring" class="basis-1/4">Recurring tasks</label>
-                <div id="recurring" class="mt-2 space-x-1">
+                <div id="recurring" class="mt-2">
                   {#each recurringTasks as entry}
+                    <div class="space-x-2 md:inline-flex flex items-start">
                     <input
                       checked={descriptionSegments.includes(entry.name)}
                       class="rounded-md border border-gray-300 bg-white p-2"
@@ -236,6 +238,7 @@
                       on:change={onRecurringTaskChange}
                     />
                     <label class="pr-5" for={entry.name}>{entry.name}</label>
+                      </div>
                   {/each}
                 </div>
               {/if}
@@ -245,7 +248,7 @@
                 {#each phases as phase}
                   <details class="mb-[20px]" bind:open={phase.open}>
                     <summary
-                      class="flex h-12 w-full flex-row items-center gap-4 rounded-t border-b-2 border-solid border-b-[#CED4DA] bg-[#E5E5E5] px-[16px] py-[20px]"
+                      class="flex w-full flex-row items-center gap-4 rounded-t border-b-2 border-solid border-b-[#CED4DA] bg-[#E5E5E5] px-[16px] py-[20px]"
                       on:click={() => togglePhase(phase)}
                     >
                       <span>{phase.name}</span>
@@ -301,8 +304,8 @@
                 {/each}
               {/if}
             </div>
-            <div class="relative mb-4 flex w-full items-center justify-between">
-              <div class="w-4/6">
+            <div class="relative mb-4 flex flex-col md:flex-row w-full items-center justify-between">
+              <div class="w-full md:w-4/6 mb-2 md:mb-0">
                 <pre
                   aria-hidden="true"
                   class="inherit border-box overflow-hidden p-[0.5em] leading-4"
@@ -319,12 +322,12 @@
                     errors.description
                       ? textareaErrorAppearance
                       : textareaNormalAppearance
-                  }`}
+                  } md:w-5/6 md:h-full`}
                   placeholder="Working the work…"
                 />
               </div>
-              <div class="flex flex-col space-y-2">
-                {#if !disabled}
+              <div class="flex md:flex-col md:space-y-2 flex-row space-x-2">
+              {#if !disabled}
                   {#if updateMode}
                     <AchillButton
                       text={"Save"}
