@@ -321,7 +321,7 @@
                     errors.description
                       ? textareaErrorAppearance
                       : textareaNormalAppearance
-                  } md:w-5/6 md:h-full`}
+                  } w-full h-3/5 md:w-5/6 md:h-full`}
                   placeholder="Working the work…"
                 />
               </div>
