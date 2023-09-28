@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
-          node-version: "16.13.0"
+          node-version: "18.18.0"
           cache: "npm"
 
       - run: npm install
@@ -81,6 +81,11 @@ jobs:
           docker tag ${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           docker tag ${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           docker push --all-tags ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Generate SBOM and upload to GitHub
+        uses: anchore/sbom-action@v0.14.3
+        with:
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   deploy:
     needs: [build-push-image]
