@@ -47,7 +47,7 @@ export function transformCalendarEvent(eventInApiFormat, minDate, maxDate) {
   const synthesisedEventsInApiFormat = _synthesiseMultiDayEvents(
     eventInApiFormat,
     minDate,
-    maxDate
+    maxDate,
   );
   const tranformedEvents = synthesisedEventsInApiFormat.map((event) => {
     return _transformSingleDayEvent(event);
@@ -74,15 +74,15 @@ function _synthesiseMultiDayEvents(eventInApiFormat, minDate, maxDate) {
     new Date(
       Math.max(
         utcMidnightDateFromString(eventInApiFormat.startDate),
-        convertToUTCMidnight(minDate)
-      )
+        convertToUTCMidnight(minDate),
+      ),
     ),
     new Date(
       Math.min(
         utcMidnightDateFromString(eventInApiFormat.endDate),
-        convertToUTCMidnight(maxDate)
-      )
-    )
+        convertToUTCMidnight(maxDate),
+      ),
+    ),
   );
 
   datesBetween.forEach((date) => {

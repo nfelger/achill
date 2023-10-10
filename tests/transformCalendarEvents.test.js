@@ -107,7 +107,7 @@ test.describe("Single day event tests", async () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate
+      maxDate,
     );
 
     // THEN
@@ -129,7 +129,7 @@ test.describe("Single day event tests", async () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate
+      maxDate,
     );
 
     // THEN
@@ -151,7 +151,7 @@ test.describe("Single day event tests", async () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate
+      maxDate,
     );
 
     // THEN
@@ -173,7 +173,7 @@ test.describe("Single day event tests", async () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate
+      maxDate,
     );
 
     // THEN
@@ -195,7 +195,7 @@ test.describe("Single day event tests", async () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate
+      maxDate,
     );
 
     // THEN
@@ -217,7 +217,7 @@ test.describe("Single day event tests", async () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate
+      maxDate,
     );
 
     // THEN
@@ -239,7 +239,7 @@ test.describe("Single day event tests", async () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate
+      maxDate,
     );
 
     // THEN
@@ -261,7 +261,7 @@ test.describe("Single day event tests", async () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate
+      maxDate,
     );
 
     // THEN
@@ -285,7 +285,7 @@ test.describe("Multi day event tests", async () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate
+      maxDate,
     );
 
     // THEN
@@ -325,7 +325,7 @@ test.describe("Multi day event tests", async () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate
+      maxDate,
     );
 
     // THEN
@@ -365,7 +365,7 @@ test.describe("Multi day event tests", async () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate
+      maxDate,
     );
 
     // THEN
@@ -406,7 +406,7 @@ test.describe("Multi day event tests", async () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate
+      maxDate,
     );
 
     // THEN
@@ -447,7 +447,7 @@ test.describe("Multi day event tests", async () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate
+      maxDate,
     );
 
     // THEN
@@ -478,7 +478,7 @@ test.describe("Multi day event tests", async () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate
+      maxDate,
     );
 
     // THEN
@@ -509,7 +509,7 @@ test.describe("Multi day event tests", async () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate
+      maxDate,
     );
 
     // THEN
