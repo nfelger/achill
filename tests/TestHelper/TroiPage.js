@@ -7,10 +7,10 @@ export default class TroiPage {
 
   async expectEntryVisible(entry) {
     const entryCard = this.page.locator(
-      "data-testid=entryCard-" + entry.projectId
+      "data-testid=entryCard-" + entry.projectId,
     );
     const enrtyCardContent = entryCard.locator(
-      "data-testid=entry-card-content"
+      "data-testid=entry-card-content",
     );
     const expectedText = entry.time + " Hour(s) " + entry.description;
     await expect(enrtyCardContent).toHaveText(expectedText);
@@ -22,6 +22,12 @@ export default class TroiPage {
   async expectNoEntryVisible(projectId) {
     await this._expectAddEntryFormVisible(projectId);
     await this._expectOnlyAddVisible(projectId);
+  }
+
+  async expectProjectSectionHidden(projectId) {
+    await expect(
+      this.page.getByTestId(`project-section-${projectId}`),
+    ).toBeHidden();
   }
 
   async _expectAddEntryFormHidden(projectId) {
@@ -93,14 +99,6 @@ export default class TroiPage {
     await this.page.getByTestId("btn-today").click();
   }
 
-  async expectHoldiayBannerToBeVisible() {
-    await expect(this.page.getByTestId("holiday-banner")).toBeVisible();
-  }
-
-  async expectVacationBannerToBeVisible() {
-    await expect(this.page.getByTestId("vacation-banner")).toBeVisible();
-  }
-
   async expectSelectedDateToBe(dateString) {
     await expect(this.page.getByTestId("date")).toHaveText(dateString);
   }
@@ -115,6 +113,23 @@ export default class TroiPage {
     ][dayIndex];
 
     await expect(this.page.getByTestId(testId)).toHaveText(hours);
+  }
+
+  async expectEventIconOfWeekdayToBe(dayIndex, iconName) {
+    const testId = [
+      "event-mon",
+      "event-tue",
+      "event-wed",
+      "event-thu",
+      "event-fri",
+    ][dayIndex];
+
+    await expect(this.page.getByTestId(testId)).toHaveText(iconName);
+  }
+
+  async expectBannerOfEventTypeWithContent(type, content) {
+    await expect(this.page.getByTestId(type)).toBeVisible();
+    await expect(this.page.getByTestId(type)).toHaveText(content);
   }
 
   async editEntry(projectId) {

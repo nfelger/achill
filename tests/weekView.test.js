@@ -296,42 +296,6 @@ test("going back to today from different week works", async ({
   await troiPage.expectSelectedDateToBe("Wednesday, 7 June 2023");
 });
 
-test("holiday banner is shown when holiday is selected", async ({
-  context,
-  page,
-}) => {
-  let mockApi = new TroiApiStub();
-
-  initializeTestSetup(context, mockApi);
-  await new LoginPage(page).logIn(username, password);
-
-  await troiPage.expectLoading();
-
-  await troiPage.clickOnPreviousWeek();
-  await troiPage.clickOnWeekDay(0);
-
-  await troiPage.expectSelectedDateToBe("Monday, 29 May 2023");
-  await troiPage.expectHoldiayBannerToBeVisible();
-});
-
-test("vacation banner is shown when vacation day is selected", async ({
-  context,
-  page,
-}) => {
-  let mockApi = new TroiApiStub();
-
-  initializeTestSetup(context, mockApi);
-  await new LoginPage(page).logIn(username, password);
-
-  await troiPage.expectLoading();
-
-  await troiPage.clickOnNextWeek();
-  await troiPage.clickOnWeekDay(3);
-
-  await troiPage.expectSelectedDateToBe("Thursday, 15 June 2023");
-  await troiPage.expectVacationBannerToBeVisible();
-});
-
 test("new entries are loaded when bottom cache border is crossed", async ({
   context,
   page,
@@ -402,4 +366,26 @@ test("new entries are loaded when top cache border is crossed", async ({
 
   await troiPage.expectEntryVisible(existingEntry);
   await troiPage.expectSelectedDateToBe("Wednesday, 26 July 2023");
+});
+
+test("hour booking unavailable when day events contain holdiay", async ({
+  context,
+  page,
+}) => {
+  const calendarEvents = [
+    {
+      id: "12345",
+      Start: "2023-06-07 00:00:00",
+      End: "2023-06-07 23:59:59",
+      Subject: "Feiertag",
+      Type: "H",
+    },
+  ];
+
+  let mockApi = new TroiApiStub(calendarEvents);
+  initializeTestSetup(context, mockApi);
+  await new LoginPage(page).logIn(username, password);
+  await troiPage.expectLoading();
+  await troiPage.expectProjectSectionHidden("100");
+  await troiPage.expectProjectSectionHidden("101");
 });

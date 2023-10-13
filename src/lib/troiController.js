@@ -5,9 +5,9 @@ import TimeEntryCache, {
 import {
   addDaysToDate,
   formatDateToYYYYMMDD,
-  getDatesBetween,
   getWeekDaysFor,
 } from "$lib/utils/dateUtils";
+import { transformCalendarEvent } from "./stores/transformCalendarEvents";
 
 const timeEntryCache = new TimeEntryCache();
 
@@ -28,7 +28,7 @@ export default class TroiController {
 
     await this._loadEntriesAndEventsBetween(
       this._cacheBottomBorder,
-      this._cacheTopBorder
+      this._cacheTopBorder,
     );
   }
 
@@ -45,7 +45,7 @@ export default class TroiController {
         "clientId:",
         this._troiApi.clientId,
         "employeeId:",
-        this._troiApi.employeeId
+        this._troiApi.employeeId,
       );
       alert("An error in Troi occured, please reload track-your-time!");
       return false;
@@ -60,10 +60,16 @@ export default class TroiController {
     }
 
     for (const project of this._projects) {
+      console.log(
+        "employeeId",
+        this._troiApi.employeeId,
+        "projectId",
+        project.id,
+      );
       const entries = await this._troiApi.getTimeEntries(
         project.id,
         formatDateToYYYYMMDD(startDate),
-        formatDateToYYYYMMDD(endDate)
+        formatDateToYYYYMMDD(endDate),
       );
 
       timeEntryCache.addEntries(project, entries);
@@ -77,37 +83,35 @@ export default class TroiController {
     }
     const calendarEvents = await this._troiApi.getCalendarEvents(
       formatDateToYYYYMMDD(startDate),
-      formatDateToYYYYMMDD(endDate)
+      formatDateToYYYYMMDD(endDate),
     );
 
     calendarEvents.forEach((calendarEvent) => {
-      let dates = getDatesBetween(
-        new Date(Math.max(new Date(calendarEvent.startDate), startDate)),
-        new Date(Math.min(new Date(calendarEvent.endDate), endDate))
+      const transformedEvents = transformCalendarEvent(
+        calendarEvent,
+        startDate,
+        endDate,
       );
-
-      dates.forEach((date) => {
-        timeEntryCache.addEventForDate(
-          {
-            id: calendarEvent.id,
-            subject: calendarEvent.subject,
-            type: calendarEvent.type,
-          },
-          date
-        );
+      transformedEvents.forEach((event) => {
+        timeEntryCache.addEvent(event);
       });
     });
   }
 
   async _loadEntriesAndEventsBetween(startDate, endDate) {
+    // might be quick fix for not loading time entries if employeeId is undefined
+    if (this._troiApi.employeeId == undefined) {
+      return;
+    }
+
     await this._loadEntriesBetween(startDate, endDate);
     await this._loadCalendarEventsBetween(startDate, endDate);
 
     this._cacheBottomBorder = new Date(
-      Math.min(new Date(this._cacheBottomBorder), startDate)
+      Math.min(new Date(this._cacheBottomBorder), startDate),
     );
     this._cacheTopBorder = new Date(
-      Math.max(new Date(this._cacheTopBorder), endDate)
+      Math.max(new Date(this._cacheTopBorder), endDate),
     );
   }
 
@@ -123,7 +127,7 @@ export default class TroiController {
     week.forEach((date) => {
       timesAndEventsOfWeek.push({
         hours: timeEntryCache.totalHoursOf(date),
-        events: timeEntryCache.getEventsForDate(date),
+        events: timeEntryCache.getEventsFor(date),
       });
     });
 
@@ -168,7 +172,7 @@ export default class TroiController {
       project.id,
       troiFormattedSelectedDate,
       hours,
-      description
+      description,
     );
 
     const entry = {
@@ -187,7 +191,7 @@ export default class TroiController {
       return;
     }
     let result = await this._troiApi.deleteTimeEntryViaServerSideProxy(
-      entry.id
+      entry.id,
     );
     if (result.ok) {
       timeEntryCache.deleteEntry(entry, projectId, successCallback);
@@ -204,7 +208,7 @@ export default class TroiController {
       entry.date,
       entry.hours,
       entry.description,
-      entry.id
+      entry.id,
     );
 
     const updatedEntry = {

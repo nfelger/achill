@@ -46,8 +46,8 @@
 </script>
 
 {#each projects as project}
-  <section class="bg-white p-4">
-    <div class="container mx-auto pt-4 pb-2">
+  <section class="bg-white p-4" data-testid="project-section-{project.id}">
+    <div class="container mx-auto pb-2 pt-4">
       <h2
         class="mb-4 text-lg font-semibold text-gray-900"
         title="Position ID: {project.id}"
