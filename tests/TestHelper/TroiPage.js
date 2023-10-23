@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { TimeoutConfig } from "./TestHelper/TestHelper";
+import { TimeoutConfig } from "./TestHelper";
 
 export default class TroiPage {
   constructor(page) {
