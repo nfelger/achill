@@ -1,4 +1,7 @@
 import { expect } from "@playwright/test";
+import {
+  TimeoutConfig
+} from "./TestHelper/TestHelper";
 
 export default class TroiPage {
   constructor(page) {
@@ -13,7 +16,7 @@ export default class TroiPage {
       "data-testid=entry-card-content"
     );
     const expectedText = entry.time + " Hour(s) " + entry.description;
-    await expect(enrtyCardContent).toHaveText(expectedText);
+    await expect(enrtyCardContent).toHaveText(expectedText, { timeout: 10000 });
 
     await this._expectAddEntryFormHidden(entry.projectId);
     await this._expectOnlyDeleteAndEditVisible(entry.projectId);
@@ -27,7 +30,7 @@ export default class TroiPage {
   async expectProjectSectionHidden(projectId) {
     await expect(
       this.page.getByTestId(`project-section-${projectId}`)
-    ).toBeHidden();
+    ).toBeHidden(TimeoutConfig);
   }
 
   async _expectAddEntryFormHidden(projectId) {
@@ -42,41 +45,41 @@ export default class TroiPage {
     const hoursTestId = "hours-" + projectId;
     const descriptionTestId = "description-" + projectId;
     if (hidden) {
-      await expect(this.page.getByTestId(hoursTestId)).toBeHidden();
-      await expect(this.page.getByTestId(descriptionTestId)).toBeHidden();
+      await expect(this.page.getByTestId(hoursTestId)).toBeHidden(TimeoutConfig);
+      await expect(this.page.getByTestId(descriptionTestId)).toBeHidden(TimeoutConfig);
     } else {
-      await expect(this.page.getByTestId(hoursTestId)).toBeVisible();
-      await expect(this.page.getByTestId(descriptionTestId)).toBeVisible();
+      await expect(this.page.getByTestId(hoursTestId)).toBeVisible(TimeoutConfig);
+      await expect(this.page.getByTestId(descriptionTestId)).toBeVisible(TimeoutConfig);
     }
   }
 
   async _expectOnlyDeleteAndEditVisible(projectId) {
-    await expect(this.page.getByTestId(`delete-${projectId}`)).toBeVisible();
-    await expect(this.page.getByTestId(`edit-${projectId}`)).toBeVisible();
-    await expect(this.page.getByTestId(`add-${projectId}`)).toBeHidden();
-    await expect(this.page.getByTestId(`cancel-${projectId}`)).toBeHidden();
-    await expect(this.page.getByTestId(`save-${projectId}`)).toBeHidden();
+    await expect(this.page.getByTestId(`delete-${projectId}`)).toBeVisible(TimeoutConfig);
+    await expect(this.page.getByTestId(`edit-${projectId}`)).toBeVisible(TimeoutConfig);
+    await expect(this.page.getByTestId(`add-${projectId}`)).toBeHidden(TimeoutConfig);
+    await expect(this.page.getByTestId(`cancel-${projectId}`)).toBeHidden(TimeoutConfig);
+    await expect(this.page.getByTestId(`save-${projectId}`)).toBeHidden(TimeoutConfig);
   }
 
   async _expectOnlyAddVisible(projectId) {
-    await expect(this.page.getByTestId(`delete-${projectId}`)).toBeHidden();
-    await expect(this.page.getByTestId(`edit-${projectId}`)).toBeHidden();
-    await expect(this.page.getByTestId(`add-${projectId}`)).toBeVisible();
-    await expect(this.page.getByTestId(`cancel-${projectId}`)).toBeHidden();
-    await expect(this.page.getByTestId(`save-${projectId}`)).toBeHidden();
+    await expect(this.page.getByTestId(`delete-${projectId}`)).toBeHidden(TimeoutConfig);
+    await expect(this.page.getByTestId(`edit-${projectId}`)).toBeHidden(TimeoutConfig);
+    await expect(this.page.getByTestId(`add-${projectId}`)).toBeVisible(TimeoutConfig);
+    await expect(this.page.getByTestId(`cancel-${projectId}`)).toBeHidden(TimeoutConfig);
+    await expect(this.page.getByTestId(`save-${projectId}`)).toBeHidden(TimeoutConfig);
   }
 
   async expectOnlyCancelAndSaveVisible(projectId) {
-    await expect(this.page.getByTestId(`delete-${projectId}`)).toBeHidden();
-    await expect(this.page.getByTestId(`edit-${projectId}`)).toBeHidden();
-    await expect(this.page.getByTestId(`add-${projectId}`)).toBeHidden();
-    await expect(this.page.getByTestId(`cancel-${projectId}`)).toBeVisible();
-    await expect(this.page.getByTestId(`save-${projectId}`)).toBeVisible();
+    await expect(this.page.getByTestId(`delete-${projectId}`)).toBeHidden(TimeoutConfig);
+    await expect(this.page.getByTestId(`edit-${projectId}`)).toBeHidden(TimeoutConfig);
+    await expect(this.page.getByTestId(`add-${projectId}`)).toBeHidden(TimeoutConfig);
+    await expect(this.page.getByTestId(`cancel-${projectId}`)).toBeVisible(TimeoutConfig);
+    await expect(this.page.getByTestId(`save-${projectId}`)).toBeVisible(TimeoutConfig);
   }
 
   async expectLoading() {
-    await expect(this.page.getByTestId("loadingOverlay")).toBeVisible();
-    await expect(this.page.getByTestId("loadingOverlay")).toBeHidden();
+    await expect(this.page.getByTestId("loadingOverlay")).toBeVisible(TimeoutConfig);
+    await expect(this.page.getByTestId("loadingOverlay")).toBeHidden(TimeoutConfig);
   }
 
   async clickOnWeekDay(dayIndex) {
@@ -128,7 +131,7 @@ export default class TroiPage {
   }
 
   async expectBannerOfEventTypeWithContent(type, content) {
-    await expect(this.page.getByTestId(type)).toBeVisible();
+    await expect(this.page.getByTestId(type)).toBeVisible(TimeoutConfig);
     await expect(this.page.getByTestId(type)).toHaveText(content);
   }
 

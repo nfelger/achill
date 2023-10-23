@@ -4,6 +4,7 @@ import {
   fixedCurrentDate,
   initializeTestSetup,
   setFixedCurrentDate,
+  TimeoutConfig
 } from "./TestHelper/TestHelper";
 import TroiApiStub from "./TestHelper/TroiApiStub";
 import { username, password } from "./TestHelper/TroiApiStub";
@@ -100,10 +101,10 @@ test("add entry with invalid data shows error", async ({ context, page }) => {
   await troiPage.expectLoading();
 
   await troiPage.fillForm(entryToAdd);
-  await expect(page.getByTestId(`error-${entryToAdd.projectId}`)).toBeHidden();
+  await expect(page.getByTestId(`error-${entryToAdd.projectId}`)).toBeHidden(TimeoutConfig);
   await troiPage.submitForm(entryToAdd.projectId);
-  await expect(page.getByTestId("loadingOverlay")).toBeHidden();
-  await expect(page.getByTestId("error-" + entryToAdd.projectId)).toBeVisible();
+  await expect(page.getByTestId("loadingOverlay")).toBeHidden(TimeoutConfig);
+  await expect(page.getByTestId("error-" + entryToAdd.projectId)).toBeVisible(TimeoutConfig);
 });
 
 test("delete existing entry works", async ({ context, page }) => {

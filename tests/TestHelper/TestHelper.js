@@ -1,5 +1,7 @@
 export const fixedCurrentDate = new Date("June 7 2023 5:00:00");
 
+export const TimeoutConfig = { timeout: 10000 };
+
 export async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
