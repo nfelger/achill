@@ -178,7 +178,6 @@
       }
     }
   }
-
 </script>
 
 <div data-test="entry-form" class="my-2 flex justify-center">
@@ -228,16 +227,16 @@
                 <label for="recurring" class="basis-1/4">Recurring tasks</label>
                 <div id="recurring" class="mt-2">
                   {#each recurringTasks as entry}
-                    <div class="space-x-2 md:inline-flex flex items-start">
-                    <input
-                      checked={descriptionSegments.includes(entry.name)}
-                      class="rounded-md border border-gray-300 bg-white p-2"
-                      id={entry.name}
-                      type="checkbox"
-                      on:change={onRecurringTaskChange}
-                    />
-                    <label class="pr-5" for={entry.name}>{entry.name}</label>
-                      </div>
+                    <div class="flex items-start space-x-2 md:inline-flex">
+                      <input
+                        checked={descriptionSegments.includes(entry.name)}
+                        class="rounded-md border border-gray-300 bg-white p-2"
+                        id={entry.name}
+                        type="checkbox"
+                        on:change={onRecurringTaskChange}
+                      />
+                      <label class="pr-5" for={entry.name}>{entry.name}</label>
+                    </div>
                   {/each}
                 </div>
               {/if}
@@ -303,8 +302,10 @@
                 {/each}
               {/if}
             </div>
-            <div class="relative mb-4 flex flex-col md:flex-row w-full items-center justify-between">
-              <div class="w-full md:w-4/6 mb-2 md:mb-0">
+            <div
+              class="relative mb-4 flex w-full flex-col items-center justify-between md:flex-row"
+            >
+              <div class="mb-2 w-full md:mb-0 md:w-4/6">
                 <pre
                   aria-hidden="true"
                   class="inherit border-box overflow-hidden p-[0.5em] leading-4"
@@ -321,12 +322,12 @@
                     errors.description
                       ? textareaErrorAppearance
                       : textareaNormalAppearance
-                  } w-full h-3/5 md:w-5/6 md:h-full`}
+                  } h-3/5 w-full md:h-full md:w-5/6`}
                   placeholder="Working the work…"
                 />
               </div>
-              <div class="flex md:flex-col md:space-y-2 flex-row space-x-2">
-              {#if !disabled}
+              <div class="flex flex-row space-x-2 md:flex-col md:space-y-2">
+                {#if !disabled}
                   {#if updateMode}
                     <AchillButton
                       text={"Save"}
