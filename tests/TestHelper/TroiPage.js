@@ -1,7 +1,5 @@
 import { expect } from "@playwright/test";
-import {
-  TimeoutConfig
-} from "./TestHelper/TestHelper";
+import { TimeoutConfig } from "./TestHelper/TestHelper";
 
 export default class TroiPage {
   constructor(page) {
@@ -45,41 +43,83 @@ export default class TroiPage {
     const hoursTestId = "hours-" + projectId;
     const descriptionTestId = "description-" + projectId;
     if (hidden) {
-      await expect(this.page.getByTestId(hoursTestId)).toBeHidden(TimeoutConfig);
-      await expect(this.page.getByTestId(descriptionTestId)).toBeHidden(TimeoutConfig);
+      await expect(this.page.getByTestId(hoursTestId)).toBeHidden(
+        TimeoutConfig
+      );
+      await expect(this.page.getByTestId(descriptionTestId)).toBeHidden(
+        TimeoutConfig
+      );
     } else {
-      await expect(this.page.getByTestId(hoursTestId)).toBeVisible(TimeoutConfig);
-      await expect(this.page.getByTestId(descriptionTestId)).toBeVisible(TimeoutConfig);
+      await expect(this.page.getByTestId(hoursTestId)).toBeVisible(
+        TimeoutConfig
+      );
+      await expect(this.page.getByTestId(descriptionTestId)).toBeVisible(
+        TimeoutConfig
+      );
     }
   }
 
   async _expectOnlyDeleteAndEditVisible(projectId) {
-    await expect(this.page.getByTestId(`delete-${projectId}`)).toBeVisible(TimeoutConfig);
-    await expect(this.page.getByTestId(`edit-${projectId}`)).toBeVisible(TimeoutConfig);
-    await expect(this.page.getByTestId(`add-${projectId}`)).toBeHidden(TimeoutConfig);
-    await expect(this.page.getByTestId(`cancel-${projectId}`)).toBeHidden(TimeoutConfig);
-    await expect(this.page.getByTestId(`save-${projectId}`)).toBeHidden(TimeoutConfig);
+    await expect(this.page.getByTestId(`delete-${projectId}`)).toBeVisible(
+      TimeoutConfig
+    );
+    await expect(this.page.getByTestId(`edit-${projectId}`)).toBeVisible(
+      TimeoutConfig
+    );
+    await expect(this.page.getByTestId(`add-${projectId}`)).toBeHidden(
+      TimeoutConfig
+    );
+    await expect(this.page.getByTestId(`cancel-${projectId}`)).toBeHidden(
+      TimeoutConfig
+    );
+    await expect(this.page.getByTestId(`save-${projectId}`)).toBeHidden(
+      TimeoutConfig
+    );
   }
 
   async _expectOnlyAddVisible(projectId) {
-    await expect(this.page.getByTestId(`delete-${projectId}`)).toBeHidden(TimeoutConfig);
-    await expect(this.page.getByTestId(`edit-${projectId}`)).toBeHidden(TimeoutConfig);
-    await expect(this.page.getByTestId(`add-${projectId}`)).toBeVisible(TimeoutConfig);
-    await expect(this.page.getByTestId(`cancel-${projectId}`)).toBeHidden(TimeoutConfig);
-    await expect(this.page.getByTestId(`save-${projectId}`)).toBeHidden(TimeoutConfig);
+    await expect(this.page.getByTestId(`delete-${projectId}`)).toBeHidden(
+      TimeoutConfig
+    );
+    await expect(this.page.getByTestId(`edit-${projectId}`)).toBeHidden(
+      TimeoutConfig
+    );
+    await expect(this.page.getByTestId(`add-${projectId}`)).toBeVisible(
+      TimeoutConfig
+    );
+    await expect(this.page.getByTestId(`cancel-${projectId}`)).toBeHidden(
+      TimeoutConfig
+    );
+    await expect(this.page.getByTestId(`save-${projectId}`)).toBeHidden(
+      TimeoutConfig
+    );
   }
 
   async expectOnlyCancelAndSaveVisible(projectId) {
-    await expect(this.page.getByTestId(`delete-${projectId}`)).toBeHidden(TimeoutConfig);
-    await expect(this.page.getByTestId(`edit-${projectId}`)).toBeHidden(TimeoutConfig);
-    await expect(this.page.getByTestId(`add-${projectId}`)).toBeHidden(TimeoutConfig);
-    await expect(this.page.getByTestId(`cancel-${projectId}`)).toBeVisible(TimeoutConfig);
-    await expect(this.page.getByTestId(`save-${projectId}`)).toBeVisible(TimeoutConfig);
+    await expect(this.page.getByTestId(`delete-${projectId}`)).toBeHidden(
+      TimeoutConfig
+    );
+    await expect(this.page.getByTestId(`edit-${projectId}`)).toBeHidden(
+      TimeoutConfig
+    );
+    await expect(this.page.getByTestId(`add-${projectId}`)).toBeHidden(
+      TimeoutConfig
+    );
+    await expect(this.page.getByTestId(`cancel-${projectId}`)).toBeVisible(
+      TimeoutConfig
+    );
+    await expect(this.page.getByTestId(`save-${projectId}`)).toBeVisible(
+      TimeoutConfig
+    );
   }
 
   async expectLoading() {
-    await expect(this.page.getByTestId("loadingOverlay")).toBeVisible(TimeoutConfig);
-    await expect(this.page.getByTestId("loadingOverlay")).toBeHidden(TimeoutConfig);
+    await expect(this.page.getByTestId("loadingOverlay")).toBeVisible(
+      TimeoutConfig
+    );
+    await expect(this.page.getByTestId("loadingOverlay")).toBeHidden(
+      TimeoutConfig
+    );
   }
 
   async clickOnWeekDay(dayIndex) {
