@@ -91,7 +91,7 @@ jobs:
         uses: digitalservicebund/github-actions/argocd-deploy@9b15fba0ce0e874d9af5be33ebeea7d476f808d0
         with:
           environment: staging
-          version: :${{ github.sha }}
+          version: ${{ github.sha }}
           deploying_repo: achill-test
           infra_repo: achill-infra
           deploy_key: ${{ secrets.DEPLOY_KEY }}
