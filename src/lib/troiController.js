@@ -57,12 +57,6 @@ export default class TroiController {
       this._troiApi.clientId == undefined ||
       this._troiApi.employeeId == undefined
     ) {
-      console.log(
-        "clientId:",
-        this._troiApi.clientId,
-        "employeeId:",
-        this._troiApi.employeeId
-      );
       alert("An error in Troi occured, please reload track-your-time!");
       return false;
     }
@@ -76,12 +70,6 @@ export default class TroiController {
     }
 
     for (const project of this._projects) {
-      console.log(
-        "employeeId",
-        this._troiApi.employeeId,
-        "projectId",
-        project.id
-      );
       const entries = await this._troiApi.getTimeEntries(
         project.id,
         formatDateToYYYYMMDD(startDate),

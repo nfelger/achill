@@ -46,23 +46,53 @@
   const textareaNormalAppearance = textAreaClass + normalAppearance;
   const textareaErrorAppearance = textAreaClass + errorAppearance;
 
-  function onKeyDown(e) {
+  async function onKeyDown(e) {
     if (e.keyCode === 13) {
-      addOrUpdateClicked(values.hours, values.description);
+      errors = await validateForm({
+        hours: values.hours,
+        description: description,
+      });
+      if (Object.keys(errors).length === 0) {
+        addOrUpdateClicked(values.hours, values.description);
+        values.hours = "";
+        values.description = "";
+      }
     }
   }
-
   function handleDescriptionChange(event) {
-    errors = {};
-    description = event.target.value;
-    descriptionSegments = event.target.value
-      .split(", ")
-      .filter((item) => item !== "");
+    if (event.inputType !== "insertLineBreak") {
+      errors = {};
+    }
+    if (
+      event.inputType === "deleteContentBackward" &&
+      description.charAt(description.length - 1) === " "
+    ) {
+      description = event.target.value;
+    } else {
+      description = event.target.value;
+      if (event.data !== " ") {
+        descriptionSegments = event.target.value
+          .split(",")
+          .map((value) => value.trim());
+      }
+    }
+    const indexEmptyEntry = descriptionSegments.indexOf("");
+    if (
+      indexEmptyEntry !== -1 &&
+      indexEmptyEntry !== descriptionSegments.length - 1
+    ) {
+      descriptionSegments = descriptionSegments.filter(
+        (entry, index) =>
+          entry !== "" || index === descriptionSegments.length - 1
+      );
+    }
   }
 
   function onRecurringTaskChange(event) {
     if (event.target.checked) {
-      descriptionSegments = [...descriptionSegments, event.target.id];
+      descriptionSegments = [...descriptionSegments, event.target.id].filter(
+        (f) => f !== ""
+      );
     } else {
       descriptionSegments = descriptionSegments.filter(
         (segment) => segment !== event.target.id
@@ -72,7 +102,9 @@
 
   function handleChipClick(phaseAndTask) {
     if (!descriptionSegments.includes(phaseAndTask)) {
-      descriptionSegments = [...descriptionSegments, phaseAndTask];
+      descriptionSegments = [...descriptionSegments, phaseAndTask].filter(
+        (f) => f !== ""
+      );
     }
   }
 
