@@ -12,7 +12,7 @@ fileignoreconfig:
 - filename: SECURITY.md
   checksum: b1743150cdd537be3a66f5308f887d130f0f320ab21628b63713808090a84e3f
 - filename: app/routes/login.tsx
-  checksum: a1bd7db3e391f6ccd4a989946b77f13ccda7ad439edf01f78a630c0a74cd02a6
+  checksum: 71439f7a400334caeb550ee897753dec4b8d36ded11952b3b81594b745aaa18b
 version: ""
 scopeconfig:
   - scope: node

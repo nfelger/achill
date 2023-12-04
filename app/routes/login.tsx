@@ -21,7 +21,7 @@ const troiBaseUrl = "https://digitalservice.troi.software/api/v2/rest";
 export async function loader({ request }: LoaderFunctionArgs) {
   const cookieHeader = request.headers.get("Cookie");
   const cookie = (await login.parse(cookieHeader)) || {};
-  return json({ username: cookie.username, password: cookie.password });
+  return json({ username: cookie.username });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -41,7 +41,6 @@ export async function action({ request }: ActionFunctionArgs) {
     });
     await troiApi.initialize();
   } catch (error) {
-    console.log(error);
     if (error instanceof AuthenticationFailed) {
       return json({
         message: "Login failed! Please check your username & password.",
@@ -51,7 +50,7 @@ export async function action({ request }: ActionFunctionArgs) {
     }
   }
 
-  return redirect("/", {
+  return redirect("/projects", {
     headers: {
       "Set-Cookie": await login.serialize(cookie),
     },
