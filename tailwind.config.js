@@ -1,12 +1,17 @@
+import defaultTheme from "tailwindcss/defaultTheme";
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./app/**/*.{js,jsx,ts,tsx}"],
-  presets: [require("@digitalservice4germany/style-dictionary/tailwind")],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ["Inter var", ...defaultTheme.fontFamily.sans],
+      },
+    },
   },
   corePlugins: {
     container: false,
   },
-  plugins: [require("@digitalservice4germany/angie")],
+  plugins: [require("@tailwindcss/forms")],
 };

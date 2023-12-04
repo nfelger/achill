@@ -2,29 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
-h1,
-h2,
-h3,
-h4,
-li,
-p {
-  max-width: 70ch;
-}
-
-ul {
-  list-style-type: disc;
-  padding-left: 1.5rem;
-}
-
-html {
-  /* keep 16px, don't change! (e.g. angie library depends on it) */
-  font-size: 16px;
-}
-
 body {
-  font-family: "BundesSansWeb", "Calibri", "Verdana", "Arial", "Helvetica",
-    sans-serif;
-  font-size: 1.125rem;
-  line-height: 1.5;
-  min-height: 100vh;
+  background-color: #0063eb;
+  background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23f5d0fe' fill-opacity='0.15' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.angie-link {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  /* identical to box height, or 129% */
+
+  letter-spacing: 0.16px;
+  text-decoration-line: underline;
+
+  /* text/label */
+
+  color: #4e596a;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 48;
+}
+
+input {
+  @apply rounded-sm border border-gray-200 bg-white text-gray-800 placeholder-gray-400 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-400 focus:ring-opacity-40;
 }

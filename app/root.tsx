@@ -32,6 +32,7 @@ export const links: LinksFunction = () => [
   },
   { rel: "stylesheet", href: fontsStylesheet },
   { rel: "stylesheet", href: stylesheet },
+  { rel: "stylesheet", href: "https://rsms.me/inter/inter.css" },
   { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
 ];
 
@@ -44,8 +45,10 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body>
-        <Outlet />
+      <body className="bg-blue-500">
+        <div className="container mx-auto mt-8 w-full max-w-screen-lg text-sm text-gray-800 sm:px-2">
+          <Outlet />
+        </div>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
