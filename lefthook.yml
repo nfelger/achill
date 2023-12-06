@@ -12,7 +12,7 @@ pre-commit:
       tags: style
       run: npm run format:check
 pre-push:
-  parallel: true
+  parallel: false
   commands:
     licenses-audit:
       tags: licenses audit
