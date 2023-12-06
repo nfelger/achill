@@ -38,7 +38,7 @@
 <div
   class="mx-auto mt-8 w-full max-w-sm overflow-hidden rounded-sm bg-white px-8 py-6 shadow-md"
 >
-  <h2 class="mt-4 mb-8 text-center text-3xl font-bold text-blue-600">
+  <h2 class="mb-8 mt-4 text-center text-3xl font-bold text-blue-600">
     Enter. Time.
   </h2>
 
@@ -91,7 +91,7 @@
       />
     </div>
 
-    <div class="mt-8 mb-4">
+    <div class="mb-4 mt-8">
       <button
         class="w-full transform rounded-sm bg-blue-600 px-4 py-2 tracking-wide text-white transition-colors duration-200 hover:bg-blue-400 focus:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50"
       >

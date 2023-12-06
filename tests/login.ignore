@@ -20,7 +20,7 @@ test.describe("Auth", async () => {
   test("log in and back out", async ({ page }) => {
     await new LoginPage(page).logIn(username, password);
     await expect(
-      page.locator("nav div >> text=Logged in as user.name")
+      page.locator("nav div >> text=Logged in as user.name"),
     ).toBeVisible();
 
     await page.locator("text=LOGOUT").click();

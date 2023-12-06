@@ -44,7 +44,7 @@ export default class TroiController {
 
     await this._loadEntriesAndEventsBetween(
       this._cacheBottomBorder,
-      this._cacheTopBorder
+      this._cacheTopBorder,
     );
   }
 
@@ -57,6 +57,12 @@ export default class TroiController {
       this._troiApi.clientId == undefined ||
       this._troiApi.employeeId == undefined
     ) {
+      console.log(
+        "clientId:",
+        this._troiApi.clientId,
+        "employeeId:",
+        this._troiApi.employeeId,
+      );
       alert("An error in Troi occured, please reload track-your-time!");
       return false;
     }
@@ -70,10 +76,16 @@ export default class TroiController {
     }
 
     for (const project of this._projects) {
+      console.log(
+        "employeeId",
+        this._troiApi.employeeId,
+        "projectId",
+        project.id,
+      );
       const entries = await this._troiApi.getTimeEntries(
         project.id,
         formatDateToYYYYMMDD(startDate),
-        formatDateToYYYYMMDD(endDate)
+        formatDateToYYYYMMDD(endDate),
       );
 
       timeEntryCache.addEntries(project, entries);
@@ -87,14 +99,14 @@ export default class TroiController {
     }
     const calendarEvents = await this._troiApi.getCalendarEvents(
       formatDateToYYYYMMDD(startDate),
-      formatDateToYYYYMMDD(endDate)
+      formatDateToYYYYMMDD(endDate),
     );
 
     calendarEvents.forEach((calendarEvent) => {
       const transformedEvents = transformCalendarEvent(
         calendarEvent,
         startDate,
-        endDate
+        endDate,
       );
       transformedEvents.forEach((event) => {
         timeEntryCache.addEvent(event);
@@ -112,10 +124,10 @@ export default class TroiController {
     await this._loadCalendarEventsBetween(startDate, endDate);
 
     this._cacheBottomBorder = new Date(
-      Math.min(new Date(this._cacheBottomBorder), startDate)
+      Math.min(new Date(this._cacheBottomBorder), startDate),
     );
     this._cacheTopBorder = new Date(
-      Math.max(new Date(this._cacheTopBorder), endDate)
+      Math.max(new Date(this._cacheTopBorder), endDate),
     );
   }
 
@@ -178,7 +190,7 @@ export default class TroiController {
       project.id,
       troiFormattedSelectedDate,
       hours,
-      description
+      description,
     );
 
     const entry = {
@@ -197,7 +209,7 @@ export default class TroiController {
       return;
     }
     let result = await this._troiApi.deleteTimeEntryViaServerSideProxy(
-      entry.id
+      entry.id,
     );
     if (result.ok) {
       timeEntryCache.deleteEntry(entry, projectId, successCallback);
@@ -214,7 +226,7 @@ export default class TroiController {
       entry.date,
       entry.hours,
       entry.description,
-      entry.id
+      entry.id,
     );
 
     const updatedEntry = {

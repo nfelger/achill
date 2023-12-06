@@ -23,7 +23,7 @@ export async function initializeTestSetup(context, apiStub) {
         method,
         pathname,
         params,
-        postData
+        postData,
       );
 
       if (matchedResponse !== null) {
@@ -32,7 +32,7 @@ export async function initializeTestSetup(context, apiStub) {
         console.log({ matchedResponse, method, pathname, params, postData });
         route.abort();
       }
-    }
+    },
   );
 
   await context.route("/time_entries/*", async (route) => {

@@ -8,10 +8,10 @@ export default class TroiPage {
 
   async expectEntryVisible(entry) {
     const entryCard = this.page.locator(
-      "data-testid=entryCard-" + entry.projectId
+      "data-testid=entryCard-" + entry.projectId,
     );
     const enrtyCardContent = entryCard.locator(
-      "data-testid=entry-card-content"
+      "data-testid=entry-card-content",
     );
     const expectedText = entry.time + " Hour(s) " + entry.description;
     await expect(enrtyCardContent).toHaveText(expectedText, { timeout: 10000 });

@@ -61,7 +61,7 @@ export default class TimeEntryCache {
 
   _findEntryWithSameDescription(entry, projectId) {
     return this._entriesFor(entry.date, projectId).find(
-      (e) => e.description.toLowerCase() == entry.description.toLowerCase()
+      (e) => e.description.toLowerCase() == entry.description.toLowerCase(),
     );
   }
 

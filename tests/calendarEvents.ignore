@@ -40,7 +40,7 @@ test("holiday icon and banner is shown when day is holiday", async ({
   await troiPage.expectEventIconOfWeekdayToBe(2, expectedIcon);
   await troiPage.expectBannerOfEventTypeWithContent(
     "Holiday",
-    `${expectedIcon} Public holiday, working impossible`
+    `${expectedIcon} Public holiday, working impossible`,
   );
 });
 
@@ -68,7 +68,7 @@ test("paid vacation icon and half day banner is shown when day is half day paid 
   await troiPage.expectEventIconOfWeekdayToBe(2, expectedIcon);
   await troiPage.expectBannerOfEventTypeWithContent(
     "PaidVacation",
-    `${expectedIcon} ½ Day: You are on paid vacation`
+    `${expectedIcon} ½ Day: You are on paid vacation`,
   );
 });
 
@@ -103,12 +103,12 @@ test("icons and two half day banners are shown for paid vacation and learning wh
   await troiPage.expectEventIconOfWeekdayToBe(2, expectedIcon);
   await troiPage.expectBannerOfEventTypeWithContent(
     "PaidVacation",
-    `${expectedIcon} ½ Day: You are on paid vacation`
+    `${expectedIcon} ½ Day: You are on paid vacation`,
   );
 
   expectedIcon = "school";
   await troiPage.expectBannerOfEventTypeWithContent(
     "Training",
-    `${expectedIcon} ½ Day: Learning`
+    `${expectedIcon} ½ Day: Learning`,
   );
 });

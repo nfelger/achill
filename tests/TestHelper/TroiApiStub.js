@@ -60,7 +60,7 @@ export default class TroiApiStub {
   deleteEntry(id) {
     mockData.calculationPositions.forEach((project) => {
       this.entries[project.Id] = this.entries[project.Id].filter(
-        (entry) => entry.Id !== id
+        (entry) => entry.Id !== id,
       );
     });
   }
@@ -110,7 +110,7 @@ export default class TroiApiStub {
       });
     } else if (method === "POST" && pathname.endsWith("/billings/hours")) {
       const projectId = parseInt(
-        postData.CalculationPosition.Path.split("/").at(-1)
+        postData.CalculationPosition.Path.split("/").at(-1),
       );
       const newEntryId = `${projectId}${this.entries[projectId].length}`;
       this.addEntry(projectId, {
@@ -131,7 +131,7 @@ export default class TroiApiStub {
       const splittedPath = pathname.split("/");
       const entryId = parseInt(splittedPath[splittedPath.length - 1], 10);
       const projectId = parseInt(
-        postData.CalculationPosition.Path.split("/").at(-1)
+        postData.CalculationPosition.Path.split("/").at(-1),
       );
       this.updateEntry(projectId, entryId, {
         entryId,

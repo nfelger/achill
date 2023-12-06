@@ -4,7 +4,7 @@ import moment from "moment";
 // see https://stackoverflow.com/a/38050824
 export function convertToUTCMidnight(date) {
   return new Date(
-    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
   );
 }
 

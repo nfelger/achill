@@ -34,7 +34,7 @@
 
 {#each positions as position}
   <section class="bg-white p-4" data-testid="project-section-{position.id}">
-    <div class="container mx-auto pt-4 pb-2">
+    <div class="container mx-auto pb-2 pt-4">
       {#if !entries[position.id] || entries[position.id].length === 0}
         <TimeEntryForm
           addMode={true}
