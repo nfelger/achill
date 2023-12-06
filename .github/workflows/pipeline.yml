@@ -2,14 +2,14 @@ name: Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [main, remix-migration]
   pull_request:
     branches: [main]
   # Allow to run this workflow manually
   workflow_dispatch:
 
 env:
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ${{ github.repository }}-remix
 
 jobs:
   build:
@@ -172,7 +172,7 @@ jobs:
 
   build-and-push-image:
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' && false }}
+    if: ${{ github.ref == 'refs/heads/remix-migration' }}
     needs:
       - build
       - audit-licenses
