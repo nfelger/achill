@@ -5,6 +5,10 @@ import {
 } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import { login } from "~/cookies.server";
+import Troi from "../components/troi.client";
+import { useEffect, useState } from "react";
+
+let isHydrating = true;
 
 export const meta: MetaFunction = () => {
   return [
@@ -16,11 +20,17 @@ export const meta: MetaFunction = () => {
 export async function loader({ request }: LoaderFunctionArgs) {
   const cookieHeader = request.headers.get("Cookie");
   const cookie = (await login.parse(cookieHeader)) || {};
-  return json({ username: cookie.username });
+  return json({ username: cookie.username, password: cookie.password });
 }
 
 export default function Index() {
-  const { username } = useLoaderData<typeof loader>();
+  const [isHydrated, setIsHydrated] = useState(!isHydrating);
+  const { username, password } = useLoaderData<typeof loader>();
+
+  useEffect(() => {
+    isHydrating = false;
+    setIsHydrated(true);
+  }, []);
 
   return (
     <main>
@@ -53,6 +63,9 @@ export default function Index() {
             </div>
           </div>
         </nav>
+        {/* render client side only */}
+        {/* https://remix.run/docs/en/main/guides/migrating-react-router-app#client-only-components */}
+        {isHydrated && <Troi username={username} password={password} />}
       </div>
     </main>
   );
