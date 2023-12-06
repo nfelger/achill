@@ -237,3 +237,25 @@ jobs:
         env:
           COSIGN_EXPERIMENTAL: "true"
         run: cosign attest --yes --replace --predicate vulnerabilities.json --type vuln ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+  deploy:
+    needs: [build-and-push-image]
+    if: github.ref == 'refs/heads/remix-migration'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      packages: read
+    environment: staging
+    steps:
+      - name: Deploy new image
+        uses: digitalservicebund/github-actions/argocd-deploy@9b15fba0ce0e874d9af5be33ebeea7d476f808d0
+        with:
+          environment: staging
+          version: ${{ github.sha }}
+          deploying_repo: achill-remix
+          infra_repo: achill-infra
+          deploy_key: ${{ secrets.DEPLOY_KEY }}
+          app: achill-staging
+          argocd_pipeline_password: ${{ secrets.ARGOCD_PIPELINE_PASSWORD }}
+          argocd_server: ${{ secrets.ARGOCD_SERVER }}
+          argocd_sync_timeout: 300
