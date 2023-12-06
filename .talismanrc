@@ -13,6 +13,10 @@ fileignoreconfig:
   checksum: b1743150cdd537be3a66f5308f887d130f0f320ab21628b63713808090a84e3f
 - filename: app/routes/login.tsx
   checksum: 71439f7a400334caeb550ee897753dec4b8d36ded11952b3b81594b745aaa18b
+- filename: app/components/troi.client.tsx
+  checksum: b0e396226c9c6ae3c27ff4f4c1157ecff06e5140b44662ef4264559ec9e33a18
+- filename: app/routes/projects.tsx
+  checksum: 68dde5f568d7d4a01c207d5bc6fb95976b1bfe469ad7614ad71241fce8820130
 version: ""
 scopeconfig:
   - scope: node
