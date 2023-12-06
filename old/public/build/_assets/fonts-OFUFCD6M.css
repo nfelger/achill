@@ -1,0 +1,65 @@
+/* node_modules/@digitalservice4germany/angie/fonts.css */
+@font-face {
+  font-family: BundesSansWeb;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/build/_assets/BundesSansWeb-Regular-EJT7T333.woff2) format("woff2"), url(/build/_assets/BundesSansWeb-Regular-4KT6J25A.woff) format("woff");
+}
+@font-face {
+  font-family: BundesSansWeb;
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/build/_assets/BundesSansWeb-Italic-WOTJHHBP.woff2) format("woff2"), url(/build/_assets/BundesSansWeb-Italic-GKASTAKV.woff) format("woff");
+}
+@font-face {
+  font-family: BundesSansWeb;
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/build/_assets/BundesSansWeb-Bold-OIVKJ6OA.woff2) format("woff2"), url(/build/_assets/BundesSansWeb-Bold-ZI6LIAEU.woff) format("woff");
+}
+@font-face {
+  font-family: BundesSansWeb;
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/build/_assets/BundesSansWeb-BoldItalic-GTD26QMP.woff2) format("woff2"), url(/build/_assets/BundesSansWeb-BoldItalic-472TZIQE.woff) format("woff");
+}
+@font-face {
+  font-family: BundesSerifWeb;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/build/_assets/BundesSerifWeb-Regular-ZNCJA6HD.woff2) format("woff2"), url(/build/_assets/BundesSerifWeb-Regular-2U6VEZIP.woff) format("woff");
+}
+@font-face {
+  font-family: BundesSerifWeb;
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/build/_assets/BundesSerifWeb-Italic-3JPY64B6.woff2) format("woff2"), url(/build/_assets/BundesSerifWeb-Italic-7SHUXDPQ.woff) format("woff");
+}
+@font-face {
+  font-family: BundesSerifWeb;
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/build/_assets/BundesSerifWeb-Bold-TWJNW2E4.woff2) format("woff2"), url(/build/_assets/BundesSerifWeb-Bold-GXQBPVWD.woff) format("woff");
+}
+@font-face {
+  font-family: BundesSerifWeb;
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/build/_assets/BundesSerifWeb-BoldItalic-YFUZNOKW.woff2) format("woff2"), url(/build/_assets/BundesSerifWeb-BoldItalic-MDCTRVZH.woff) format("woff");
+}
+@font-face {
+  font-family: BundesSansCondWeb;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/build/_assets/BundesSansCondWeb-IXNT6R47.woff2) format("woff2"), url(/build/_assets/BundesSansCondWeb-ANXE7ZJC.woff) format("woff");
+}
+/*# sourceMappingURL=/build/_assets/fonts-7RZ4AHKT.css.map */
