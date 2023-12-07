@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import TroiController from "../troiController";
+import TroiController from "../troi/troiController";
 import TroiApiService from "troi-library";
 
 interface Props {

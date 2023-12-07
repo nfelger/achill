@@ -1,3 +1,4 @@
+import type { CalenderEvent } from "troi-library";
 import {
   convertToUTCMidnight,
   getDatesBetween,
@@ -5,22 +6,25 @@ import {
 } from "./dateUtils";
 import moment from "moment";
 
-// TODO: make sure this contains all possible types
-const _CalendarEventType = {
-  Holiday: "Holiday",
-  Training: "Training",
-  PaidVacation: "PaidVacation",
-  UnpaidVacation: "UnpaidVacation",
-  CompensatoryTimeOff: "CompensatoryTimeOff",
-  Sick: "Sick",
+export type TransformedCalendarEvent = {
+  type?: CalendarEventType;
+  duration?: string;
+  date: Date;
 };
+
+export type CalendarEventType =
+  | "Holiday"
+  | "Training"
+  | "PaidVacation"
+  | "UnpaidVacation"
+  | "CompensatoryTimeOff"
+  | "Sick";
 
 const _CalendarEventDuration = {
   HalfDay: "HalfDay",
   AllDay: "AllDay",
 };
 
-export const CalendarEventType = Object.freeze(_CalendarEventType);
 export const CalendarEventDuration = Object.freeze(_CalendarEventDuration);
 
 /*
@@ -42,7 +46,11 @@ export const CalendarEventDuration = Object.freeze(_CalendarEventDuration);
         date: Date
     }
 */
-export function transformCalendarEvent(eventInApiFormat, minDate, maxDate) {
+export function transformCalendarEvent(
+  eventInApiFormat: CalenderEvent,
+  minDate: Date,
+  maxDate: Date,
+) {
   const synthesisedEventsInApiFormat = _synthesiseMultiDayEvents(
     eventInApiFormat,
     minDate,
@@ -55,7 +63,9 @@ export function transformCalendarEvent(eventInApiFormat, minDate, maxDate) {
   return tranformedEvents;
 }
 
-function _transformSingleDayEvent(eventInApiFormat) {
+function _transformSingleDayEvent(
+  eventInApiFormat: CalenderEvent,
+): TransformedCalendarEvent {
   const normalizedDate = utcMidnightDateFromString(eventInApiFormat.startDate);
   const tranformedEvent = {
     type: _getCalendarEventTypForEvent(eventInApiFormat),
@@ -66,20 +76,24 @@ function _transformSingleDayEvent(eventInApiFormat) {
   return tranformedEvent;
 }
 
-function _synthesiseMultiDayEvents(eventInApiFormat, minDate, maxDate) {
-  const synthesisedEventsInApiFormat = [];
+function _synthesiseMultiDayEvents(
+  eventInApiFormat: CalenderEvent,
+  minDate: Date,
+  maxDate: Date,
+) {
+  const synthesisedEventsInApiFormat: CalenderEvent[] = [];
 
   let datesBetween = getDatesBetween(
     new Date(
       Math.max(
-        utcMidnightDateFromString(eventInApiFormat.startDate),
-        convertToUTCMidnight(minDate),
+        utcMidnightDateFromString(eventInApiFormat.startDate).getDate(),
+        convertToUTCMidnight(minDate).getDate(),
       ),
     ),
     new Date(
       Math.min(
-        utcMidnightDateFromString(eventInApiFormat.endDate),
-        convertToUTCMidnight(maxDate),
+        utcMidnightDateFromString(eventInApiFormat.endDate).getDate(),
+        convertToUTCMidnight(maxDate).getDate(),
       ),
     ),
   );
@@ -116,26 +130,28 @@ function _synthesiseMultiDayEvents(eventInApiFormat, minDate, maxDate) {
   return synthesisedEventsInApiFormat;
 }
 
-function _getCalendarEventTypForEvent(event) {
+function _getCalendarEventTypForEvent(
+  event: CalenderEvent,
+): CalendarEventType | undefined {
   if (event === undefined) {
     return undefined;
   }
 
   switch (event.type) {
     case "H":
-      return CalendarEventType.Holiday;
+      return "Holiday";
     case "P":
       switch (event.subject) {
         case "Fortbildung":
-          return CalendarEventType.Training;
+          return "Training";
         case "Bezahlter Urlaub":
-          return CalendarEventType.PaidVacation;
+          return "PaidVacation";
         case "Unbezahlter Urlaub":
-          return CalendarEventType.UnpaidVacation;
+          return "UnpaidVacation";
         case "Freizeitausgleich (Überstunden)":
-          return CalendarEventType.CompensatoryTimeOff;
+          return "CompensatoryTimeOff";
         case "Krankheit":
-          return CalendarEventType.Sick;
+          return "Sick";
         default:
           return undefined;
       }
@@ -144,7 +160,7 @@ function _getCalendarEventTypForEvent(event) {
   }
 }
 
-function _getCalendarEventDurationForEvent(event) {
+function _getCalendarEventDurationForEvent(event: CalenderEvent) {
   if (event === undefined) {
     return undefined;
   }

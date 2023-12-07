@@ -1,9 +1,9 @@
-function padLeadingZeros(num, size) {
+function padLeadingZeros(num: string, size: number) {
   var s = "0" + num;
   return s.substring(s.length - size);
 }
 
-export const convertFloatTimeToHHMM = (time) => {
+export const convertFloatTimeToHHMM = (time: number) => {
   if (time == 0) return "0";
   // times are float input and we need to parse them to "H:MM", e.g 2.25 -> 2:15
   const minutes = time % 1; // extracts 0.25 from 2.25
@@ -11,15 +11,19 @@ export const convertFloatTimeToHHMM = (time) => {
   return `${Math.floor(time)}:${padLeadingZeros(displayMinutes, 2)}`;
 };
 
-export const convertTimeStringToFloat = (time) => {
+const minuteStringToInt = (minutes: string): number => {
+  if (minutes.length === 1) {
+    return parseInt(minutes, 10) * 10;
+  }
+
+  return parseInt(minutes);
+};
+
+export const convertTimeStringToFloat = (time: string) => {
   if (time.includes(":")) {
     let [hours, minutes] = time.split(":");
 
-    if (minutes.length == 1) {
-      minutes *= 10;
-    }
-
-    let minuteFractions = Number(minutes) / 60;
+    let minuteFractions = minuteStringToInt(minutes) / 60;
 
     return Number(hours) + minuteFractions;
   } else if (time.includes(",")) {

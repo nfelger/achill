@@ -2,26 +2,26 @@ import moment from "moment";
 
 // Use this to make the date compareble, regardless of its time and timezone
 // see https://stackoverflow.com/a/38050824
-export function convertToUTCMidnight(date) {
+export function convertToUTCMidnight(date: Date) {
   return new Date(
     Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
   );
 }
 
-export function utcMidnightDateFromString(dateString) {
+export function utcMidnightDateFromString(dateString: string) {
   return new Date(dateString.split(" ")[0] + "T00:00:00Z");
 }
 
 // subtraction also possible
-export function addDaysToDate(date, days) {
+export function addDaysToDate(date: Date, days: number) {
   return new Date(date.getTime() + days * 86400000); // 24*60*60*1000
 }
 
-export function formatDateToYYYYMMDD(date) {
+export function formatDateToYYYYMMDD(date: Date): string {
   return moment(date).format("YYYYMMDD");
 }
 
-export function getDatesBetween(startDate, endDate) {
+export function getDatesBetween(startDate: Date, endDate: Date) {
   var dateArray = [];
   var currentDate = startDate;
   while (currentDate <= endDate) {
@@ -32,7 +32,7 @@ export function getDatesBetween(startDate, endDate) {
   return dateArray;
 }
 
-export function datesEqual(date1, date2) {
+export function datesEqual(date1: Date, date2: Date) {
   return (
     date1.getDate() === date2.getDate() &&
     date1.getMonth() === date2.getMonth() &&
@@ -40,7 +40,7 @@ export function datesEqual(date1, date2) {
   );
 }
 
-export function getWeekDaysFor(date) {
+export function getWeekDaysFor(date: Date) {
   // calc Monday of current week
   const dateDayNumber = date.getDay() || 7; // get current day number, converting Sunday to 7
   var monday = new Date(date);
@@ -61,8 +61,8 @@ export function getWeekDaysFor(date) {
 /**
  * ISO-8601 week number
  */
-export function getWeekNumberFor(date) {
-  var tdt = new Date(date.valueOf());
+export function getWeekNumberFor(date: Date) {
+  var tdt: Date = new Date(date.valueOf());
   var dayn = getDayNumberFor(date);
   tdt.setDate(tdt.getDate() - dayn + 3);
   var firstThursday = tdt.valueOf();
@@ -70,9 +70,9 @@ export function getWeekNumberFor(date) {
   if (tdt.getDay() !== 4) {
     tdt.setMonth(0, 1 + ((4 - tdt.getDay() + 7) % 7));
   }
-  return 1 + Math.ceil((firstThursday - tdt) / 604800000);
+  return 1 + Math.ceil((firstThursday - tdt.getDate()) / 604800000);
 }
 
-export function getDayNumberFor(date) {
+export function getDayNumberFor(date: Date) {
   return (date.getDay() + 6) % 7;
 }
