@@ -1,7 +1,4 @@
-import { useEffect } from "react";
-
-import TroiController from "../troi/troiController";
-import TroiApiService from "troi-library";
+import { useTroi } from "~/troi/useTroi.hook";
 
 interface Props {
   username: string;
@@ -9,30 +6,10 @@ interface Props {
 }
 
 export default function Troi(props: Props) {
-  const troiController = new TroiController();
-
-  useEffect(() => {
-    const troiApi = new TroiApiService({
-      baseUrl: "https://digitalservice.troi.software/api/v2/rest",
-      clientName: "DigitalService GmbH des Bundes",
-      username: props.username,
-      password: props.password,
-    });
-
-    troiController
-      .init(
-        troiApi,
-        () => {},
-        () => {},
-      )
-      .then(() => {
-        const positions = troiController.getProjects();
-        console.log(positions);
-        // await updateUI();
-        // await getDefaultTasks();
-        // hideLoadingSpinner();
-      });
-  }, []);
+  const { troiController, loading, initialized } = useTroi(
+    props.username,
+    props.password,
+  );
 
   return <div>TEST</div>;
 }

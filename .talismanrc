@@ -17,6 +17,8 @@ fileignoreconfig:
   checksum: aab99fc3f4f2284848510075ccfc612122cb572eb56f2e531d78ce42613f52e7
 - filename: app/routes/projects.tsx
   checksum: 68dde5f568d7d4a01c207d5bc6fb95976b1bfe469ad7614ad71241fce8820130
+- filename: app/troi/useTroi.hook.tsx
+  checksum: a0139b548ba37a46ac023bef5f71a6b9a41aa4486a5b59dd97fdc3408c2b7972
 version: ""
 scopeconfig:
   - scope: node
