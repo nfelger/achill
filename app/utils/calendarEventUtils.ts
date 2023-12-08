@@ -1,6 +1,6 @@
 import type { CalendarEventType } from "./transformCalendarEvents";
 
-export function getItemForEventType(type: CalendarEventType) {
+export function getItemForEventType(type?: CalendarEventType) {
   switch (type) {
     case "Holiday":
       return "wb_sunny";
@@ -19,7 +19,7 @@ export function getItemForEventType(type: CalendarEventType) {
   }
 }
 
-export function getDescriptionForEventType(type: CalendarEventType) {
+export function getDescriptionForEventType(type?: CalendarEventType) {
   switch (type) {
     case "Holiday":
       return "Public holiday, working impossible";

@@ -50,6 +50,8 @@ export default class TroiController {
     this._startLoadingCallback = willStartLoadingCallback;
     this._stopLoadingCallback = finishedLoadingCallback;
 
+    await this._troiApi.initialize();
+
     this._projects = await this._troiApi
       .makeRequest({
         url: "/calculationPositions",

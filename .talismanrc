@@ -14,7 +14,7 @@ fileignoreconfig:
 - filename: app/routes/login.tsx
   checksum: 71439f7a400334caeb550ee897753dec4b8d36ded11952b3b81594b745aaa18b
 - filename: app/components/troi.client.tsx
-  checksum: c9435fd1d18506312bf7c1fce449becc26079aa7af12c2fce92c8b4485c0a989
+  checksum: f8a42a7eaf66377662298793bb806905a807dd5ab2388e629345db80029197e4
 - filename: app/routes/projects.tsx
   checksum: 68dde5f568d7d4a01c207d5bc6fb95976b1bfe469ad7614ad71241fce8820130
 - filename: app/troi/useTroi.hook.tsx

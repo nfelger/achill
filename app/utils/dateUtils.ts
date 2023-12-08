@@ -70,7 +70,7 @@ export function getWeekNumberFor(date: Date) {
   if (tdt.getDay() !== 4) {
     tdt.setMonth(0, 1 + ((4 - tdt.getDay() + 7) % 7));
   }
-  return 1 + Math.ceil((firstThursday - tdt.getDate()) / 604800000);
+  return 1 + Math.ceil((firstThursday - tdt.getTime()) / 604800000);
 }
 
 export function getDayNumberFor(date: Date) {

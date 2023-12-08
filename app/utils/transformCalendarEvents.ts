@@ -86,14 +86,14 @@ function _synthesiseMultiDayEvents(
   let datesBetween = getDatesBetween(
     new Date(
       Math.max(
-        utcMidnightDateFromString(eventInApiFormat.startDate).getDate(),
-        convertToUTCMidnight(minDate).getDate(),
+        utcMidnightDateFromString(eventInApiFormat.startDate).getTime(),
+        convertToUTCMidnight(minDate).getTime(),
       ),
     ),
     new Date(
       Math.min(
-        utcMidnightDateFromString(eventInApiFormat.endDate).getDate(),
-        convertToUTCMidnight(maxDate).getDate(),
+        utcMidnightDateFromString(eventInApiFormat.endDate).getTime(),
+        convertToUTCMidnight(maxDate).getTime(),
       ),
     ),
   );

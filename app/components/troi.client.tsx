@@ -1,5 +1,8 @@
 import { useTroi } from "~/troi/useTroi.hook";
 import { LoadingOverlay } from "./LoadingOverlay";
+import { useEffect, useState } from "react";
+import { TimeEntry } from "troi-library";
+import { InfoBanner } from "./InfoBanner";
 
 interface Props {
   username: string;
@@ -11,6 +14,22 @@ export default function Troi(props: Props) {
     props.username,
     props.password,
   );
+
+  const [selectedDate, setSelectedDate] = useState(() => new Date());
+
+  const [entriesForSelectedDate, setEntriesForSelectedDate] = useState<{
+    [projectId: number]: TimeEntry[];
+  }>({});
+
+  useEffect(() => {
+    if (troiController && initialized) {
+      troiController.getEntriesFor(selectedDate).then((entries) => {
+        setEntriesForSelectedDate(entries);
+      });
+    }
+  }, [troiController, initialized, selectedDate]);
+
+  const selectedDayEvents = troiController?.getEventsFor(selectedDate);
 
   return (
     <div>
@@ -26,6 +45,8 @@ export default function Troi(props: Props) {
         </a>
       </section>
 
+      {selectedDayEvents?.map((event) => <InfoBanner event={event} />)}
+
       <section className="mt-8 text-xs text-gray-600">
         <p>
           Project not showing up? Make sure it's available in Troi and marked as
@@ -34,6 +55,4 @@ export default function Troi(props: Props) {
       </section>
     </div>
   );
-
-  return <div>TEST</div>;
 }
