@@ -10,7 +10,7 @@ declare module "troi-library" {
   };
   export type CalenderEventType = "R" | "H" | "G" | "P" | "T";
   export type CalenderEvent = {
-    id: number;
+    id: string;
     startDate: string;
     endDate: string;
     subject: string;

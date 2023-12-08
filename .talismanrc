@@ -12,13 +12,15 @@ fileignoreconfig:
 - filename: SECURITY.md
   checksum: b1743150cdd537be3a66f5308f887d130f0f320ab21628b63713808090a84e3f
 - filename: app/routes/login.tsx
-  checksum: 71439f7a400334caeb550ee897753dec4b8d36ded11952b3b81594b745aaa18b
+  allowed_patterns: [password]
 - filename: app/components/troi.client.tsx
-  checksum: f8a42a7eaf66377662298793bb806905a807dd5ab2388e629345db80029197e4
+  allowed_patterns: [password, /wiki/spaces/DIGITALSER/pages/\d+]
 - filename: app/routes/projects.tsx
-  checksum: 68dde5f568d7d4a01c207d5bc6fb95976b1bfe469ad7614ad71241fce8820130
+  allowed_patterns: [password]
 - filename: app/troi/useTroi.hook.tsx
-  checksum: a0139b548ba37a46ac023bef5f71a6b9a41aa4486a5b59dd97fdc3408c2b7972
+  allowed_patterns: [password]
+- filename: tests/unit/transformCalendarEvents.test.ts
+  allowed_patterns: [key]
 version: ""
 scopeconfig:
   - scope: node
