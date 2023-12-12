@@ -14,7 +14,7 @@ const timeEntryCache = new TimeEntryCache();
 const intervallInWeeks = 6;
 const intervallInDays = intervallInWeeks * 7;
 
-type Project = {
+export type Project = {
   name: string;
   id: number;
   subproject: number;

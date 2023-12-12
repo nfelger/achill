@@ -5,6 +5,7 @@ import { TimeEntry } from "troi-library";
 import { InfoBanner } from "./InfoBanner";
 import { getWeekDaysFor } from "~/utils/dateUtils";
 import { WeekView } from "./WeekView";
+import { TroiTimeEntries } from "./TroiTimeEntries";
 
 interface Props {
   username: string;
@@ -35,6 +36,7 @@ export default function Troi(props: Props) {
   const selectedDayEvents = troiController?.getEventsFor(selectedDate);
   const timesAndEventsOfSelectedWeek =
     troiController?.getTimesAndEventsFor(selectedWeek) ?? [];
+  const positions = troiController?.getProjects();
 
   return (
     <div>
@@ -58,6 +60,19 @@ export default function Troi(props: Props) {
       </section>
 
       {selectedDayEvents?.map((event) => <InfoBanner event={event} />)}
+
+      {!selectedDayEvents?.some((event) => event.type == "Holiday") && (
+        <TroiTimeEntries
+          positions={positions ?? []}
+          recurringTasks={[]}
+          phaseTasks={[]}
+          entries={entriesForSelectedDate}
+          deleteEntry={() => {}}
+          updateEntry={() => {}}
+          addEntry={() => {}}
+          disabled={false}
+        />
+      )}
 
       <section className="mt-8 text-xs text-gray-600">
         <p>

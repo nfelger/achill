@@ -8,12 +8,6 @@ import { Form, useLoaderData } from "@remix-run/react";
 import { login } from "~/cookies.server";
 import Troi from "../components/troi.client";
 import { useEffect, useState } from "react";
-import TroiApiService from "troi-library";
-import {
-  formatDateToYYYYMMDD,
-  getWeekDaysFor,
-  addDaysToDate,
-} from "~/utils/dateUtils";
 
 let isHydrating = true;
 
