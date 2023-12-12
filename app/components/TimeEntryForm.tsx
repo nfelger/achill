@@ -118,7 +118,6 @@ interface Props {
   minRows?: number;
   maxRows?: number;
   addMode?: boolean;
-  updateMode?: boolean;
 }
 
 export function TimeEntryForm({
@@ -136,7 +135,6 @@ export function TimeEntryForm({
   minRows = 4,
   maxRows = 40,
   addMode = false,
-  updateMode = false,
 }: Props) {
   const hoursTestId = `hours-${position.id}`;
   const descriptionTestId = `description-${position.id}`;
@@ -164,24 +162,12 @@ export function TimeEntryForm({
   const [description, setDescription] = useState(() =>
     descriptionSegments.join(", "),
   );
+  const [hours, setHours] = useState(values.hours);
+  const [updateMode, setUpdateMode] = useState(false);
 
   useEffect(() => {
     setDescription(descriptionSegments.join(", "));
   }, [descriptionSegments]);
-
-  async function onKeyDown(e) {
-    if (e.keyCode === 13) {
-      /*errors = await validateForm({
-        hours: values.hours,
-        description: description,
-      });*/
-      if (Object.keys(errors).length === 0) {
-        addOrUpdateClicked(values.hours, values.description);
-        values.hours = "";
-        values.description = "";
-      }
-    }
-  }
 
   function handleDescriptionChange(
     event: React.FormEvent<HTMLTextAreaElement>,
@@ -224,24 +210,37 @@ export function TimeEntryForm({
     }
   }
 
+  async function onKeyDown(e) {
+    if (e.keyCode === 13) {
+      /*errors = await validateForm({
+        hours: hours,
+        description: description,
+      });*/
+      if (Object.keys(errors).length === 0) {
+        addOrUpdateClicked(hours, description);
+        setHours("");
+        setDescription("");
+      }
+    }
+  }
+
   async function handleAdd() {
-    values.description = description;
     // errors = await validateForm(values);
     if (Object.keys(errors).length === 0) {
-      addOrUpdateClicked(values.hours, values.description);
-      values.hours = "";
-      values.description = "";
+      addOrUpdateClicked(hours, description);
+      setHours("");
+      setDescription("");
     }
   }
 
   async function handleUpdate() {
-    values.description = description;
     // errors = await validateForm(values);
 
     if (Object.keys(errors).length === 0) {
-      addOrUpdateClicked(values.hours, values.description);
-      values.hours = "";
-      values.description = "";
+      addOrUpdateClicked(hours, description);
+      setHours(hours);
+      setDescription(description);
+      setUpdateMode(false);
 
       // TODO noci: do like with handleAdd
       // setTimeout(() => {
@@ -249,6 +248,12 @@ export function TimeEntryForm({
       //   phases.forEach((phase) => (phase.open = false));
       // }, 2000);
     }
+  }
+
+  function handleCancel() {
+    setHours(values.hours);
+    setDescription(values.description);
+    setUpdateMode(false);
   }
 
   return (
@@ -271,8 +276,11 @@ export function TimeEntryForm({
                       Hours
                     </label>
                     <input
-                      value={values.hours}
+                      value={hours}
                       onKeyDown={onKeyDown}
+                      onChange={(e) => {
+                        setHours(e.target.value);
+                      }}
                       type="text"
                       id="hours"
                       data-testid={hoursTestId}
@@ -324,9 +332,7 @@ export function TimeEntryForm({
                         <TroiButton
                           text={"Cancel"}
                           testId={`cancel-${position.id}`}
-                          onClick={() => {
-                            updateMode = false;
-                          }}
+                          onClick={handleCancel}
                           color={buttonRed}
                         />
                       </>
@@ -362,7 +368,7 @@ export function TimeEntryForm({
                     testId={`edit-${position.id}`}
                     onClick={() => {
                       // openPhases();
-                      updateMode = true;
+                      setUpdateMode(true);
                     }}
                     color={buttonBlue}
                   />

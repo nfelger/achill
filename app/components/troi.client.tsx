@@ -44,7 +44,6 @@ export default function Troi(props: Props) {
     hours: number,
     description: string,
   ) {
-    // showLoadingSpinner();
     await troiController?.addEntry(
       selectedDate,
       position,
@@ -52,19 +51,14 @@ export default function Troi(props: Props) {
       description,
       () => {},
     );
-    // hideLoadingSpinner();
   }
 
-  // async function onUpdateEntryClicked(position, entry) {
-  //   showLoadingSpinner();
-  //   await troiController.updateEntry(position, entry, updateUI);
-  //   hideLoadingSpinner();
-  // }
+  async function onUpdateEntryClicked(position: Project, entry: TimeEntry) {
+    await troiController?.updateEntry(position, entry, () => {});
+  }
 
   async function onDeleteEntryClicked(entry: TimeEntry, positionId: number) {
-    // showLoadingSpinner();
     await troiController?.deleteEntry(entry, positionId, () => {});
-    // hideLoadingSpinner();
   }
 
   return (
@@ -97,9 +91,7 @@ export default function Troi(props: Props) {
           phaseTasks={[]}
           entries={entriesForSelectedDate}
           deleteEntry={onDeleteEntryClicked}
-          updateEntry={(project, entry) => {
-            console.log("update", entry);
-          }}
+          updateEntry={onUpdateEntryClicked}
           addEntry={onAddEntryClicked}
           disabled={false}
         />

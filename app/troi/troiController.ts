@@ -249,6 +249,7 @@ export default class TroiController {
     if (!this._verifyTroiApiCredentials) {
       return;
     }
+    this._startLoadingCallback?.();
     const troiFormattedSelectedDate = convertToCacheFormat(date);
     const result = (await this._troiApi.postTimeEntry(
       project.id,
@@ -269,6 +270,7 @@ export default class TroiController {
     };
 
     timeEntryCache.addEntry(project, entry, successCallback);
+    this._stopLoadingCallback?.();
   }
 
   async deleteEntry(
@@ -283,6 +285,7 @@ export default class TroiController {
     if (!this._verifyTroiApiCredentials) {
       return;
     }
+    this._startLoadingCallback?.();
     let result = (await this._troiApi.deleteTimeEntryViaServerSideProxy(
       entry.id,
     )) as {
@@ -291,6 +294,7 @@ export default class TroiController {
     if (result.ok) {
       timeEntryCache.deleteEntry(entry, projectId, successCallback);
     }
+    this._stopLoadingCallback?.();
   }
 
   async updateEntry(
@@ -305,6 +309,7 @@ export default class TroiController {
     if (!this._verifyTroiApiCredentials) {
       return;
     }
+    this._startLoadingCallback?.();
     const result = (await this._troiApi.updateTimeEntry(
       project.id,
       entry.date,
@@ -325,5 +330,6 @@ export default class TroiController {
     };
 
     timeEntryCache.updateEntry(project, updatedEntry, successCallback);
+    this._stopLoadingCallback?.();
   }
 }
