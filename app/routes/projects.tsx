@@ -35,62 +35,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const cookieHeader = request.headers.get("Cookie");
   const cookie = (await login.parse(cookieHeader)) || {};
 
-  const _troiApi = new TroiApiService({
-    baseUrl: "https://digitalservice.troi.software/api/v2/rest",
-    clientName: "DigitalService GmbH des Bundes",
-    username: cookie.username,
-    password: cookie.password,
-  });
-
-  const _projects = await _troiApi
-    .makeRequest({
-      url: "/calculationPositions",
-      params: {
-        clientId: (await _troiApi.getClientId()).toString(),
-        favoritesOnly: true.toString(),
-      },
-    })
-    .then((response) =>
-      (response as any).map((obj: unknown) => {
-        return {
-          name: (obj as any).DisplayPath,
-          id: (obj as any).Id,
-          subproject: (obj as any).Subproject.id,
-        };
-      }),
-    );
-  console.log(_projects);
-
-  const fetchStartDate = addDaysToDate(getWeekDaysFor(new Date())[0], -365); // monday a year before
-  const fetchEndDate = getWeekDaysFor(new Date())[4]; // current week friday
-
-  console.log(fetchStartDate);
-  console.log(fetchEndDate);
-
-  for (const project of _projects) {
-    const entries = (await _troiApi.makeRequest({
-      url: "/billings/hours",
-      params: {
-        clientId: (await _troiApi.getClientId()).toString(),
-        employeeId: (await _troiApi.getEmployeeId()).toString(),
-        calculationPositionId: project.id,
-        startDate: formatDateToYYYYMMDD(fetchStartDate),
-        endDate: formatDateToYYYYMMDD(fetchEndDate),
-      },
-    })) as any[];
-    entries
-      .map((obj) => {
-        return {
-          id: obj.id,
-          date: obj.Date,
-          hours: obj.Quantity,
-          description: obj.Remark,
-        };
-      })
-      .sort((a, b) => (a.date > b.date ? 1 : -1));
-    console.log(project.id, entries.length);
-  }
-
   return json({ username: cookie.username, password: cookie.password });
 }
 
