@@ -1,5 +1,7 @@
 import { Project } from "~/troi/troiController";
 import { useEffect, useState } from "react";
+import { TroiButton } from "./TroiButton";
+import { buttonBlue, buttonRed } from "~/utils/colors";
 
 /*
 function onRecurringTaskChange(event) {
@@ -26,33 +28,6 @@ function removeChip(phaseAndTask) {
   descriptionSegments = descriptionSegments.filter(
     (segment) => segment !== phaseAndTask
   );
-}
-
-async function handleAdd() {
-  values.description = description;
-  errors = await validateForm(values);
-  if (Object.keys(errors).length === 0) {
-    addOrUpdateClicked(values.hours, values.description);
-    values.hours = "";
-    values.description = "";
-  }
-}
-
-async function handleUpdate() {
-  values.description = description;
-  errors = await validateForm(values);
-
-  if (Object.keys(errors).length === 0) {
-    addOrUpdateClicked(values.hours, values.description);
-    values.hours = "";
-    values.description = "";
-
-    // TODO noci: do like with handleAdd
-    setTimeout(() => {
-      updateMode = false;
-      phases.forEach((phase) => (phase.open = false));
-    }, 2000);
-  }
 }
 
 async function pollPhaseNames(positionId, subprojectId) {
@@ -249,6 +224,33 @@ export function TimeEntryForm({
     }
   }
 
+  async function handleAdd() {
+    values.description = description;
+    // errors = await validateForm(values);
+    if (Object.keys(errors).length === 0) {
+      addOrUpdateClicked(values.hours, values.description);
+      values.hours = "";
+      values.description = "";
+    }
+  }
+
+  async function handleUpdate() {
+    values.description = description;
+    // errors = await validateForm(values);
+
+    if (Object.keys(errors).length === 0) {
+      addOrUpdateClicked(values.hours, values.description);
+      values.hours = "";
+      values.description = "";
+
+      // TODO noci: do like with handleAdd
+      // setTimeout(() => {
+      //   updateMode = false;
+      //   phases.forEach((phase) => (phase.open = false));
+      // }, 2000);
+    }
+  }
+
   return (
     <div data-test="entry-form" className="my-2 flex justify-center">
       <div className="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
@@ -310,7 +312,34 @@ export function TimeEntryForm({
                       placeholder="Working the work…"
                     />
                   </div>
-                  <div className="flex flex-row space-x-2 md:flex-col md:space-y-2"></div>
+                  <div className="flex flex-row space-x-2 md:flex-col md:space-y-2">
+                    {!disabled && updateMode && (
+                      <>
+                        <TroiButton
+                          text={"Save"}
+                          testId={`update-${position.id}`}
+                          onClick={handleUpdate}
+                          color={buttonBlue}
+                        />
+                        <TroiButton
+                          text={"Cancel"}
+                          testId={`cancel-${position.id}`}
+                          onClick={() => {
+                            updateMode = false;
+                          }}
+                          color={buttonRed}
+                        />
+                      </>
+                    )}
+                    {!disabled && addMode && (
+                      <TroiButton
+                        text={"Save"}
+                        testId={"add-" + position.id}
+                        onClick={handleAdd}
+                        color={buttonBlue}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
             ) : (
@@ -319,6 +348,25 @@ export function TimeEntryForm({
                 <br />
                 <p>{values.description}</p>
                 <br />
+                <TroiButton
+                  text={"Delete"}
+                  testId={`delete-${position.id}`}
+                  onClick={() => {
+                    deleteClicked?.();
+                  }}
+                  color={buttonRed}
+                />
+                {!disabled && (
+                  <TroiButton
+                    text={"Edit"}
+                    testId={`edit-${position.id}`}
+                    onClick={() => {
+                      // openPhases();
+                      updateMode = true;
+                    }}
+                    color={buttonBlue}
+                  />
+                )}
               </div>
             )}
           </div>

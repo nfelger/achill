@@ -6,6 +6,7 @@ import { InfoBanner } from "./InfoBanner";
 import { getWeekDaysFor } from "~/utils/dateUtils";
 import { WeekView } from "./WeekView";
 import { TroiTimeEntries } from "./TroiTimeEntries";
+import { Project } from "~/troi/troiController";
 
 interface Props {
   username: string;
@@ -38,6 +39,34 @@ export default function Troi(props: Props) {
     troiController?.getTimesAndEventsFor(selectedWeek) ?? [];
   const positions = troiController?.getProjects();
 
+  async function onAddEntryClicked(
+    position: Project,
+    hours: number,
+    description: string,
+  ) {
+    // showLoadingSpinner();
+    await troiController?.addEntry(
+      selectedDate,
+      position,
+      hours,
+      description,
+      () => {},
+    );
+    // hideLoadingSpinner();
+  }
+
+  // async function onUpdateEntryClicked(position, entry) {
+  //   showLoadingSpinner();
+  //   await troiController.updateEntry(position, entry, updateUI);
+  //   hideLoadingSpinner();
+  // }
+
+  async function onDeleteEntryClicked(entry: TimeEntry, positionId: number) {
+    // showLoadingSpinner();
+    await troiController?.deleteEntry(entry, positionId, () => {});
+    // hideLoadingSpinner();
+  }
+
   return (
     <div>
       {loading && <LoadingOverlay message={"Please wait..."} />}
@@ -67,9 +96,11 @@ export default function Troi(props: Props) {
           recurringTasks={[]}
           phaseTasks={[]}
           entries={entriesForSelectedDate}
-          deleteEntry={() => {}}
-          updateEntry={() => {}}
-          addEntry={() => {}}
+          deleteEntry={onDeleteEntryClicked}
+          updateEntry={(project, entry) => {
+            console.log("update", entry);
+          }}
+          addEntry={onAddEntryClicked}
           disabled={false}
         />
       )}

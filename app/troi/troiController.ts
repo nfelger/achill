@@ -111,21 +111,26 @@ export default class TroiController {
       return;
     }
 
-    for (const project of this._projects ?? []) {
-      console.log(
-        "employeeId",
-        this._troiApi.employeeId,
-        "projectId",
-        project.id,
-      );
-      const entries = await this._troiApi.getTimeEntries(
-        project.id,
-        formatDateToYYYYMMDD(startDate),
-        formatDateToYYYYMMDD(endDate),
-      );
+    await Promise.all(
+      this._projects?.map(async (project) => {
+        if (this._troiApi === undefined) {
+          throw new TroiApiNotInitializedError();
+        }
+        console.log(
+          "employeeId",
+          this._troiApi.employeeId,
+          "projectId",
+          project.id,
+        );
+        const entries = await this._troiApi.getTimeEntries(
+          project.id,
+          formatDateToYYYYMMDD(startDate),
+          formatDateToYYYYMMDD(endDate),
+        );
 
-      timeEntryCache.addEntries(project, entries);
-    }
+        timeEntryCache.addEntries(project, entries);
+      }) ?? [],
+    );
   }
 
   async _loadCalendarEventsBetween(startDate: Date, endDate: Date) {

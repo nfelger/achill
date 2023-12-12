@@ -11,6 +11,8 @@ fileignoreconfig:
   checksum: 446eff0044854604c36e380d186aab48077af382668430ad518ef49b37d4fa02
 - filename: SECURITY.md
   checksum: b1743150cdd537be3a66f5308f887d130f0f320ab21628b63713808090a84e3f
+- filename: app/routes/time_entries.$id.tsx
+  allowed_patterns: [password]
 - filename: app/routes/login.tsx
   allowed_patterns: [password]
 - filename: app/components/troi.client.tsx
@@ -21,6 +23,7 @@ fileignoreconfig:
   allowed_patterns: [password]
 - filename: tests/unit/transformCalendarEvents.test.ts
   allowed_patterns: [key]
+
 version: ""
 scopeconfig:
   - scope: node
