@@ -3,6 +3,8 @@ import { LoadingOverlay } from "./LoadingOverlay";
 import { useEffect, useState } from "react";
 import { TimeEntry } from "troi-library";
 import { InfoBanner } from "./InfoBanner";
+import { getWeekDaysFor } from "~/utils/dateUtils";
+import { WeekView } from "./WeekView";
 
 interface Props {
   username: string;
@@ -16,6 +18,7 @@ export default function Troi(props: Props) {
   );
 
   const [selectedDate, setSelectedDate] = useState(() => new Date());
+  const selectedWeek = getWeekDaysFor(selectedDate);
 
   const [entriesForSelectedDate, setEntriesForSelectedDate] = useState<{
     [projectId: number]: TimeEntry[];
@@ -30,6 +33,8 @@ export default function Troi(props: Props) {
   }, [troiController, initialized, selectedDate]);
 
   const selectedDayEvents = troiController?.getEventsFor(selectedDate);
+  const timesAndEventsOfSelectedWeek =
+    troiController?.getTimesAndEventsFor(selectedWeek) ?? [];
 
   return (
     <div>
@@ -43,6 +48,13 @@ export default function Troi(props: Props) {
         >
           Read about how to track your time in confluence
         </a>
+      </section>
+      <section className="z-10 w-full bg-white md:sticky md:top-0">
+        <WeekView
+          timesAndEventsOfSelectedWeek={timesAndEventsOfSelectedWeek}
+          selectedDate={selectedDate}
+          onSelectDate={setSelectedDate}
+        />
       </section>
 
       {selectedDayEvents?.map((event) => <InfoBanner event={event} />)}

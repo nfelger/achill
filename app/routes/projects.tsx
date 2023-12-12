@@ -1,5 +1,6 @@
 import {
   json,
+  LinksFunction,
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "@remix-run/node";
@@ -22,6 +23,13 @@ export const meta: MetaFunction = () => {
     { name: "description", content: "Hello DigitalService!" },
   ];
 };
+
+export const links: LinksFunction = () => [
+  {
+    rel: "stylesheet",
+    href: "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200",
+  },
+];
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const cookieHeader = request.headers.get("Cookie");

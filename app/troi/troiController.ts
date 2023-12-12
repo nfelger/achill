@@ -169,12 +169,12 @@ export default class TroiController {
 
     this._cacheBottomBorder = new Date(
       Math.min(
-        new Date(this._cacheBottomBorder).getDate(),
-        startDate.getDate(),
+        new Date(this._cacheBottomBorder).getTime(),
+        startDate.getTime(),
       ),
     );
     this._cacheTopBorder = new Date(
-      Math.max(new Date(this._cacheTopBorder).getDate(), endDate.getDate()),
+      Math.max(new Date(this._cacheTopBorder).getTime(), endDate.getTime()),
     );
   }
 
