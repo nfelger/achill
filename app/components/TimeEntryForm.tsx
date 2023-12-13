@@ -4,15 +4,16 @@ import { TroiButton } from "./TroiButton";
 import { buttonBlue, buttonRed } from "~/utils/colors";
 import { TrackyTask } from "~/tasks/useTasks";
 import { usePhaseNames } from "~/tasks/usePhaseNames";
+import { validateForm } from "~/utils/timeEntryFormValidator";
 
+export interface TimeEntryFormErrors {
+  hours?: string;
+  description?: string;
+}
 interface Props {
   values?: {
     hours: string;
     description: string;
-  };
-  errors?: {
-    hours?: string;
-    description?: string;
   };
   addOrUpdateClicked: (hours: string, description: string) => unknown;
   deleteClicked?: () => unknown;
@@ -22,7 +23,6 @@ interface Props {
   disabled: boolean;
   minRows?: number;
   maxRows?: number;
-  addMode?: boolean;
 }
 
 function descriptionToSegmenets(description: string): string[] {
@@ -43,7 +43,6 @@ export function TimeEntryForm({
     hours: "",
     description: "",
   },
-  errors = {},
   addOrUpdateClicked,
   deleteClicked,
   recurringTasks,
@@ -52,7 +51,6 @@ export function TimeEntryForm({
   disabled,
   minRows = 4,
   maxRows = 40,
-  addMode = false,
 }: Props) {
   const hoursTestId = `hours-${position.id}`;
   const descriptionTestId = `description-${position.id}`;
@@ -78,7 +76,10 @@ export function TimeEntryForm({
 
   const descriptionSegments = descriptionToSegmenets(description);
   const [hours, setHours] = useState(values.hours);
-  const [updateMode, setUpdateMode] = useState(false);
+  const [updateMode, setUpdateMode] = useState(
+    values.hours && values.description ? false : true,
+  );
+  const [errors, setErrors] = useState<TimeEntryFormErrors>({});
 
   const phaseNames = usePhaseNames(position.id, position.subproject);
   const phases = phaseNames.map((value) => {
@@ -134,7 +135,7 @@ export function TimeEntryForm({
       event.target instanceof HTMLTextAreaElement
     ) {
       if (event.nativeEvent.inputType !== "insertLineBreak") {
-        errors = {};
+        setErrors({});
       }
       let newDescription = event.target.value;
       if (hasDuplicatedCommas(newDescription)) {
@@ -147,36 +148,17 @@ export function TimeEntryForm({
     }
   }
 
-  async function onKeyDown(e) {
-    if (e.keyCode === 13) {
-      /*errors = await validateForm({
-        hours: hours,
-        description: description,
-      });*/
-      if (Object.keys(errors).length === 0) {
-        addOrUpdateClicked(hours, description);
-        setHours("");
-        setDescription("");
-      }
+  async function onKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter") {
+      submit();
     }
   }
 
-  async function handleAdd() {
-    // errors = await validateForm(values);
-    if (Object.keys(errors).length === 0) {
+  async function submit() {
+    const formErrors = await validateForm({ hours, description });
+    setErrors(formErrors);
+    if (Object.keys(formErrors).length === 0) {
       addOrUpdateClicked(hours, description);
-      setHours("");
-      setDescription("");
-    }
-  }
-
-  async function handleUpdate() {
-    // errors = await validateForm(values);
-
-    if (Object.keys(errors).length === 0) {
-      addOrUpdateClicked(hours, description);
-      setHours(hours);
-      setDescription(description);
       setUpdateMode(false);
     }
   }
@@ -215,7 +197,7 @@ export function TimeEntryForm({
             >
               {position.name}
             </h2>
-            {addMode || updateMode ? (
+            {updateMode ? (
               <div id="timeEntryForm">
                 <div className="relative flex w-full items-center">
                   <div>
@@ -290,9 +272,9 @@ export function TimeEntryForm({
                           viewBox="0 0 24 24"
                         >
                           <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
                             d="M19 9l-7 7-7-7"
                           />
                         </svg>
@@ -367,24 +349,18 @@ export function TimeEntryForm({
                         <TroiButton
                           text={"Save"}
                           testId={`update-${position.id}`}
-                          onClick={handleUpdate}
+                          onClick={submit}
                           color={buttonBlue}
                         />
-                        <TroiButton
-                          text={"Cancel"}
-                          testId={`cancel-${position.id}`}
-                          onClick={handleCancel}
-                          color={buttonRed}
-                        />
+                        {values.hours && values.description && (
+                          <TroiButton
+                            text={"Cancel"}
+                            testId={`cancel-${position.id}`}
+                            onClick={handleCancel}
+                            color={buttonRed}
+                          />
+                        )}
                       </>
-                    )}
-                    {!disabled && addMode && (
-                      <TroiButton
-                        text={"Save"}
-                        testId={"add-" + position.id}
-                        onClick={handleAdd}
-                        color={buttonBlue}
-                      />
                     )}
                   </div>
                 </div>

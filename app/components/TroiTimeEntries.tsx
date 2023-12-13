@@ -53,7 +53,6 @@ export function TroiTimeEntries({
       <div className="container mx-auto pb-2 pt-4">
         {!entries[position.id] || entries[position.id].length === 0 ? (
           <TimeEntryForm
-            addMode={true}
             position={position}
             recurringTasks={recurringTasks}
             phaseTasks={phaseTasks}
@@ -76,7 +75,6 @@ export function TroiTimeEntries({
                         hours: convertFloatTimeToHHMM(entry.hours),
                         description: entry.description,
                       }}
-                      errors={/*errors*/ {}}
                       addOrUpdateClicked={(hours, description) =>
                         submitEntry(position, hours, description, entry)
                       }

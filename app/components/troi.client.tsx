@@ -53,14 +53,23 @@ export default function Troi(props: Props) {
       description,
       () => {},
     );
+    troiController?.getEntriesFor(selectedDate).then((entries) => {
+      setEntriesForSelectedDate(entries);
+    });
   }
 
   async function onUpdateEntryClicked(position: Project, entry: TimeEntry) {
     await troiController?.updateEntry(position, entry, () => {});
+    troiController?.getEntriesFor(selectedDate).then((entries) => {
+      setEntriesForSelectedDate(entries);
+    });
   }
 
   async function onDeleteEntryClicked(entry: TimeEntry, positionId: number) {
     await troiController?.deleteEntry(entry, positionId, () => {});
+    troiController?.getEntriesFor(selectedDate).then((entries) => {
+      setEntriesForSelectedDate(entries);
+    });
   }
 
   return (
