@@ -7,6 +7,7 @@ import { getWeekDaysFor } from "~/utils/dateUtils";
 import { WeekView } from "./WeekView";
 import { TroiTimeEntries } from "./TroiTimeEntries";
 import { Project } from "~/troi/troiController";
+import { useTasks } from "~/tasks/useTasks";
 
 interface Props {
   username: string;
@@ -18,6 +19,7 @@ export default function Troi(props: Props) {
     props.username,
     props.password,
   );
+  const { recurringTasks, phaseTasks } = useTasks();
 
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const selectedWeek = getWeekDaysFor(selectedDate);
@@ -87,8 +89,8 @@ export default function Troi(props: Props) {
       {!selectedDayEvents?.some((event) => event.type == "Holiday") && (
         <TroiTimeEntries
           positions={positions ?? []}
-          recurringTasks={[]}
-          phaseTasks={[]}
+          recurringTasks={recurringTasks}
+          phaseTasks={phaseTasks}
           entries={entriesForSelectedDate}
           deleteEntry={onDeleteEntryClicked}
           updateEntry={onUpdateEntryClicked}

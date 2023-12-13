@@ -5,11 +5,12 @@ import {
   convertTimeStringToFloat,
 } from "~/utils/timeConverter";
 import { TimeEntryForm } from "./TimeEntryForm";
+import { TrackyTask } from "~/tasks/useTasks";
 
 interface Props {
   positions: Project[];
-  recurringTasks: unknown[];
-  phaseTasks: unknown[];
+  recurringTasks: TrackyTask[];
+  phaseTasks: TrackyTask[];
   entries: {
     [projectId: number]: TimeEntry[];
   };

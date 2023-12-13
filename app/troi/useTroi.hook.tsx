@@ -3,6 +3,7 @@ import TroiController from "../troi/troiController";
 import TroiApiService from "troi-library";
 
 export function useTroi(username: string, password: string) {
+  // note: this pattern could lead to race conditions when password or username change
   const [troiController, setTroiController] = useState<
     TroiController | undefined
   >();

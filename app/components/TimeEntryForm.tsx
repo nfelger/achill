@@ -2,6 +2,8 @@ import { Project } from "~/troi/troiController";
 import { useEffect, useState } from "react";
 import { TroiButton } from "./TroiButton";
 import { buttonBlue, buttonRed } from "~/utils/colors";
+import { TrackyTask } from "~/tasks/useTasks";
+import { usePhaseNames } from "~/tasks/usePhaseNames";
 
 /*
 function onRecurringTaskChange(event) {
@@ -29,59 +31,6 @@ function removeChip(phaseAndTask) {
     (segment) => segment !== phaseAndTask
   );
 }
-
-async function pollPhaseNames(positionId, subprojectId) {
-  let whereClause = [];
-  const phaseIdsForPosition = await nocodbApi.dbViewRow.list(
-    "noco",
-    "ds4g-data",
-    "Tracky-Position-Phase",
-    "Tracky-Position-Phase",
-    {
-      where: `(Position ID,eq,${positionId})`,
-    }
-  );
-  phaseIdsForPosition.list.forEach((phaseId) =>
-    whereClause.push(`(Phase ID,eq,${phaseId["Phase ID"]})`)
-  );
-
-  const phaseIdsForSubproject = await nocodbApi.dbViewRow.list(
-    "noco",
-    "ds4g-data",
-    "Tracky-Subproject-Phase",
-    "Tracky-Subproject-Phase",
-    {
-      where: `(Subproject ID,eq,${subprojectId})`,
-    }
-  );
-  phaseIdsForSubproject.list.forEach((phaseId) =>
-    whereClause.push(`(Phase ID,eq,${phaseId["Phase ID"]})`)
-  );
-
-  if (whereClause.length > 0) {
-    return nocodbApi.dbViewRow.list(
-      "noco",
-      "ds4g-data",
-      "Tracky-Phase",
-      "Tracky-Phase",
-      {
-        where: whereClause.join("~or"),
-      }
-    );
-  }
-}
-
-let phases;
-
-onMount(async () => {
-  const phaseNames = await pollPhaseNames(position.id, position.subproject);
-  if (phaseNames) {
-    phases = phaseNames.list
-      .map((phase) => phase["Phase Name"])
-      .map((value) => ({ name: value, open: false }));
-    openPhases();
-  }
-});
 
 function togglePhase(phase) {
   phase.open = !phase.open;
@@ -111,8 +60,8 @@ interface Props {
   };
   addOrUpdateClicked: (hours: string, description: string) => unknown;
   deleteClicked?: () => unknown;
-  recurringTasks: unknown[];
-  phaseTasks: unknown[];
+  recurringTasks: TrackyTask[];
+  phaseTasks: TrackyTask[];
   position: Project;
   disabled: boolean;
   minRows?: number;
@@ -164,6 +113,10 @@ export function TimeEntryForm({
   );
   const [hours, setHours] = useState(values.hours);
   const [updateMode, setUpdateMode] = useState(false);
+
+  const phaseNames = usePhaseNames(position.id, position.subproject);
+  const phases = phaseNames.map((value) => ({ name: value, open: false }));
+  // todo: openPhases();
 
   useEffect(() => {
     setDescription(descriptionSegments.join(", "));
