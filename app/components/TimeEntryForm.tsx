@@ -5,58 +5,14 @@ import { buttonBlue, buttonRed } from "~/utils/colors";
 import { TrackyTask } from "~/tasks/useTasks";
 import { usePhaseNames } from "~/tasks/usePhaseNames";
 
-/*
-function onRecurringTaskChange(event) {
-  if (event.target.checked) {
-    descriptionSegments = [...descriptionSegments, event.target.id].filter(
-      (f) => f !== ""
-    );
-  } else {
-    descriptionSegments = descriptionSegments.filter(
-      (segment) => segment !== event.target.id
-    );
-  }
-}
-
-function handleChipClick(phaseAndTask) {
-  if (!descriptionSegments.includes(phaseAndTask)) {
-    descriptionSegments = [...descriptionSegments, phaseAndTask].filter(
-      (f) => f !== ""
-    );
-  }
-}
-
-function removeChip(phaseAndTask) {
-  descriptionSegments = descriptionSegments.filter(
-    (segment) => segment !== phaseAndTask
-  );
-}
-
-function togglePhase(phase) {
-  phase.open = !phase.open;
-}
-
-function openPhases() {
-  for (const phase of phases) {
-    for (const phaseTask of phaseTasks) {
-      if (
-        descriptionSegments.includes([phaseTask.name, phase.name].join(" "))
-      ) {
-        phase.open = true;
-        break;
-      }
-    }
-  }
-}*/
-
 interface Props {
   values?: {
     hours: string;
     description: string;
   };
   errors?: {
-    hours?: unknown;
-    description?: unknown;
+    hours?: string;
+    description?: string;
   };
   addOrUpdateClicked: (hours: string, description: string) => unknown;
   deleteClicked?: () => unknown;
@@ -67,6 +23,19 @@ interface Props {
   minRows?: number;
   maxRows?: number;
   addMode?: boolean;
+}
+
+function descriptionToSegmenets(description: string): string[] {
+  return description !== ""
+    ? description
+        .split(",")
+        .map((segment) => segment.trim())
+        .filter((segment) => segment !== "")
+    : [];
+}
+
+function segmentsToDescription(segments: string[]): string {
+  return segments.join(", ");
 }
 
 export function TimeEntryForm({
@@ -105,22 +74,57 @@ export function TimeEntryForm({
   const minHeight = `${1 + minRows * 1.2}em`;
   const maxHeight = maxRows ? `${1 + maxRows * 1.2}em` : `auto`;
 
-  const [descriptionSegments, setDescriptionSegments] = useState(() =>
-    values.description !== "" ? values.description.split(", ") : [],
-  );
-  const [description, setDescription] = useState(() =>
-    descriptionSegments.join(", "),
-  );
+  const [description, setDescription] = useState(() => values.description);
+
+  const descriptionSegments = descriptionToSegmenets(description);
   const [hours, setHours] = useState(values.hours);
   const [updateMode, setUpdateMode] = useState(false);
 
   const phaseNames = usePhaseNames(position.id, position.subproject);
-  const phases = phaseNames.map((value) => ({ name: value, open: false }));
-  // todo: openPhases();
+  const phases = phaseNames.map((value) => {
+    for (const phaseTask of phaseTasks) {
+      if (descriptionSegments.includes([phaseTask.name, value].join(" "))) {
+        return { name: value, open: true };
+      }
+    }
+    return { name: value, open: false };
+  });
 
-  useEffect(() => {
-    setDescription(descriptionSegments.join(", "));
-  }, [descriptionSegments]);
+  function addDescriptionSegment(segment: string) {
+    setDescription((description) =>
+      segmentsToDescription([...descriptionToSegmenets(description), segment]),
+    );
+  }
+
+  function removeDescriptionSegment(segment: string) {
+    setDescription((description) => {
+      const segments = descriptionToSegmenets(description);
+      return segmentsToDescription(
+        segments.filter((entry) => entry !== segment),
+      );
+    });
+  }
+
+  function toggleDescriptionSegment(segment: string) {
+    if (description.includes(segment)) {
+      removeDescriptionSegment(segment);
+    } else {
+      addDescriptionSegment(segment);
+    }
+  }
+
+  function removeDuplicatedCommas(description: string) {
+    const segments = descriptionToSegmenets(description);
+    return segmentsToDescription(
+      segments.filter(
+        (entry, index) => entry !== "" || index === segments.length - 1,
+      ),
+    );
+  }
+
+  function hasDuplicatedCommas(description: string) {
+    return description.match(/\,\s*\,/g) !== null;
+  }
 
   function handleDescriptionChange(
     event: React.FormEvent<HTMLTextAreaElement>,
@@ -132,31 +136,11 @@ export function TimeEntryForm({
       if (event.nativeEvent.inputType !== "insertLineBreak") {
         errors = {};
       }
-      if (
-        event.nativeEvent.inputType === "deleteContentBackward" &&
-        description.charAt(description.length - 1) === " "
-      ) {
-        setDescription(event.target.value);
-      } else {
-        setDescription(event.target.value);
-        if (event.nativeEvent.data !== " ") {
-          setDescriptionSegments(
-            event.target.value.split(",").map((value) => value.trim()),
-          );
-        }
+      let newDescription = event.target.value;
+      if (hasDuplicatedCommas(newDescription)) {
+        newDescription = removeDuplicatedCommas(newDescription);
       }
-      const indexEmptyEntry = descriptionSegments.indexOf("");
-      if (
-        indexEmptyEntry !== -1 &&
-        indexEmptyEntry !== descriptionSegments.length - 1
-      ) {
-        setDescriptionSegments(
-          descriptionSegments.filter(
-            (entry, index) =>
-              entry !== "" || index === descriptionSegments.length - 1,
-          ),
-        );
-      }
+      setDescription(newDescription);
     } else {
       console.error("handleDescriptionChange", event);
       // todo throw something
@@ -194,12 +178,6 @@ export function TimeEntryForm({
       setHours(hours);
       setDescription(description);
       setUpdateMode(false);
-
-      // TODO noci: do like with handleAdd
-      // setTimeout(() => {
-      //   updateMode = false;
-      //   phases.forEach((phase) => (phase.open = false));
-      // }, 2000);
     }
   }
 
@@ -207,6 +185,22 @@ export function TimeEntryForm({
     setHours(values.hours);
     setDescription(values.description);
     setUpdateMode(false);
+  }
+
+  function onRecurringTaskChange(event: React.ChangeEvent<HTMLInputElement>) {
+    if (event.target.checked) {
+      addDescriptionSegment(event.target.id);
+    } else {
+      removeDescriptionSegment(event.target.id);
+    }
+  }
+
+  function handleChipClick(phaseAndTask: string) {
+    toggleDescriptionSegment(phaseAndTask);
+  }
+
+  function removeChip(phaseAndTask: string) {
+    removeDescriptionSegment(phaseAndTask);
   }
 
   return (
@@ -245,10 +239,104 @@ export function TimeEntryForm({
                       placeholder="2:15"
                     />
                   </div>
-                  <div className="mt-1"></div>
+                  <div className="mt-1">
+                    {Object.values(errors).length > 0 && (
+                      <div className="font-bold text-red-600">
+                        <ul>
+                          {Object.values(errors).map((error) => (
+                            <li>&#x26A0; {error}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="my-8"></div>
-                <div className="mb-4"></div>
+                <div className="my-8">
+                  {recurringTasks && phases && (
+                    <>
+                      <label htmlFor="recurring" className="basis-1/4">
+                        Recurring tasks
+                      </label>
+                      <div id="recurring" className="mt-2">
+                        {recurringTasks.map((entry) => (
+                          <div className="flex items-start space-x-2 md:inline-flex">
+                            <input
+                              checked={descriptionSegments.includes(entry.name)}
+                              className="rounded-md border border-gray-300 bg-white p-2"
+                              id={entry.name}
+                              type="checkbox"
+                              onChange={onRecurringTaskChange}
+                            />
+                            <label className="pr-5" htmlFor={entry.name}>
+                              {entry.name}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="mb-4">
+                  {phases.map((phase) => (
+                    <details className="mb-[20px]" open={phase.open}>
+                      <summary className="flex w-full flex-row items-center gap-4 rounded-t border-b-2 border-solid border-b-[#CED4DA] bg-[#E5E5E5] px-[16px] py-[20px]">
+                        <span>{phase.name}</span>
+                        <svg
+                          className={`ml-auto h-4 w-4 transform transition-transform ${
+                            phase.open ? "rotate-180" : ""
+                          }`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </summary>
+                      {phaseTasks && (
+                        <div className="flex h-auto flex-wrap border-b-2 border-solid border-b-[#CED4DA] bg-white p-2">
+                          {phaseTasks.map((task) => (
+                            <div
+                              className={`m-2 flex cursor-pointer items-center rounded-full border py-1 px-3 text-sm transition-all duration-150 ease-in-out ${
+                                descriptionSegments.includes(
+                                  [task.name, phase.name].join(" "),
+                                )
+                                  ? "border-black bg-white"
+                                  : "bg-[#212121] bg-opacity-10 hover:bg-gray-300"
+                              }`}
+                              onClick={() =>
+                                handleChipClick(
+                                  [task.name, phase.name].join(" "),
+                                )
+                              }
+                            >
+                              <span>{task.name}</span>
+                              {descriptionSegments.includes(
+                                [task.name, phase.name].join(" "),
+                              ) && (
+                                <button
+                                  className="ml-2 flex h-4 w-4 items-center justify-center rounded-full bg-gray-600 text-white hover:bg-gray-800"
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    removeChip(
+                                      [task.name, phase.name].join(" "),
+                                    );
+                                  }}
+                                >
+                                  &#x2715;
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </details>
+                  ))}
+                </div>
                 <div className="relative mb-4 flex w-full flex-col items-center justify-between md:flex-row">
                   <div className="mb-2 w-full md:mb-0 md:w-4/6">
                     <pre
