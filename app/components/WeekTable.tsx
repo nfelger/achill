@@ -64,7 +64,7 @@ export function WeekTable({
         <tbody>
           <tr>
             {selectedWeek.map((date, index) => (
-              <td key={index}>
+              <td key={date.getTime()}>
                 <div
                   className="h-full w-full"
                   data-testid={
@@ -85,7 +85,7 @@ export function WeekTable({
           </tr>
           <tr>
             {timesAndEventsOfSelectedWeek.map((data, index) => (
-              <td key={index}>
+              <td key={selectedWeek[index].getTime()}>
                 <div
                   className="flex min-w-[6ch] cursor-pointer justify-center px-2 py-2"
                   onClick={() => onSelectDate(selectedWeek[index])}

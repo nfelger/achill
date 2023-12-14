@@ -93,7 +93,12 @@ export default function Troi(props: Props) {
         />
       </section>
 
-      {selectedDayEvents?.map((event) => <InfoBanner event={event} />)}
+      {selectedDayEvents?.map((event) => (
+        <InfoBanner
+          key={`${event.date.getTime()}-${event.type ?? ""}`}
+          event={event}
+        />
+      ))}
 
       {!selectedDayEvents?.some((event) => event.type == "Holiday") && (
         <TroiTimeEntries

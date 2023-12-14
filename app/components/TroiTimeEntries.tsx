@@ -6,6 +6,7 @@ import {
 } from "~/utils/timeConverter";
 import { TimeEntryForm } from "./TimeEntryForm";
 import { TrackyTask } from "~/tasks/useTasks";
+import { Fragment } from "react";
 
 interface Props {
   positions: Project[];
@@ -47,6 +48,7 @@ export function TroiTimeEntries({
 
   return positions.map((position) => (
     <section
+      key={position.id}
       className="bg-white p-4"
       data-testid={`project-section-${position.id}`}
     >
@@ -63,7 +65,7 @@ export function TroiTimeEntries({
           />
         ) : (
           entries[position.id].map((entry) => (
-            <>
+            <Fragment key={entry.id}>
               <div data-testid={`entryCard-${position.id}`}>
                 <div
                   data-test="entry-form"
@@ -88,7 +90,7 @@ export function TroiTimeEntries({
                 </div>
               </div>
               <br />
-            </>
+            </Fragment>
           ))
         )}
       </div>

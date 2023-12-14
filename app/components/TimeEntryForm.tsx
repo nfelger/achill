@@ -226,7 +226,7 @@ export function TimeEntryForm({
                       <div className="font-bold text-red-600">
                         <ul>
                           {Object.values(errors).map((error) => (
-                            <li>&#x26A0; {error}</li>
+                            <li key={error}>&#x26A0; {error}</li>
                           ))}
                         </ul>
                       </div>
@@ -241,7 +241,10 @@ export function TimeEntryForm({
                       </label>
                       <div id="recurring" className="mt-2">
                         {recurringTasks.map((entry) => (
-                          <div className="flex items-start space-x-2 md:inline-flex">
+                          <div
+                            key={entry.Id}
+                            className="flex items-start space-x-2 md:inline-flex"
+                          >
                             <input
                               checked={descriptionSegments.includes(entry.name)}
                               className="rounded-md border border-gray-300 bg-white p-2"
@@ -260,7 +263,11 @@ export function TimeEntryForm({
                 </div>
                 <div className="mb-4">
                   {phases.map((phase) => (
-                    <details className="mb-[20px]" open={phase.open}>
+                    <details
+                      key={phase.name}
+                      className="mb-[20px]"
+                      open={phase.open}
+                    >
                       <summary className="flex w-full flex-row items-center gap-4 rounded-t border-b-2 border-solid border-b-[#CED4DA] bg-[#E5E5E5] px-[16px] py-[20px]">
                         <span>{phase.name}</span>
                         <svg
@@ -283,6 +290,7 @@ export function TimeEntryForm({
                         <div className="flex h-auto flex-wrap border-b-2 border-solid border-b-[#CED4DA] bg-white p-2">
                           {phaseTasks.map((task) => (
                             <div
+                              key={task.Id}
                               className={`m-2 flex cursor-pointer items-center rounded-full border py-1 px-3 text-sm transition-all duration-150 ease-in-out ${
                                 descriptionSegments.includes(
                                   [task.name, phase.name].join(" "),
