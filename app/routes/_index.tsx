@@ -1,4 +1,9 @@
-import type { MetaFunction } from "@remix-run/node";
+import {
+  redirect,
+  type LoaderFunctionArgs,
+  type MetaFunction,
+} from "@remix-run/node";
+import { login } from "~/cookies.server";
 
 export const meta: MetaFunction = () => {
   return [
@@ -7,13 +12,13 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export default function Index() {
-  return (
-    <main className={"flex flex-col items-center m-40"}>
-      <h1 className={"ds-heading-01-reg mb-40"}>Hello DigitalService!</h1>
-      <button className="ds-button ds-button-large">
-        <span className="ds-button-label">Click me for nothing</span>
-      </button>
-    </main>
-  );
+export async function loader({ request }: LoaderFunctionArgs) {
+  const cookieHeader = request.headers.get("Cookie");
+  const cookie = (await login.parse(cookieHeader)) || {};
+
+  if (cookie.username == undefined && cookie.password == undefined) {
+    return redirect("/login");
+  }
+
+  return redirect("/projects");
 }

@@ -1,6 +1,7 @@
 import {
   json,
   LinksFunction,
+  redirect,
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "@remix-run/node";
@@ -28,6 +29,10 @@ export const links: LinksFunction = () => [
 export async function loader({ request }: LoaderFunctionArgs) {
   const cookieHeader = request.headers.get("Cookie");
   const cookie = (await login.parse(cookieHeader)) || {};
+
+  if (cookie.username == undefined || cookie.password == undefined) {
+    return redirect("/login");
+  }
 
   return json({ username: cookie.username, password: cookie.password });
 }
