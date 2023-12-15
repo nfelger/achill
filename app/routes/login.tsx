@@ -14,6 +14,7 @@ import {
 import TroiApiService, { AuthenticationFailed } from "troi-library";
 import { LoadingOverlay } from "~/components/LoadingOverlay";
 import { login } from "~/cookies.server";
+import { commitSession, getSession } from "~/sessions";
 
 export const meta: MetaFunction = () => {
   return [
@@ -56,10 +57,16 @@ export async function action({ request }: ActionFunctionArgs) {
     }
   }
 
+  const session = await getSession(cookieHeader);
+  session.set("username", cookie.username);
+  session.set("troiPassword", cookie.password);
+
+  const headers = new Headers();
+  headers.append("Set-Cookie", await login.serialize(cookie));
+  headers.append("Set-Cookie", await commitSession(session));
+
   return redirect("/projects", {
-    headers: {
-      "Set-Cookie": await login.serialize(cookie),
-    },
+    headers,
   });
 }
 
