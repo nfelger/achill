@@ -3,15 +3,39 @@ import { LoadingOverlay } from "./LoadingOverlay";
 import { useEffect, useState } from "react";
 import { TimeEntry } from "troi-library";
 import { InfoBanner } from "./InfoBanner";
-import { getWeekDaysFor } from "~/utils/dateUtils";
+import { addDaysToDate, getWeekDaysFor } from "~/utils/dateUtils";
 import { WeekView } from "./WeekView";
 import { TroiTimeEntries } from "./TroiTimeEntries";
 import { Project } from "~/troi/troiController";
 import { useTasks } from "~/tasks/useTasks";
+import type { CalendarEvent } from "troi-library";
+import {
+  TransformedCalendarEvent,
+  transformCalendarEvent,
+} from "~/utils/transformCalendarEvents";
+import moment from "moment";
+import { TimeEntries } from "~/troi/TimeEntry";
 
 interface Props {
   username: string;
   password: string;
+  calendarEvents: CalendarEvent[];
+  timeEntries: TimeEntries;
+}
+
+function findEventsOfDate(
+  calendarEvents: TransformedCalendarEvent[],
+  date: Date,
+) {
+  return calendarEvents.filter((calendarEvent) =>
+    moment(calendarEvent.date).isSame(date, "day"),
+  );
+}
+
+function calcHoursOfDate(timeEntries: TimeEntries, date: Date) {
+  return Object.values(timeEntries)
+    .filter((entry) => moment(entry.date).isSame(date, "day"))
+    .reduce((acc, entry) => acc + entry.hours, 0);
 }
 
 export default function Troi(props: Props) {
@@ -36,9 +60,21 @@ export default function Troi(props: Props) {
     }
   }, [troiController, initialized, selectedDate]);
 
-  const selectedDayEvents = troiController?.getEventsFor(selectedDate);
-  const timesAndEventsOfSelectedWeek =
-    troiController?.getTimesAndEventsFor(selectedWeek) ?? [];
+  const calendarEvents = props.calendarEvents
+    .map((calendarEvent) =>
+      transformCalendarEvent(
+        calendarEvent,
+        addDaysToDate(new Date(), -366),
+        addDaysToDate(new Date(), 366),
+      ),
+    )
+    .flat();
+  const selectedDayEvents = findEventsOfDate(calendarEvents, selectedDate);
+  const timesAndEventsOfSelectedWeek = selectedWeek.map((weekday) => ({
+    hours: calcHoursOfDate(props.timeEntries, weekday),
+    events: findEventsOfDate(calendarEvents, weekday),
+  }));
+
   const positions = troiController?.getProjects();
 
   async function onAddEntryClicked(

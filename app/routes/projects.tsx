@@ -9,6 +9,7 @@ import { Form, useLoaderData } from "@remix-run/react";
 import { login } from "~/cookies.server";
 import Troi from "../components/troi.client";
 import { useEffect, useState } from "react";
+import { getCalenderEvents, getTimeEntries } from "~/troi/troiControllerServer";
 
 let isHydrating = true;
 
@@ -34,12 +35,21 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect("/login");
   }
 
-  return json({ username: cookie.username, password: cookie.password });
+  const calendarEvents = await getCalenderEvents(request);
+  const timeEntries = await getTimeEntries(request);
+
+  return json({
+    username: cookie.username,
+    password: cookie.password,
+    calendarEvents,
+    timeEntries,
+  });
 }
 
 export default function Index() {
   const [isHydrated, setIsHydrated] = useState(!isHydrating);
-  const { username, password } = useLoaderData<typeof loader>();
+  const { username, password, calendarEvents, timeEntries } =
+    useLoaderData<typeof loader>();
 
   useEffect(() => {
     isHydrating = false;
@@ -79,7 +89,14 @@ export default function Index() {
         </nav>
         {/* render client side only */}
         {/* https://remix.run/docs/en/main/guides/migrating-react-router-app#client-only-components */}
-        {isHydrated && <Troi username={username} password={password} />}
+        {isHydrated && (
+          <Troi
+            username={username}
+            password={password}
+            calendarEvents={calendarEvents}
+            timeEntries={timeEntries}
+          />
+        )}
       </div>
     </main>
   );

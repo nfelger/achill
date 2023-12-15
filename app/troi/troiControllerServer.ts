@@ -1,4 +1,4 @@
-import type { CalculationPosition, CalenderEvent } from "troi-library";
+import type { CalculationPosition, CalendarEvent } from "troi-library";
 import TroiApiService from "troi-library";
 import type { SessionData } from "~/sessions";
 import { commitSession, getSession } from "~/sessions";
@@ -132,7 +132,7 @@ async function fetchCalenderEventsAndSaveToSession(request: Request) {
 
 export async function getCalenderEvents(
   request: Request,
-): Promise<CalenderEvent[]> {
+): Promise<CalendarEvent[]> {
   return staleWhileRevalidate(
     request,
     fetchCalenderEventsAndSaveToSession,

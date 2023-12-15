@@ -1,4 +1,4 @@
-import type { CalculationPosition, CalenderEvent } from "troi-library";
+import type { CalculationPosition, CalendarEvent } from "troi-library";
 
 // how to invalidate:
 // 1. shortish ttl for session-cookie
@@ -19,7 +19,7 @@ export type SessionData = {
   // POST -> timeEntries.set(asd, new TimeEntry())
   // DELETE -> timeEntries.remove()
   // PUT -> timeEntries.set(asd, entry)
-  troiCalendarEvents: CalenderEvent[];
+  troiCalendarEvents: CalendarEvent[];
 };
 
 const sessionCookie = createCookie("__session", {

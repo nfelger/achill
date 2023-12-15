@@ -8,13 +8,13 @@ declare module "troi-library" {
     hours: number;
     description: string;
   };
-  export type CalenderEventType = "R" | "H" | "G" | "P" | "T";
-  export type CalenderEvent = {
+  export type CalendarEventType = "R" | "H" | "G" | "P" | "T";
+  export type CalendarEvent = {
     id: string;
     startDate: string;
     endDate: string;
     subject: string;
-    type: CalenderEventType;
+    type: CalendarEventType;
   };
   export type CalculationPosition = {
     name: string;
@@ -105,7 +105,7 @@ declare module "troi-library" {
     getCalendarEvents(
       startDate: string,
       endDate: string,
-      type?: CalenderEventType | "",
-    ): Promise<CalenderEvent[]>;
+      type?: CalendarEventType | "",
+    ): Promise<CalendarEvent[]>;
   }
 }

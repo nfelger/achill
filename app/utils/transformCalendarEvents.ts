@@ -1,4 +1,4 @@
-import type { CalenderEvent } from "troi-library";
+import type { CalendarEvent } from "troi-library";
 import {
   convertToUTCMidnight,
   getDatesBetween,
@@ -47,7 +47,7 @@ export const CalendarEventDuration = Object.freeze(_CalendarEventDuration);
     }
 */
 export function transformCalendarEvent(
-  eventInApiFormat: CalenderEvent,
+  eventInApiFormat: CalendarEvent,
   minDate: Date,
   maxDate: Date,
 ) {
@@ -64,7 +64,7 @@ export function transformCalendarEvent(
 }
 
 function _transformSingleDayEvent(
-  eventInApiFormat: CalenderEvent,
+  eventInApiFormat: CalendarEvent,
 ): TransformedCalendarEvent {
   const normalizedDate = utcMidnightDateFromString(eventInApiFormat.startDate);
   const tranformedEvent = {
@@ -77,11 +77,11 @@ function _transformSingleDayEvent(
 }
 
 function _synthesiseMultiDayEvents(
-  eventInApiFormat: CalenderEvent,
+  eventInApiFormat: CalendarEvent,
   minDate: Date,
   maxDate: Date,
 ) {
-  const synthesisedEventsInApiFormat: CalenderEvent[] = [];
+  const synthesisedEventsInApiFormat: CalendarEvent[] = [];
 
   let datesBetween = getDatesBetween(
     new Date(
@@ -131,7 +131,7 @@ function _synthesiseMultiDayEvents(
 }
 
 function _getCalendarEventTypForEvent(
-  event: CalenderEvent,
+  event: CalendarEvent,
 ): CalendarEventType | undefined {
   if (event === undefined) {
     return undefined;
@@ -160,7 +160,7 @@ function _getCalendarEventTypForEvent(
   }
 }
 
-function _getCalendarEventDurationForEvent(event: CalenderEvent) {
+function _getCalendarEventDurationForEvent(event: CalendarEvent) {
   if (event === undefined) {
     return undefined;
   }

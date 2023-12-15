@@ -1,8 +1,8 @@
-import type { CalenderEvent } from "troi-library";
+import type { CalendarEvent } from "troi-library";
 import { utcMidnightDateFromString } from "~/utils/dateUtils";
 import { transformCalendarEvent } from "~/utils/transformCalendarEvents";
 
-const singleDayEventsMockData: { [key: string]: CalenderEvent } = {
+const singleDayEventsMockData: { [key: string]: CalendarEvent } = {
   holiday: {
     id: "12824",
     startDate: "2023-07-04 00:00:00",
@@ -61,7 +61,7 @@ const singleDayEventsMockData: { [key: string]: CalenderEvent } = {
   },
 };
 
-const multiDayEventsMockData: { [key: string]: CalenderEvent } = {
+const multiDayEventsMockData: { [key: string]: CalendarEvent } = {
   paidVacation: {
     id: "P6889",
     startDate: "2023-07-04 09:00:00",
