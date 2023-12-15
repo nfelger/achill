@@ -12,6 +12,8 @@ import {
 import moment from "moment";
 import { TimeEntries, TimeEntry } from "~/troi/TimeEntry";
 import { CalculationPosition } from "~/troi/CalculationPosition";
+import { useFetcher } from "@remix-run/react";
+import { convertToCacheFormat } from "~/utils/TimeEntryCache";
 
 interface Props {
   username: string;
@@ -71,21 +73,25 @@ export default function Troi(props: Props) {
     selectedDate,
   );
 
+  const fetcher = useFetcher();
+
   async function onAddEntryClicked(
     position: CalculationPosition,
     hours: number,
     description: string,
   ) {
-    // await troiController?.addEntry(
-    //   selectedDate,
-    //   position,
-    //   hours,
-    //   description,
-    //   () => {}
-    // );
-    // troiController?.getEntriesFor(selectedDate).then((entries) => {
-    //   setEntriesForSelectedDate(entries);
-    // });
+    fetcher.submit(
+      {
+        hours,
+        description,
+      },
+      {
+        method: "POST",
+        action: `/calculation_postions/${
+          position.id
+        }/time_entries/${convertToCacheFormat(selectedDate)}`,
+      },
+    );
   }
 
   async function onUpdateEntryClicked(
@@ -98,12 +104,7 @@ export default function Troi(props: Props) {
     // });
   }
 
-  async function onDeleteEntryClicked(entry: TimeEntry, positionId: number) {
-    // await troiController?.deleteEntry(entry, positionId, () => {});
-    // troiController?.getEntriesFor(selectedDate).then((entries) => {
-    //   setEntriesForSelectedDate(entries);
-    // });
-  }
+  async function onDeleteEntryClicked(entry: TimeEntry, positionId: number) {}
 
   return (
     <div>

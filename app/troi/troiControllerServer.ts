@@ -102,8 +102,14 @@ async function fetchCalculationPositionsAndSaveToSession(request: Request) {
         clientId: clientId.toString(),
         favoritesOnly: true.toString(),
       },
-    })) as any[]
-  ).map((obj: any) => ({
+    })) as {
+      Id: number;
+      DisplayPath: string;
+      Subproject: {
+        id: number;
+      };
+    }[]
+  ).map((obj) => ({
     name: obj.DisplayPath,
     id: obj.Id,
     subprojectId: obj.Subproject.id,
@@ -169,28 +175,37 @@ async function fetchTimeEntriesAndSaveToSession(request: Request) {
   const calculationPositions = await getCalculationPositions(request);
   const entries: TimeEntry[] = (
     await Promise.all(
-      calculationPositions.map((calcPos) =>
-        troiApi.makeRequest({
-          url: "/billings/hours",
-          params: {
-            clientId: clientId.toString(),
-            employeeId: employeeId.toString(),
-            calculationPositionId: calcPos.id.toString(),
-            startDate: formatDateToYYYYMMDD(addDaysToDate(new Date(), -366)),
-            endDate: formatDateToYYYYMMDD(addDaysToDate(new Date(), 366)),
-          },
-        }),
+      calculationPositions.map(
+        (calcPos) =>
+          troiApi.makeRequest({
+            url: "/billings/hours",
+            params: {
+              clientId: clientId.toString(),
+              employeeId: employeeId.toString(),
+              calculationPositionId: calcPos.id.toString(),
+              startDate: formatDateToYYYYMMDD(addDaysToDate(new Date(), -366)),
+              endDate: formatDateToYYYYMMDD(addDaysToDate(new Date(), 366)),
+            },
+          }) as Promise<{
+            id: number;
+            Date: string;
+            Quantity: string;
+            Remark: string;
+            CalculationPosition: {
+              id: number;
+            };
+          }>,
       ),
     )
   )
     .flat()
-    .map((e: any) => {
+    .map((entry) => {
       return {
-        id: e.id,
-        date: e.Date,
-        hours: e.Quantity,
-        description: e.Remark,
-        calculationPosition: e.CalculationPosition.id,
+        id: entry.id,
+        date: entry.Date,
+        hours: parseFloat(entry.Quantity),
+        description: entry.Remark,
+        calculationPosition: entry.CalculationPosition.id,
       };
     });
 
@@ -211,6 +226,50 @@ export async function getTimeEntries(request: Request): Promise<TimeEntries> {
     fetchTimeEntriesAndSaveToSession,
     "troiTimeEntries",
   );
+}
+
+export async function addTimeEntry(
+  request: Request,
+  calculationPostionId: number,
+  date: string,
+  hours: number,
+  description: string,
+) {
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader);
+
+  const troiApi = await getTroiApi(
+    session.get("username"),
+    session.get("troiPassword"),
+    await getClientId(request),
+    await getEmployeeId(request),
+  );
+
+  const result = (await troiApi.postTimeEntry(
+    calculationPostionId,
+    date,
+    hours,
+    description,
+  )) as {
+    id: number;
+    Name: string;
+    Quantity: string;
+  };
+
+  const existingEntries = session.get("troiTimeEntries");
+  if (existingEntries !== undefined) {
+    existingEntries[result.id] = {
+      id: result.id,
+      date: date,
+      hours: parseFloat(result.Quantity),
+      description: result.Name,
+      calculationPosition: calculationPostionId,
+    };
+  }
+
+  await commitSession(session);
+
+  return result;
 }
 
 /**
