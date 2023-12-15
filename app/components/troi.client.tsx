@@ -95,14 +95,17 @@ export default function Troi(props: Props) {
     );
   }
 
-  async function onUpdateEntryClicked(
-    position: CalculationPosition,
-    entry: TimeEntry,
-  ) {
-    // await troiController?.updateEntry(position, entry, () => {});
-    // troiController?.getEntriesFor(selectedDate).then((entries) => {
-    //   setEntriesForSelectedDate(entries);
-    // });
+  async function onUpdateEntryClicked(entry: TimeEntry) {
+    fetcher.submit(
+      {
+        hours: entry.hours,
+        description: entry.description,
+      },
+      {
+        method: "PUT",
+        action: `/time_entries/${entry.id}`,
+      },
+    );
   }
 
   async function onDeleteEntryClicked(entry: TimeEntry) {

@@ -292,6 +292,51 @@ export async function deleteTimeEntry(request: Request, id: number) {
   }
 }
 
+export async function updateTimeEntry(
+  request: Request,
+  id: number,
+  hours: number,
+  description: string,
+) {
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader);
+
+  const troiApi = await getTroiApi(
+    session.get("username"),
+    session.get("troiPassword"),
+  );
+
+  const payload = {
+    Client: {
+      Path: `/clients/${await getClientId(request)}`,
+    },
+    Employee: {
+      Path: `/employees/${await getEmployeeId(request)}`,
+    },
+    Quantity: hours,
+    Remark: description,
+  };
+
+  const res = (await troiApi.makeRequest({
+    url: `/billings/hours/${id}`,
+    headers: { "Content-Type": "application/json" },
+    method: "PUT",
+    body: JSON.stringify(payload),
+  })) as {
+    Name: string;
+    Quantity: string;
+  };
+
+  const existingEntries = session.get("troiTimeEntries");
+
+  if (existingEntries) {
+    existingEntries[id].hours = parseFloat(res.Quantity);
+    existingEntries[id].description = res.Name;
+    session.set("troiTimeEntries", existingEntries);
+    await commitSession(session);
+  }
+}
+
 /**
  * Return data from the session cache and revalidate cached data in the background.
  *

@@ -14,7 +14,7 @@ interface Props {
   phaseTasks: TrackyTask[];
   entries: TimeEntry[];
   deleteEntry: (entry: TimeEntry) => unknown;
-  updateEntry: (position: CalculationPosition, entry: TimeEntry) => unknown;
+  updateEntry: (entry: TimeEntry) => unknown;
   addEntry: (
     position: CalculationPosition,
     hours: number,
@@ -42,7 +42,7 @@ export function TroiTimeEntries({
     if (entry) {
       entry.hours = convertTimeStringToFloat(newHours);
       entry.description = newDescription;
-      updateEntry(position, entry);
+      updateEntry(entry);
     } else {
       addEntry(position, convertTimeStringToFloat(newHours), newDescription);
     }
