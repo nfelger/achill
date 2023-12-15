@@ -1,5 +1,5 @@
 import { ActionFunctionArgs } from "@remix-run/node";
-import { addTimeEntry } from "~/troi/troiControllerServer";
+import { addTimeEntry } from "~/troi/troiApiController";
 
 export async function action({ request, params }: ActionFunctionArgs) {
   if (request.method !== "POST") {

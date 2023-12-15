@@ -13,7 +13,7 @@ import {
   getCalculationPositions,
   getCalenderEvents,
   getTimeEntries,
-} from "~/troi/troiControllerServer";
+} from "~/troi/troiApiController";
 
 let isHydrating = true;
 

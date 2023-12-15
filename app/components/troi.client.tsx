@@ -13,7 +13,6 @@ import moment from "moment";
 import { TimeEntries, TimeEntry } from "~/troi/TimeEntry";
 import { CalculationPosition } from "~/troi/CalculationPosition";
 import { useFetcher } from "@remix-run/react";
-import { convertToCacheFormat } from "~/utils/TimeEntryCache";
 import { LoadingOverlay } from "./LoadingOverlay";
 
 interface Props {
@@ -88,9 +87,9 @@ export default function Troi(props: Props) {
       },
       {
         method: "POST",
-        action: `/calculation_postions/${
-          position.id
-        }/time_entries/${convertToCacheFormat(selectedDate)}`,
+        action: `/calculation_postions/${position.id}/time_entries/${moment(
+          selectedDate,
+        ).format("YYYY-MM-DD")}`,
       },
     );
   }

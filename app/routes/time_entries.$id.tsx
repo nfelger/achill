@@ -1,5 +1,5 @@
 import { ActionFunctionArgs } from "@remix-run/node";
-import { deleteTimeEntry, updateTimeEntry } from "~/troi/troiControllerServer";
+import { deleteTimeEntry, updateTimeEntry } from "~/troi/troiApiController";
 
 export async function action({ request, params }: ActionFunctionArgs) {
   if (!params.id) {
