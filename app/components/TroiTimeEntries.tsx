@@ -1,4 +1,3 @@
-import { TimeEntry } from "troi-library";
 import {
   convertFloatTimeToHHMM,
   convertTimeStringToFloat,
@@ -7,14 +6,13 @@ import { TimeEntryForm } from "./TimeEntryForm";
 import { TrackyTask } from "~/tasks/useTasks";
 import { Fragment } from "react";
 import { CalculationPosition } from "~/troi/CalculationPosition";
+import { TimeEntry } from "~/troi/TimeEntry";
 
 interface Props {
   calculationPositions: CalculationPosition[];
   recurringTasks: TrackyTask[];
   phaseTasks: TrackyTask[];
-  entries: {
-    [projectId: number]: TimeEntry[];
-  };
+  entries: TimeEntry[];
   deleteEntry: (entry: TimeEntry, positionId: number) => unknown;
   updateEntry: (position: CalculationPosition, entry: TimeEntry) => unknown;
   addEntry: (
@@ -57,7 +55,9 @@ export function TroiTimeEntries({
       data-testid={`project-section-${position.id}`}
     >
       <div className="container mx-auto pb-2 pt-4">
-        {!entries[position.id] || entries[position.id].length === 0 ? (
+        {entries.find(
+          ({ calculationPosition }) => calculationPosition === position.id,
+        ) === undefined ? (
           <TimeEntryForm
             calculationPosition={position}
             recurringTasks={recurringTasks}
@@ -68,34 +68,38 @@ export function TroiTimeEntries({
             disabled={disabled}
           />
         ) : (
-          entries[position.id].map((entry) => (
-            <Fragment key={entry.id}>
-              <div data-testid={`entryCard-${position.id}`}>
-                <div
-                  data-test="entry-form"
-                  className="my-2 flex justify-center"
-                >
-                  <div className="block w-full">
-                    <TimeEntryForm
-                      values={{
-                        hours: convertFloatTimeToHHMM(entry.hours),
-                        description: entry.description,
-                      }}
-                      addOrUpdateClicked={(hours, description) =>
-                        submitEntry(position, hours, description, entry)
-                      }
-                      deleteClicked={() => deleteEntry(entry, position.id)}
-                      recurringTasks={recurringTasks}
-                      phaseTasks={phaseTasks}
-                      calculationPosition={position}
-                      disabled={disabled}
-                    />
+          entries
+            .filter(
+              ({ calculationPosition }) => calculationPosition === position.id,
+            )
+            .map((entry) => (
+              <Fragment key={entry.id}>
+                <div data-testid={`entryCard-${position.id}`}>
+                  <div
+                    data-test="entry-form"
+                    className="my-2 flex justify-center"
+                  >
+                    <div className="block w-full">
+                      <TimeEntryForm
+                        values={{
+                          hours: convertFloatTimeToHHMM(entry.hours),
+                          description: entry.description,
+                        }}
+                        addOrUpdateClicked={(hours, description) =>
+                          submitEntry(position, hours, description, entry)
+                        }
+                        deleteClicked={() => deleteEntry(entry, position.id)}
+                        recurringTasks={recurringTasks}
+                        phaseTasks={phaseTasks}
+                        calculationPosition={position}
+                        disabled={disabled}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <br />
-            </Fragment>
-          ))
+                <br />
+              </Fragment>
+            ))
         )}
       </div>
     </section>

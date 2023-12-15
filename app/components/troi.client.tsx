@@ -1,7 +1,4 @@
-import { useTroi } from "~/troi/useTroi.hook";
-import { LoadingOverlay } from "./LoadingOverlay";
-import { useEffect, useState } from "react";
-import { TimeEntry } from "troi-library";
+import { useState } from "react";
 import { InfoBanner } from "./InfoBanner";
 import { addDaysToDate, getWeekDaysFor } from "~/utils/dateUtils";
 import { WeekView } from "./WeekView";
@@ -13,7 +10,7 @@ import {
   transformCalendarEvent,
 } from "~/utils/transformCalendarEvents";
 import moment from "moment";
-import { TimeEntries } from "~/troi/TimeEntry";
+import { TimeEntries, TimeEntry } from "~/troi/TimeEntry";
 import { CalculationPosition } from "~/troi/CalculationPosition";
 
 interface Props {
@@ -33,33 +30,24 @@ function findEventsOfDate(
   );
 }
 
+function findTimeEntriesOfDate(timeEntries: TimeEntries, date: Date) {
+  return Object.values(timeEntries).filter((entry) =>
+    moment(entry.date).isSame(date, "day"),
+  );
+}
+
 function calcHoursOfDate(timeEntries: TimeEntries, date: Date) {
-  return Object.values(timeEntries)
-    .filter((entry) => moment(entry.date).isSame(date, "day"))
-    .reduce((acc, entry) => acc + entry.hours, 0);
+  return findTimeEntriesOfDate(timeEntries, date).reduce(
+    (acc, entry) => acc + entry.hours,
+    0,
+  );
 }
 
 export default function Troi(props: Props) {
-  const { troiController, loading, initialized } = useTroi(
-    props.username,
-    props.password,
-  );
   const { recurringTasks, phaseTasks } = useTasks();
 
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const selectedWeek = getWeekDaysFor(selectedDate);
-
-  const [entriesForSelectedDate, setEntriesForSelectedDate] = useState<{
-    [projectId: number]: TimeEntry[];
-  }>({});
-
-  useEffect(() => {
-    if (troiController && initialized) {
-      troiController.getEntriesFor(selectedDate).then((entries) => {
-        setEntriesForSelectedDate(entries);
-      });
-    }
-  }, [troiController, initialized, selectedDate]);
 
   const calendarEvents = props.calendarEvents
     .map((calendarEvent) =>
@@ -77,6 +65,11 @@ export default function Troi(props: Props) {
   }));
 
   const positions = props.calculationPositions;
+
+  const entriesForSelectedDate = findTimeEntriesOfDate(
+    props.timeEntries,
+    selectedDate,
+  );
 
   async function onAddEntryClicked(
     position: CalculationPosition,
@@ -114,8 +107,6 @@ export default function Troi(props: Props) {
 
   return (
     <div>
-      {loading && <LoadingOverlay message={"Please wait..."} />}
-
       <section className="p-4">
         <a
           className="angie-link"

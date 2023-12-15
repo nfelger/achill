@@ -75,14 +75,12 @@ export default function Index() {
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
 
-  const isSubmitting = navigation.state === "submitting";
+  const isIdle = navigation.state === "idle";
 
   return (
     <main>
       <div className="mx-auto mt-8 w-full max-w-sm overflow-hidden rounded-sm bg-white px-8 py-6 shadow-md">
-        {isSubmitting && (
-          <LoadingOverlay message="Please wait..."></LoadingOverlay>
-        )}
+        {!isIdle && <LoadingOverlay message="Please wait..."></LoadingOverlay>}
 
         <h2 className="mb-8 mt-4 text-center text-3xl font-bold text-blue-600">
           Enter. Time.
