@@ -1,4 +1,4 @@
-import type { CalculationPosition, CalendarEvent } from "troi-library";
+import type { CalendarEvent } from "troi-library";
 
 // how to invalidate:
 // 1. shortish ttl for session-cookie
@@ -8,6 +8,7 @@ import type { CalculationPosition, CalendarEvent } from "troi-library";
 
 import { createCookie, createFileSessionStorage } from "@remix-run/node";
 import type { TimeEntries } from "./troi/TimeEntry";
+import type { CalculationPosition } from "./troi/CalculationPosition";
 
 export type SessionData = {
   username: string;

@@ -9,7 +9,11 @@ import { Form, useLoaderData } from "@remix-run/react";
 import { login } from "~/cookies.server";
 import Troi from "../components/troi.client";
 import { useEffect, useState } from "react";
-import { getCalenderEvents, getTimeEntries } from "~/troi/troiControllerServer";
+import {
+  getCalculationPositions,
+  getCalenderEvents,
+  getTimeEntries,
+} from "~/troi/troiControllerServer";
 
 let isHydrating = true;
 
@@ -35,12 +39,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect("/login");
   }
 
+  const calculationPositions = await getCalculationPositions(request);
   const calendarEvents = await getCalenderEvents(request);
   const timeEntries = await getTimeEntries(request);
 
   return json({
     username: cookie.username,
     password: cookie.password,
+    calculationPositions,
     calendarEvents,
     timeEntries,
   });
@@ -48,8 +54,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Index() {
   const [isHydrated, setIsHydrated] = useState(!isHydrating);
-  const { username, password, calendarEvents, timeEntries } =
-    useLoaderData<typeof loader>();
+  const {
+    username,
+    password,
+    calculationPositions,
+    calendarEvents,
+    timeEntries,
+  } = useLoaderData<typeof loader>();
 
   useEffect(() => {
     isHydrating = false;
@@ -95,6 +106,7 @@ export default function Index() {
             password={password}
             calendarEvents={calendarEvents}
             timeEntries={timeEntries}
+            calculationPositions={calculationPositions}
           />
         )}
       </div>

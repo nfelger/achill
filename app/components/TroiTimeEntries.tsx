@@ -1,5 +1,4 @@
 import { TimeEntry } from "troi-library";
-import { Project } from "~/troi/troiController";
 import {
   convertFloatTimeToHHMM,
   convertTimeStringToFloat,
@@ -7,22 +6,27 @@ import {
 import { TimeEntryForm } from "./TimeEntryForm";
 import { TrackyTask } from "~/tasks/useTasks";
 import { Fragment } from "react";
+import { CalculationPosition } from "~/troi/CalculationPosition";
 
 interface Props {
-  positions: Project[];
+  calculationPositions: CalculationPosition[];
   recurringTasks: TrackyTask[];
   phaseTasks: TrackyTask[];
   entries: {
     [projectId: number]: TimeEntry[];
   };
   deleteEntry: (entry: TimeEntry, positionId: number) => unknown;
-  updateEntry: (position: Project, entry: TimeEntry) => unknown;
-  addEntry: (position: Project, hours: number, description: string) => unknown;
+  updateEntry: (position: CalculationPosition, entry: TimeEntry) => unknown;
+  addEntry: (
+    position: CalculationPosition,
+    hours: number,
+    description: string,
+  ) => unknown;
   disabled: boolean;
 }
 
 export function TroiTimeEntries({
-  positions,
+  calculationPositions,
   recurringTasks,
   phaseTasks,
   entries,
@@ -32,7 +36,7 @@ export function TroiTimeEntries({
   disabled = false,
 }: Props) {
   async function submitEntry(
-    position: Project,
+    position: CalculationPosition,
     newHours: string,
     newDescription: string,
     entry: TimeEntry | undefined = undefined,
@@ -46,7 +50,7 @@ export function TroiTimeEntries({
     }
   }
 
-  return positions.map((position) => (
+  return calculationPositions.map((position) => (
     <section
       key={position.id}
       className="bg-white p-4"
@@ -55,7 +59,7 @@ export function TroiTimeEntries({
       <div className="container mx-auto pb-2 pt-4">
         {!entries[position.id] || entries[position.id].length === 0 ? (
           <TimeEntryForm
-            position={position}
+            calculationPosition={position}
             recurringTasks={recurringTasks}
             phaseTasks={phaseTasks}
             addOrUpdateClicked={(hours, description) =>
@@ -83,7 +87,7 @@ export function TroiTimeEntries({
                       deleteClicked={() => deleteEntry(entry, position.id)}
                       recurringTasks={recurringTasks}
                       phaseTasks={phaseTasks}
-                      position={position}
+                      calculationPosition={position}
                       disabled={disabled}
                     />
                   </div>

@@ -1,10 +1,10 @@
-import { Project } from "~/troi/troiController";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TroiButton } from "./TroiButton";
 import { buttonBlue, buttonRed } from "~/utils/colors";
 import { TrackyTask } from "~/tasks/useTasks";
 import { usePhaseNames } from "~/tasks/usePhaseNames";
 import { validateForm } from "~/utils/timeEntryFormValidator";
+import { CalculationPosition } from "~/troi/CalculationPosition";
 
 export interface TimeEntryFormErrors {
   hours?: string;
@@ -19,7 +19,7 @@ interface Props {
   deleteClicked?: () => unknown;
   recurringTasks: TrackyTask[];
   phaseTasks: TrackyTask[];
-  position: Project;
+  calculationPosition: CalculationPosition;
   disabled: boolean;
   minRows?: number;
   maxRows?: number;
@@ -47,13 +47,13 @@ export function TimeEntryForm({
   deleteClicked,
   recurringTasks,
   phaseTasks,
-  position,
+  calculationPosition,
   disabled,
   minRows = 4,
   maxRows = 40,
 }: Props) {
-  const hoursTestId = `hours-${position.id}`;
-  const descriptionTestId = `description-${position.id}`;
+  const hoursTestId = `hours-${calculationPosition.id}`;
+  const descriptionTestId = `description-${calculationPosition.id}`;
 
   const normalAppearance = "border-1 border-b-[1px] border-gray-300 ";
   const errorAppearance =
@@ -81,7 +81,10 @@ export function TimeEntryForm({
   );
   const [errors, setErrors] = useState<TimeEntryFormErrors>({});
 
-  const phaseNames = usePhaseNames(position.id, position.subproject);
+  const phaseNames = usePhaseNames(
+    calculationPosition.id,
+    calculationPosition.subprojectId,
+  );
   const phases = phaseNames.map((value) => {
     for (const phaseTask of phaseTasks) {
       if (descriptionSegments.includes([phaseTask.name, value].join(" "))) {
@@ -195,7 +198,7 @@ export function TimeEntryForm({
               title="Position ID: {position.id}"
               data-testid="project-heading-{position.id}"
             >
-              {position.name}
+              {calculationPosition.name}
             </h2>
             {updateMode ? (
               <div id="timeEntryForm">
@@ -356,14 +359,14 @@ export function TimeEntryForm({
                       <>
                         <TroiButton
                           text={"Save"}
-                          testId={`update-${position.id}`}
+                          testId={`update-${calculationPosition.id}`}
                           onClick={submit}
                           color={buttonBlue}
                         />
                         {values.hours && values.description && (
                           <TroiButton
                             text={"Cancel"}
-                            testId={`cancel-${position.id}`}
+                            testId={`cancel-${calculationPosition.id}`}
                             onClick={handleCancel}
                             color={buttonRed}
                           />
@@ -381,7 +384,7 @@ export function TimeEntryForm({
                 <br />
                 <TroiButton
                   text={"Delete"}
-                  testId={`delete-${position.id}`}
+                  testId={`delete-${calculationPosition.id}`}
                   onClick={() => {
                     deleteClicked?.();
                   }}
@@ -390,7 +393,7 @@ export function TimeEntryForm({
                 {!disabled && (
                   <TroiButton
                     text={"Edit"}
-                    testId={`edit-${position.id}`}
+                    testId={`edit-${calculationPosition.id}`}
                     onClick={() => {
                       // openPhases();
                       setUpdateMode(true);

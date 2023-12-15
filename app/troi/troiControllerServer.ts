@@ -1,9 +1,10 @@
-import type { CalculationPosition, CalendarEvent } from "troi-library";
+import type { CalendarEvent } from "troi-library";
 import TroiApiService from "troi-library";
 import type { SessionData } from "~/sessions";
 import { commitSession, getSession } from "~/sessions";
 import { addDaysToDate, formatDateToYYYYMMDD } from "~/utils/dateUtils";
 import type { TimeEntries, TimeEntry } from "./TimeEntry";
+import type { CalculationPosition } from "./CalculationPosition";
 
 const BASE_URL = "https://digitalservice.troi.software/api/v2/rest";
 const CLIENT_NAME = "DigitalService GmbH des Bundes";
@@ -87,13 +88,26 @@ async function fetchCalculationPositionsAndSaveToSession(request: Request) {
   const cookieHeader = request.headers.get("Cookie");
   const session = await getSession(cookieHeader);
 
+  const clientId = await getClientId(request);
+
   const troiApi = await getTroiApi(
     session.get("username"),
     session.get("troiPassword"),
-    await getClientId(request),
-    await getEmployeeId(request),
   );
-  const calculationPositions = await troiApi.getCalculationPositions();
+
+  const calculationPositions: CalculationPosition[] = (
+    (await troiApi.makeRequest({
+      url: "/calculationPositions",
+      params: {
+        clientId: clientId.toString(),
+        favoritesOnly: true.toString(),
+      },
+    })) as any[]
+  ).map((obj: any) => ({
+    name: obj.DisplayPath,
+    id: obj.Id,
+    subprojectId: obj.Subproject.id,
+  }));
 
   session.set("troiCalculationPositions", calculationPositions);
   await commitSession(session);

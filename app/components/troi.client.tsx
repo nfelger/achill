@@ -6,7 +6,6 @@ import { InfoBanner } from "./InfoBanner";
 import { addDaysToDate, getWeekDaysFor } from "~/utils/dateUtils";
 import { WeekView } from "./WeekView";
 import { TroiTimeEntries } from "./TroiTimeEntries";
-import { Project } from "~/troi/troiController";
 import { useTasks } from "~/tasks/useTasks";
 import type { CalendarEvent } from "troi-library";
 import {
@@ -15,10 +14,12 @@ import {
 } from "~/utils/transformCalendarEvents";
 import moment from "moment";
 import { TimeEntries } from "~/troi/TimeEntry";
+import { CalculationPosition } from "~/troi/CalculationPosition";
 
 interface Props {
   username: string;
   password: string;
+  calculationPositions: CalculationPosition[];
   calendarEvents: CalendarEvent[];
   timeEntries: TimeEntries;
 }
@@ -75,37 +76,40 @@ export default function Troi(props: Props) {
     events: findEventsOfDate(calendarEvents, weekday),
   }));
 
-  const positions = troiController?.getProjects();
+  const positions = props.calculationPositions;
 
   async function onAddEntryClicked(
-    position: Project,
+    position: CalculationPosition,
     hours: number,
     description: string,
   ) {
-    await troiController?.addEntry(
-      selectedDate,
-      position,
-      hours,
-      description,
-      () => {},
-    );
-    troiController?.getEntriesFor(selectedDate).then((entries) => {
-      setEntriesForSelectedDate(entries);
-    });
+    // await troiController?.addEntry(
+    //   selectedDate,
+    //   position,
+    //   hours,
+    //   description,
+    //   () => {}
+    // );
+    // troiController?.getEntriesFor(selectedDate).then((entries) => {
+    //   setEntriesForSelectedDate(entries);
+    // });
   }
 
-  async function onUpdateEntryClicked(position: Project, entry: TimeEntry) {
-    await troiController?.updateEntry(position, entry, () => {});
-    troiController?.getEntriesFor(selectedDate).then((entries) => {
-      setEntriesForSelectedDate(entries);
-    });
+  async function onUpdateEntryClicked(
+    position: CalculationPosition,
+    entry: TimeEntry,
+  ) {
+    // await troiController?.updateEntry(position, entry, () => {});
+    // troiController?.getEntriesFor(selectedDate).then((entries) => {
+    //   setEntriesForSelectedDate(entries);
+    // });
   }
 
   async function onDeleteEntryClicked(entry: TimeEntry, positionId: number) {
-    await troiController?.deleteEntry(entry, positionId, () => {});
-    troiController?.getEntriesFor(selectedDate).then((entries) => {
-      setEntriesForSelectedDate(entries);
-    });
+    // await troiController?.deleteEntry(entry, positionId, () => {});
+    // troiController?.getEntriesFor(selectedDate).then((entries) => {
+    //   setEntriesForSelectedDate(entries);
+    // });
   }
 
   return (
@@ -138,7 +142,7 @@ export default function Troi(props: Props) {
 
       {!selectedDayEvents?.some((event) => event.type == "Holiday") && (
         <TroiTimeEntries
-          positions={positions ?? []}
+          calculationPositions={positions ?? []}
           recurringTasks={recurringTasks}
           phaseTasks={phaseTasks}
           entries={entriesForSelectedDate}
