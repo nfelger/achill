@@ -3,6 +3,7 @@ import TroiApiService from "troi-library";
 import type { SessionData } from "~/sessions";
 import { commitSession, getSession } from "~/sessions";
 import { addDaysToDate, formatDateToYYYYMMDD } from "~/utils/dateUtils";
+import type { TimeEntries, TimeEntry } from "./TimeEntry";
 
 const BASE_URL = "https://digitalservice.troi.software/api/v2/rest";
 const CLIENT_NAME = "DigitalService GmbH des Bundes";
@@ -136,6 +137,65 @@ export async function getCalenderEvents(
     request,
     fetchCalenderEventsAndSaveToSession,
     "troiCalendarEvents",
+  );
+}
+
+async function fetchTimeEntriesAndSaveToSession(request: Request) {
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader);
+
+  const clientId = await getClientId(request);
+  const employeeId = await getEmployeeId(request);
+
+  const troiApi = await getTroiApi(
+    session.get("username"),
+    session.get("troiPassword"),
+  );
+
+  const calculationPositions = await getCalculationPositions(request);
+  const entries: TimeEntry[] = (
+    await Promise.all(
+      calculationPositions.map((calcPos) =>
+        troiApi.makeRequest({
+          url: "/billings/hours",
+          params: {
+            clientId: clientId.toString(),
+            employeeId: employeeId.toString(),
+            calculationPositionId: calcPos.id.toString(),
+            startDate: formatDateToYYYYMMDD(addDaysToDate(new Date(), -366)),
+            endDate: formatDateToYYYYMMDD(addDaysToDate(new Date(), 366)),
+          },
+        }),
+      ),
+    )
+  )
+    .flat()
+    .map((e: any) => {
+      return {
+        id: e.id,
+        date: e.Date,
+        hours: e.Quantity,
+        description: e.Remark,
+        calculationPosition: e.CalculationPosition.id,
+      };
+    });
+
+  const entriesById: TimeEntries = {};
+  for (const entry of entries) {
+    entriesById[entry.id] = entry;
+  }
+
+  session.set("troiTimeEntries", entriesById);
+  await commitSession(session);
+
+  return entriesById;
+}
+
+export async function getTimeEntries(request: Request): Promise<TimeEntries> {
+  return staleWhileRevalidate(
+    request,
+    fetchTimeEntriesAndSaveToSession,
+    "troiTimeEntries",
   );
 }
 
