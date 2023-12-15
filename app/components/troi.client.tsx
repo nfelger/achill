@@ -14,6 +14,7 @@ import { TimeEntries, TimeEntry } from "~/troi/TimeEntry";
 import { CalculationPosition } from "~/troi/CalculationPosition";
 import { useFetcher } from "@remix-run/react";
 import { convertToCacheFormat } from "~/utils/TimeEntryCache";
+import { LoadingOverlay } from "./LoadingOverlay";
 
 interface Props {
   username: string;
@@ -104,7 +105,15 @@ export default function Troi(props: Props) {
     // });
   }
 
-  async function onDeleteEntryClicked(entry: TimeEntry, positionId: number) {}
+  async function onDeleteEntryClicked(entry: TimeEntry) {
+    fetcher.submit(
+      {},
+      {
+        method: "DELETE",
+        action: `/time_entries/${entry.id}`,
+      },
+    );
+  }
 
   return (
     <div>
@@ -151,6 +160,8 @@ export default function Troi(props: Props) {
           a "favorite".
         </p>
       </section>
+
+      {fetcher.state !== "idle" && <LoadingOverlay message="Please wait..." />}
     </div>
   );
 }

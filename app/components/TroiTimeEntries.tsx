@@ -13,7 +13,7 @@ interface Props {
   recurringTasks: TrackyTask[];
   phaseTasks: TrackyTask[];
   entries: TimeEntry[];
-  deleteEntry: (entry: TimeEntry, positionId: number) => unknown;
+  deleteEntry: (entry: TimeEntry) => unknown;
   updateEntry: (position: CalculationPosition, entry: TimeEntry) => unknown;
   addEntry: (
     position: CalculationPosition,
@@ -88,7 +88,7 @@ export function TroiTimeEntries({
                         addOrUpdateClicked={(hours, description) =>
                           submitEntry(position, hours, description, entry)
                         }
-                        deleteClicked={() => deleteEntry(entry, position.id)}
+                        deleteClicked={() => deleteEntry(entry)}
                         recurringTasks={recurringTasks}
                         phaseTasks={phaseTasks}
                         calculationPosition={position}

@@ -265,11 +265,31 @@ export async function addTimeEntry(
       description: result.Name,
       calculationPosition: calculationPostionId,
     };
+    session.set("troiTimeEntries", existingEntries);
+    await commitSession(session);
   }
 
-  await commitSession(session);
-
   return result;
+}
+
+export async function deleteTimeEntry(request: Request, id: number) {
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader);
+
+  const troiApi = await getTroiApi(
+    session.get("username"),
+    session.get("troiPassword"),
+  );
+
+  await troiApi.deleteTimeEntry(id);
+
+  const existingEntries = session.get("troiTimeEntries");
+
+  if (existingEntries) {
+    delete existingEntries[id];
+    session.set("troiTimeEntries", existingEntries);
+    await commitSession(session);
+  }
 }
 
 /**

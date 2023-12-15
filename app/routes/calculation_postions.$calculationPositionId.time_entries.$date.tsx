@@ -1,35 +1,34 @@
 import { ActionFunctionArgs } from "@remix-run/node";
-import TroiApiService from "troi-library";
-import { login } from "~/cookies.server";
 import { addTimeEntry } from "~/troi/troiControllerServer";
 
 export async function action({ request, params }: ActionFunctionArgs) {
   if (request.method !== "POST") {
-    throw new Error("MethodNotAllowed");
-    // todo (Malte Laukötter, 2023-12-15): throw a error with the correct error type (405)
+    throw new Response("Method Not Allowed", { status: 405 });
   }
 
+  // todo (Malte Laukötter, 2023-12-15): check auth
+
   if (params.calculationPositionId === undefined) {
-    throw new Error("Missing calculationPositionId");
+    throw new Response("Missing calculationPositionId", { status: 400 });
   }
 
   if (params.date === undefined) {
-    throw new Error("Missing date");
+    throw new Response("Missing date", { status: 400 });
   }
 
   const body = await request.formData();
 
   const hours = body.get("hours");
   if (typeof hours !== "string") {
-    throw new Error("Missing hours");
+    throw new Response("Missing hours", { status: 400 });
   }
 
   const description = body.get("description");
   if (typeof description !== "string") {
-    throw new Error("Missing description");
+    throw new Response("Missing description", { status: 400 });
   }
 
-  addTimeEntry(
+  await addTimeEntry(
     request,
     parseInt(params.calculationPositionId, 10),
     params.date,
@@ -37,5 +36,5 @@ export async function action({ request, params }: ActionFunctionArgs) {
     description,
   );
 
-  return;
+  return new Response(null, { status: 201 });
 }
