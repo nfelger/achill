@@ -17,15 +17,15 @@ export type SessionData = {
   troiEmployeeId: number;
   troiCalculationPositions: CalculationPosition[];
   troiTimeEntries: TimeEntries;
-  // POST -> timeEntries.set(asd, new TimeEntry())
-  // DELETE -> timeEntries.remove()
-  // PUT -> timeEntries.set(asd, entry)
   troiCalendarEvents: CalendarEvent[];
 };
 
 const sessionCookie = createCookie("__session", {
+  maxAge: 30 * 24 * 60 * 60,
   secrets: ["todo_create_a_secret_and_load_from_env"],
-  sameSite: true,
+  sameSite: "lax",
+  secure: true,
+  httpOnly: true,
 });
 
 const { getSession, commitSession, destroySession } =
