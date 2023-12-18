@@ -86,6 +86,6 @@ export default defineConfig({
   webServer: {
     command: "MOCK_TROI_API=true npm run dev",
     url: "http://127.0.0.1:3000",
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
   },
 });

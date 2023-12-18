@@ -109,6 +109,7 @@ export default function Index() {
               Troi username
             </label>
             <input
+              id="username"
               type="text"
               defaultValue={username}
               name="username"
@@ -126,6 +127,7 @@ export default function Index() {
               Troi password or Troi v2 token ⓘ
             </label>
             <input
+              id="password"
               type="password"
               name="password"
               placeholder="hunter2"

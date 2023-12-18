@@ -1,4 +1,5 @@
 import { HttpResponse, http, passthrough } from "msw";
+import md5 from "crypto-js/md5.js";
 
 export const handlers = [
   http.get(
@@ -7,9 +8,18 @@ export const handlers = [
       return HttpResponse.json(require("./stubs/calculationPositions.json"));
     },
   ),
-  http.get("https://digitalservice.troi.software/api/v2/rest/clients", () => {
-    return HttpResponse.json(require("./stubs/clients.json"));
-  }),
+  http.get(
+    "https://digitalservice.troi.software/api/v2/rest/clients",
+    ({ request }) => {
+      const expectedAuthHeader =
+        "Basic " + btoa(`max.mustermann:${md5("aSafePassword")}`);
+      if (request.headers.get("authorization") === expectedAuthHeader) {
+        return HttpResponse.json(require("./stubs/clients.json"));
+      } else {
+        return new HttpResponse(null, { status: 403 });
+      }
+    },
+  ),
   http.get("https://digitalservice.troi.software/api/v2/rest/employees", () => {
     return HttpResponse.json(require("./stubs/employees.json"));
   }),

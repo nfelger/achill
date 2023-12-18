@@ -1,38 +1,42 @@
 fileignoreconfig:
-- filename: .github/workflows/pipeline.yml
-  checksum: 505d6ded3cca636f98c06e4f941204a4fdc83c7f98a038f5f80e64b73b7670f8
-- filename: .github/workflows/scan.yml
-  checksum: 14fd20b334e55e9f6ee23d13fa82d2c17d94cb59928b7dd5828e8adca40cf1d8
-- filename: README.md
-  checksum: 7420902b2398edae580fd51b1043019441b4c3c78fc5495e0bc065a24fbefb95
-- filename: public/fonts/BundesSerifWeb-Italic.woff
-  checksum: 2cad03dd85939c73e892cce6d994a89046677e94ceb11dd1cde5a23a3b35c392
-- filename: public/fonts/BundesSansWeb-BoldItalic.woff
-  checksum: 446eff0044854604c36e380d186aab48077af382668430ad518ef49b37d4fa02
-- filename: SECURITY.md
-  checksum: b1743150cdd537be3a66f5308f887d130f0f320ab21628b63713808090a84e3f
-- filename: app/routes/time_entries.$id.tsx
-  allowed_patterns: [password]
-- filename: app/routes/login.tsx
-  allowed_patterns: [password, troiPassword]
-- filename: app/routes/_index.tsx
-  allowed_patterns: [password]
-- filename: app/components/troi.client.tsx
-  allowed_patterns: [password, /wiki/spaces/\w+/pages/\d+]
-- filename: app/routes/projects.tsx
-  allowed_patterns: [password]
-- filename: app/troi/useTroi.hook.tsx
-  allowed_patterns: [password]
-- filename: tests/unit/transformCalendarEvents.test.ts
-  allowed_patterns: [key]
-- filename: old/src/lib/nocodbClient.js
-  checksum: 96164d475474e53ab8ce465d98b6c580a04e33228f02a1beb74436fa240d114c
-- filename: app/tasks/nocodbClient.ts
-  checksum: f4bcc85b1fbacd2a8dd8da7675849a40024fb1f7d909b4692954412aa2473319
-- filename: app/sessions.ts
-  allowed_patterns: [todo_create_a_secret_and_load_from_env]
-- filename: app/mocks/stubs/calculationPositions.json
-  checksum: 4013141db60d72f20e9867642310c167f9f32d55406e7d9b788995eeac3c2111
+  - filename: .github/workflows/pipeline.yml
+    checksum: 505d6ded3cca636f98c06e4f941204a4fdc83c7f98a038f5f80e64b73b7670f8
+  - filename: .github/workflows/scan.yml
+    checksum: 14fd20b334e55e9f6ee23d13fa82d2c17d94cb59928b7dd5828e8adca40cf1d8
+  - filename: README.md
+    checksum: 7420902b2398edae580fd51b1043019441b4c3c78fc5495e0bc065a24fbefb95
+  - filename: public/fonts/BundesSerifWeb-Italic.woff
+    checksum: 2cad03dd85939c73e892cce6d994a89046677e94ceb11dd1cde5a23a3b35c392
+  - filename: public/fonts/BundesSansWeb-BoldItalic.woff
+    checksum: 446eff0044854604c36e380d186aab48077af382668430ad518ef49b37d4fa02
+  - filename: SECURITY.md
+    checksum: b1743150cdd537be3a66f5308f887d130f0f320ab21628b63713808090a84e3f
+  - filename: app/routes/time_entries.$id.tsx
+    allowed_patterns: [password]
+  - filename: app/routes/login.tsx
+    allowed_patterns: [password, troiPassword]
+  - filename: app/routes/_index.tsx
+    allowed_patterns: [password]
+  - filename: app/components/troi.client.tsx
+    allowed_patterns: [password, /wiki/spaces/\w+/pages/\d+]
+  - filename: app/routes/projects.tsx
+    allowed_patterns: [password]
+  - filename: app/troi/useTroi.hook.tsx
+    allowed_patterns: [password]
+  - filename: tests/unit/transformCalendarEvents.test.ts
+    allowed_patterns: [key]
+  - filename: old/src/lib/nocodbClient.js
+    checksum: 96164d475474e53ab8ce465d98b6c580a04e33228f02a1beb74436fa240d114c
+  - filename: app/tasks/nocodbClient.ts
+    checksum: f4bcc85b1fbacd2a8dd8da7675849a40024fb1f7d909b4692954412aa2473319
+  - filename: app/sessions.ts
+    allowed_patterns: [todo_create_a_secret_and_load_from_env]
+  - filename: app/mocks/stubs/calculationPositions.json
+    checksum: 4013141db60d72f20e9867642310c167f9f32d55406e7d9b788995eeac3c2111
+  - filename: tests/e2e/login.spec.ts
+    checksum: fcdd236aecbe539babccf1942cc9cea0b5acbfd77233247f2b2646f8c28c640a
+  - filename: tests/e2e/LoginPage.ts
+    allowed_patterns: [password]
 
 version: ""
 scopeconfig:
