@@ -11,7 +11,7 @@ import Troi from "../components/troi.client";
 import { useEffect, useState } from "react";
 import {
   getCalculationPositions,
-  getCalenderEvents,
+  getCalendarEvents,
   getTimeEntries,
 } from "~/troi/troiApiController";
 
@@ -40,7 +40,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   const calculationPositions = await getCalculationPositions(request);
-  const calendarEvents = await getCalenderEvents(request);
+  const calendarEvents = await getCalendarEvents(request);
   const timeEntries = await getTimeEntries(request);
 
   return json({

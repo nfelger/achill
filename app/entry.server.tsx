@@ -6,11 +6,16 @@
 
 import { PassThrough } from "node:stream";
 
-import type { AppLoadContext, EntryContext } from "@remix-run/node";
+import type { EntryContext } from "@remix-run/node";
 import { createReadableStreamFromReadable } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import isbot from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
+import { server } from "./mocks/node";
+
+if (process.env.MOCK_TROI_API) {
+  server.listen();
+}
 
 const ABORT_DELAY = 5_000;
 

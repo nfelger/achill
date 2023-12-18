@@ -131,7 +131,7 @@ export async function getCalculationPositions(
   );
 }
 
-async function fetchCalenderEventsAndSaveToSession(request: Request) {
+async function fetchCalendarEventsAndSaveToSession(request: Request) {
   const cookieHeader = request.headers.get("Cookie");
   const session = await getSession(cookieHeader);
 
@@ -150,12 +150,12 @@ async function fetchCalenderEventsAndSaveToSession(request: Request) {
   return calendarEvents;
 }
 
-export async function getCalenderEvents(
+export async function getCalendarEvents(
   request: Request,
 ): Promise<CalendarEvent[]> {
   return staleWhileRevalidate(
     request,
-    fetchCalenderEventsAndSaveToSession,
+    fetchCalendarEventsAndSaveToSession,
     "troiCalendarEvents",
   );
 }

@@ -31,6 +31,8 @@ fileignoreconfig:
   checksum: f4bcc85b1fbacd2a8dd8da7675849a40024fb1f7d909b4692954412aa2473319
 - filename: app/sessions.ts
   allowed_patterns: [todo_create_a_secret_and_load_from_env]
+- filename: app/mocks/stubs/calculationPositions.json
+  checksum: 4013141db60d72f20e9867642310c167f9f32d55406e7d9b788995eeac3c2111
 
 version: ""
 scopeconfig:
