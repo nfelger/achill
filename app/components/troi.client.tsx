@@ -82,12 +82,12 @@ export default function Troi(props: Props) {
       {
         hours,
         description,
+        calculationPositionId: position.id,
+        date: moment(selectedDate).format("YYYY-MM-DD"),
       },
       {
         method: "POST",
-        action: `/calculation_postions/${position.id}/time_entries/${moment(
-          selectedDate,
-        ).format("YYYY-MM-DD")}`,
+        action: `/time_entries`,
       },
     );
   }

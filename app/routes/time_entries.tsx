@@ -7,15 +7,17 @@ export async function action({ request, params }: ActionFunctionArgs) {
     throw new Response("Method Not Allowed", { status: 405 });
   }
 
-  if (params.calculationPositionId === undefined) {
-    throw new Response("Missing calculationPositionId", { status: 400 });
-  }
+  const body = await request.formData();
 
-  if (params.date === undefined) {
+  const date = body.get("date");
+  if (typeof date !== "string") {
     throw new Response("Missing date", { status: 400 });
   }
 
-  const body = await request.formData();
+  const calculationPositionId = body.get("calculationPositionId");
+  if (typeof calculationPositionId !== "string") {
+    throw new Response("Missing calculationPositionId", { status: 400 });
+  }
 
   const hours = body.get("hours");
   if (typeof hours !== "string") {
@@ -33,8 +35,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   await addTimeEntry(
     request,
-    parseInt(params.calculationPositionId, 10),
-    params.date,
+    parseInt(calculationPositionId, 10),
+    date,
     parseFloat(hours),
     description,
   );
