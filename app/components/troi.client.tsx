@@ -16,8 +16,6 @@ import { useFetcher } from "@remix-run/react";
 import { LoadingOverlay } from "./LoadingOverlay";
 
 interface Props {
-  username: string;
-  password: string;
   calculationPositions: CalculationPosition[];
   calendarEvents: CalendarEvent[];
   timeEntries: TimeEntries;

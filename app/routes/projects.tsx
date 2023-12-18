@@ -45,7 +45,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   return json({
     username: session.get("username")!,
-    password: session.get("troiPassword")!,
     calculationPositions,
     calendarEvents,
     timeEntries,
@@ -54,13 +53,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Index() {
   const [isHydrated, setIsHydrated] = useState(!isHydrating);
-  const {
-    username,
-    password,
-    calculationPositions,
-    calendarEvents,
-    timeEntries,
-  } = useLoaderData<typeof loader>();
+  const { username, calculationPositions, calendarEvents, timeEntries } =
+    useLoaderData<typeof loader>();
 
   useEffect(() => {
     isHydrating = false;
@@ -102,8 +96,6 @@ export default function Index() {
         {/* https://remix.run/docs/en/main/guides/migrating-react-router-app#client-only-components */}
         {isHydrated && (
           <Troi
-            username={username}
-            password={password}
             calendarEvents={calendarEvents}
             timeEntries={timeEntries}
             calculationPositions={calculationPositions}
