@@ -3,7 +3,7 @@ import {
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "@remix-run/node";
-import { login } from "~/cookies.server";
+import { isSessionValid } from "~/sessions";
 
 export const meta: MetaFunction = () => {
   return [
@@ -13,10 +13,7 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const cookieHeader = request.headers.get("Cookie");
-  const cookie = (await login.parse(cookieHeader)) || {};
-
-  if (cookie.username == undefined && cookie.password == undefined) {
+  if (!(await isSessionValid(request))) {
     return redirect("/login");
   }
 

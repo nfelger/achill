@@ -6,7 +6,6 @@ import {
   type MetaFunction,
 } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
-import { login } from "~/cookies.server";
 import Troi from "../components/troi.client";
 import { useEffect, useState } from "react";
 import {
@@ -14,6 +13,7 @@ import {
   getCalendarEvents,
   getTimeEntries,
 } from "~/troi/troiApiController";
+import { getSession, isSessionValid } from "~/sessions";
 
 let isHydrating = true;
 
@@ -33,10 +33,10 @@ export const links: LinksFunction = () => [
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const cookieHeader = request.headers.get("Cookie");
-  const cookie = (await login.parse(cookieHeader)) || {};
+  const session = await getSession(cookieHeader);
 
-  if (cookie.username == undefined || cookie.password == undefined) {
-    return redirect("/login");
+  if (!(await isSessionValid(request))) {
+    throw redirect("/login");
   }
 
   const calculationPositions = await getCalculationPositions(request);
@@ -44,8 +44,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const timeEntries = await getTimeEntries(request);
 
   return json({
-    username: cookie.username,
-    password: cookie.password,
+    username: session.get("username")!,
+    password: session.get("troiPassword")!,
     calculationPositions,
     calendarEvents,
     timeEntries,

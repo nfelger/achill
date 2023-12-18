@@ -1,9 +1,14 @@
-import { ActionFunctionArgs } from "@remix-run/node";
+import { ActionFunctionArgs, redirect } from "@remix-run/node";
+import { isSessionValid } from "~/sessions";
 import { deleteTimeEntry, updateTimeEntry } from "~/troi/troiApiController";
 
 export async function action({ request, params }: ActionFunctionArgs) {
   if (!params.id) {
     throw new Response("entry id required", { status: 400 });
+  }
+
+  if (!(await isSessionValid(request))) {
+    throw redirect("/login");
   }
 
   switch (request.method) {

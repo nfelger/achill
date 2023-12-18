@@ -2,18 +2,11 @@ import {
   ActionFunctionArgs,
   json,
   redirect,
-  type LoaderFunctionArgs,
   type MetaFunction,
 } from "@remix-run/node";
-import {
-  Form,
-  useActionData,
-  useLoaderData,
-  useNavigation,
-} from "@remix-run/react";
+import { Form, useActionData, useNavigation } from "@remix-run/react";
 import TroiApiService, { AuthenticationFailed } from "troi-library";
 import { LoadingOverlay } from "~/components/LoadingOverlay";
-import { login } from "~/cookies.server";
 import { commitSession, getSession } from "~/sessions";
 
 export const meta: MetaFunction = () => {
@@ -25,26 +18,26 @@ export const meta: MetaFunction = () => {
 
 const troiBaseUrl = "https://digitalservice.troi.software/api/v2/rest";
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const cookieHeader = request.headers.get("Cookie");
-  const cookie = (await login.parse(cookieHeader)) || {};
-  return json({ username: cookie.username });
-}
-
 export async function action({ request }: ActionFunctionArgs) {
   const cookieHeader = request.headers.get("Cookie");
-  const cookie = (await login.parse(cookieHeader)) || {};
   const bodyParams = await request.formData();
 
-  cookie.username = bodyParams.get("username");
-  cookie.password = bodyParams.get("password");
+  const username = bodyParams.get("username");
+  if (typeof username !== "string") {
+    throw new Response("Missing username", { status: 400 });
+  }
+
+  const password = bodyParams.get("password");
+  if (typeof password !== "string") {
+    throw new Response("Missing password", { status: 400 });
+  }
 
   try {
     const troiApi = new TroiApiService({
       baseUrl: troiBaseUrl,
       clientName: "DigitalService GmbH des Bundes",
-      username: cookie.username,
-      password: cookie.password,
+      username,
+      password,
     });
     await troiApi.initialize();
   } catch (error) {
@@ -58,11 +51,10 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   const session = await getSession(cookieHeader);
-  session.set("username", cookie.username);
-  session.set("troiPassword", cookie.password);
+  session.set("username", username);
+  session.set("troiPassword", password);
 
   const headers = new Headers();
-  headers.append("Set-Cookie", await login.serialize(cookie));
   headers.append("Set-Cookie", await commitSession(session));
 
   return redirect("/projects", {
@@ -71,7 +63,6 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Index() {
-  const { username } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
 
@@ -111,7 +102,6 @@ export default function Index() {
             <input
               id="username"
               type="text"
-              defaultValue={username}
               name="username"
               placeholder="firstName.lastName"
               className="mt-2 block w-full px-4 py-2"

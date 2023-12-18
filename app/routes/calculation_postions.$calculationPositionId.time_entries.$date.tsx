@@ -1,12 +1,11 @@
-import { ActionFunctionArgs } from "@remix-run/node";
+import { ActionFunctionArgs, redirect } from "@remix-run/node";
+import { isSessionValid } from "~/sessions";
 import { addTimeEntry } from "~/troi/troiApiController";
 
 export async function action({ request, params }: ActionFunctionArgs) {
   if (request.method !== "POST") {
     throw new Response("Method Not Allowed", { status: 405 });
   }
-
-  // todo (Malte Laukötter, 2023-12-15): check auth
 
   if (params.calculationPositionId === undefined) {
     throw new Response("Missing calculationPositionId", { status: 400 });
@@ -26,6 +25,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const description = body.get("description");
   if (typeof description !== "string") {
     throw new Response("Missing description", { status: 400 });
+  }
+
+  if (!(await isSessionValid(request))) {
+    throw redirect("/login");
   }
 
   await addTimeEntry(

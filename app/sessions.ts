@@ -34,4 +34,11 @@ const { getSession, commitSession, destroySession } =
     cookie: sessionCookie,
   });
 
+export async function isSessionValid(request: Request): Promise<boolean> {
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader);
+
+  return session.has("username") && session.has("troiPassword");
+}
+
 export { getSession, commitSession, destroySession };
