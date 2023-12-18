@@ -34,7 +34,7 @@ fileignoreconfig:
   - filename: app/mocks/stubs/calculationPositions.json
     checksum: 4013141db60d72f20e9867642310c167f9f32d55406e7d9b788995eeac3c2111
   - filename: tests/e2e/login.spec.ts
-    checksum: fcdd236aecbe539babccf1942cc9cea0b5acbfd77233247f2b2646f8c28c640a
+    checksum: 1a0d9ceaf8e4a6d76c7c9c0df4fcaca85edf5bd08344dd7a02cafa17cf01031a
   - filename: tests/e2e/LoginPage.ts
     allowed_patterns: [password]
 

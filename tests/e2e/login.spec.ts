@@ -19,6 +19,6 @@ test.describe("login page", () => {
     ).toBeVisible();
 
     await page.locator("text=LOGOUT").click();
-    await expect(page.locator("h2 >> text=Enter. Time.")).toBeVisible();
+    await expect(page).toHaveURL("/login");
   });
 });
