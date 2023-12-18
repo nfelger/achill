@@ -82,9 +82,9 @@ export default function Index() {
       <div className="mx-auto mt-8 w-full max-w-sm overflow-hidden rounded-sm bg-white px-8 py-6 shadow-md">
         {!isIdle && <LoadingOverlay message="Please wait..."></LoadingOverlay>}
 
-        <h2 className="mb-8 mt-4 text-center text-3xl font-bold text-blue-600">
+        <h1 className="mb-8 mt-4 text-center text-3xl font-bold text-blue-600">
           Enter. Time.
-        </h2>
+        </h1>
 
         {actionData?.message && (
           <div className="mt-4 w-full rounded-sm bg-red-500 text-white">
