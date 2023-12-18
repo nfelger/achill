@@ -30,7 +30,7 @@ const sessionCookie = createCookie("__session", {
 
 const { getSession, commitSession, destroySession } =
   createFileSessionStorage<SessionData>({
-    dir: "/sessions",
+    dir: "./sessions",
     cookie: sessionCookie,
   });
 
