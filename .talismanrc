@@ -25,9 +25,7 @@ fileignoreconfig:
     allowed_patterns: [password]
   - filename: tests/unit/transformCalendarEvents.test.ts
     allowed_patterns: [key]
-  - filename: old/src/lib/nocodbClient.js
-    checksum: 96164d475474e53ab8ce465d98b6c580a04e33228f02a1beb74436fa240d114c
-  - filename: app/tasks/nocodbClient.ts
+  - filename: app/tasks/nocodbClient.server.ts
     checksum: f4bcc85b1fbacd2a8dd8da7675849a40024fb1f7d909b4692954412aa2473319
   - filename: app/sessions.ts
     allowed_patterns: [todo_create_a_secret_and_load_from_env]
