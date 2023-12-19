@@ -11,7 +11,7 @@ import { commitSession, getSession } from "~/sessions";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Remix Application Template" },
+    { title: "Track your time" },
     { name: "description", content: "Hello DigitalService!" },
   ];
 };

@@ -7,7 +7,6 @@ import {
 } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import Troi from "../components/troi";
-import { useEffect, useState } from "react";
 import {
   getCalculationPositions,
   getCalendarEvents,
@@ -17,11 +16,9 @@ import { getSession, isSessionValid } from "~/sessions";
 import { loadTasks } from "~/tasks/TrackyTask";
 import { AuthenticationFailed } from "troi-library";
 
-let isHydrating = true;
-
 export const meta: MetaFunction = () => {
   return [
-    { title: "Remix Application Template" },
+    { title: "Track your time" },
     { name: "description", content: "Hello DigitalService!" },
   ];
 };
@@ -66,14 +63,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function Index() {
-  const [isHydrated, setIsHydrated] = useState(!isHydrating);
   const { username, calculationPositions, calendarEvents, timeEntries, tasks } =
     useLoaderData<typeof loader>();
-
-  useEffect(() => {
-    isHydrating = false;
-    setIsHydrated(true);
-  }, []);
 
   return (
     <main>
