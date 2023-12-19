@@ -368,7 +368,7 @@ export function TimeEntryForm({
                       placeholder="Working the work…"
                     />
                   </div>
-                  <div className="flex flex-row space-x-2 md:flex-col md:space-y-2">
+                  <div className="flex flex-row space-x-2 md:flex-col md:space-x-0 md:space-y-2">
                     {!disabled && updateMode && (
                       <>
                         <TroiButton
@@ -396,25 +396,27 @@ export function TimeEntryForm({
                 <br />
                 <p>{values.description}</p>
                 <br />
-                <TroiButton
-                  text={"Delete"}
-                  testId={`delete-${calculationPosition.id}`}
-                  onClick={() => {
-                    deleteClicked?.();
-                  }}
-                  color={buttonRed}
-                />
-                {!disabled && (
+                <div className="flex flex-row space-x-2">
                   <TroiButton
-                    text={"Edit"}
-                    testId={`edit-${calculationPosition.id}`}
+                    text={"Delete"}
+                    testId={`delete-${calculationPosition.id}`}
                     onClick={() => {
-                      // openPhases();
-                      setUpdateMode(true);
+                      deleteClicked?.();
                     }}
-                    color={buttonBlue}
+                    color={buttonRed}
                   />
-                )}
+                  {!disabled && (
+                    <TroiButton
+                      text={"Edit"}
+                      testId={`edit-${calculationPosition.id}`}
+                      onClick={() => {
+                        // openPhases();
+                        setUpdateMode(true);
+                      }}
+                      color={buttonBlue}
+                    />
+                  )}
+                </div>
               </div>
             )}
           </div>
