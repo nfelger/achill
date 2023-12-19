@@ -132,12 +132,6 @@ export default function Index() {
             >
               Sign in
             </button>
-            <p className="mt-2 px-2 text-xs text-gray-600">
-              <s>
-                Your password isn't stored anywhere and is deleted when you
-                close this tab.
-              </s>
-            </p>
           </div>
         </Form>
       </div>
