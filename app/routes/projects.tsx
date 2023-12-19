@@ -6,7 +6,7 @@ import {
   type MetaFunction,
 } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
-import Troi from "../components/troi.client";
+import Troi from "../components/troi";
 import { useEffect, useState } from "react";
 import {
   getCalculationPositions,
@@ -106,16 +106,12 @@ export default function Index() {
             </div>
           </div>
         </nav>
-        {/* render client side only */}
-        {/* https://remix.run/docs/en/main/guides/migrating-react-router-app#client-only-components */}
-        {isHydrated && (
-          <Troi
-            calendarEvents={calendarEvents}
-            timeEntries={timeEntries}
-            calculationPositions={calculationPositions}
-            tasks={tasks}
-          />
-        )}
+        <Troi
+          calendarEvents={calendarEvents}
+          timeEntries={timeEntries}
+          calculationPositions={calculationPositions}
+          tasks={tasks}
+        />
       </div>
     </main>
   );
