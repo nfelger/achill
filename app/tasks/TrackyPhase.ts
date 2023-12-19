@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import nocodbApi from "./nocodbClient";
+import nocodbApi from "./nocodbClient.server";
 
 type TrackyPositionPhase = {
   Id: number;
@@ -13,25 +12,12 @@ type TrackySubprojectPhase = {
   "Phase ID": number;
 };
 
-type TrackyPhase = {
+export type TrackyPhase = {
   Id: number;
   "Phase ID": number;
   "Phase Name": string;
   Divider: unknown;
 };
-
-export function usePhaseNames(positionId: number, subprojectId: number) {
-  // note: this pattern could lead to race conditions when positionId or subprojectId change
-  const [phaseNames, setPhaseNames] = useState<string[]>([]);
-
-  useEffect(() => {
-    loadPhases(positionId, subprojectId).then((phases) => {
-      setPhaseNames(phases.map((phase) => phase["Phase Name"]));
-    });
-  }, [positionId, subprojectId]);
-
-  return phaseNames;
-}
 
 async function loadPostionPhases(
   positionId: number,
@@ -63,7 +49,7 @@ async function loadSubprojectPhases(
   return subprojectPhases.list as TrackySubprojectPhase[];
 }
 
-async function loadPhases(
+export async function loadPhases(
   positionId: number,
   subprojectId: number,
 ): Promise<TrackyPhase[]> {

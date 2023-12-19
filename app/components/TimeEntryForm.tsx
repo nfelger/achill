@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TroiButton } from "./TroiButton";
 import { buttonBlue, buttonRed } from "~/utils/colors";
-import { TrackyTask } from "~/tasks/useTasks";
-import { usePhaseNames } from "~/tasks/usePhaseNames";
+import { TrackyTask } from "~/tasks/TrackyTask";
+import { TrackyPhase } from "~/tasks/TrackyPhase";
 import { validateForm } from "~/utils/timeEntryFormValidator";
 import { CalculationPosition } from "~/troi/CalculationPosition";
+import { useFetcher } from "@remix-run/react";
+import { LoadingOverlay } from "./LoadingOverlay";
 
 export interface TimeEntryFormErrors {
   hours?: string;
@@ -81,10 +83,15 @@ export function TimeEntryForm({
   );
   const [errors, setErrors] = useState<TimeEntryFormErrors>({});
 
-  const phaseNames = usePhaseNames(
-    calculationPosition.id,
-    calculationPosition.subprojectId,
-  );
+  const phaseFetcher = useFetcher<TrackyPhase[]>();
+  useEffect(() => {
+    phaseFetcher.load(
+      `/phases?calculationPositionId=${calculationPosition.id}`,
+    );
+  }, [calculationPosition.id]);
+
+  const phaseNames =
+    phaseFetcher.data?.map((phase) => phase["Phase Name"]) ?? [];
   const phases = phaseNames.map((value) => {
     for (const phaseTask of phaseTasks) {
       if (descriptionSegments.includes([phaseTask.name, value].join(" "))) {
@@ -190,6 +197,9 @@ export function TimeEntryForm({
 
   return (
     <div data-test="entry-form" className="my-2 flex justify-center">
+      {phaseFetcher.state !== "idle" && (
+        <LoadingOverlay message="Please wait..." />
+      )}
       <div className="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
         <div className="flex flex-col">
           <div className="basis-3/4 p-1">

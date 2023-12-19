@@ -14,6 +14,7 @@ import {
   getTimeEntries,
 } from "~/troi/troiApiController";
 import { getSession, isSessionValid } from "~/sessions";
+import { loadTasks } from "~/tasks/TrackyTask";
 
 let isHydrating = true;
 
@@ -40,20 +41,24 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   const calculationPositions = await getCalculationPositions(request);
-  const calendarEvents = await getCalendarEvents(request);
-  const timeEntries = await getTimeEntries(request);
+  const [calendarEvents, timeEntries, tasks] = await Promise.all([
+    getCalendarEvents(request),
+    getTimeEntries(request),
+    loadTasks(),
+  ]);
 
   return json({
     username: session.get("username")!,
     calculationPositions,
     calendarEvents,
     timeEntries,
+    tasks,
   });
 }
 
 export default function Index() {
   const [isHydrated, setIsHydrated] = useState(!isHydrating);
-  const { username, calculationPositions, calendarEvents, timeEntries } =
+  const { username, calculationPositions, calendarEvents, timeEntries, tasks } =
     useLoaderData<typeof loader>();
 
   useEffect(() => {
@@ -99,6 +104,7 @@ export default function Index() {
             calendarEvents={calendarEvents}
             timeEntries={timeEntries}
             calculationPositions={calculationPositions}
+            tasks={tasks}
           />
         )}
       </div>

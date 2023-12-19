@@ -123,11 +123,13 @@ async function fetchCalculationPositionsAndSaveToSession(request: Request) {
 
 export async function getCalculationPositions(
   request: Request,
+  shouldRevalidate = true,
 ): Promise<CalculationPosition[]> {
   return staleWhileRevalidate(
     request,
     fetchCalculationPositionsAndSaveToSession,
     "troiCalculationPositions",
+    shouldRevalidate,
   );
 }
 
@@ -351,14 +353,17 @@ async function staleWhileRevalidate<Key extends keyof SessionData>(
   request: Request,
   fetcher: (request: Request) => Promise<SessionData[Key]>,
   sessionKey: Key,
+  shouldRevalidate = true,
 ): Promise<SessionData[Key]> {
   const cookieHeader = request.headers.get("Cookie");
   const session = await getSession(cookieHeader);
 
   const cacheData: SessionData[Key] | undefined = session.get(sessionKey);
   if (cacheData !== undefined) {
-    // fetch in background
-    void fetcher(request);
+    if (shouldRevalidate) {
+      // fetch in background
+      void fetcher(request);
+    }
     return cacheData;
   }
 

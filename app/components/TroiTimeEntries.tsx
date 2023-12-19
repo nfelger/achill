@@ -3,7 +3,7 @@ import {
   convertTimeStringToFloat,
 } from "~/utils/timeConverter";
 import { TimeEntryForm } from "./TimeEntryForm";
-import { TrackyTask } from "~/tasks/useTasks";
+import { TrackyTask } from "~/tasks/TrackyTask";
 import { Fragment } from "react";
 import { CalculationPosition } from "~/troi/CalculationPosition";
 import { TimeEntry } from "~/troi/TimeEntry";

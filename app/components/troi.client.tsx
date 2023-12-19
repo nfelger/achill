@@ -3,7 +3,11 @@ import { InfoBanner } from "./InfoBanner";
 import { addDaysToDate, getWeekDaysFor } from "~/utils/dateUtils";
 import { WeekView } from "./WeekView";
 import { TroiTimeEntries } from "./TroiTimeEntries";
-import { useTasks } from "~/tasks/useTasks";
+import {
+  TrackyTask,
+  filterPhaseTasks,
+  filterRecurringTasks,
+} from "~/tasks/TrackyTask";
 import type { CalendarEvent } from "troi-library";
 import {
   TransformedCalendarEvent,
@@ -19,6 +23,7 @@ interface Props {
   calculationPositions: CalculationPosition[];
   calendarEvents: CalendarEvent[];
   timeEntries: TimeEntries;
+  tasks: TrackyTask[];
 }
 
 function findEventsOfDate(
@@ -44,7 +49,8 @@ function calcHoursOfDate(timeEntries: TimeEntries, date: Date) {
 }
 
 export default function Troi(props: Props) {
-  const { recurringTasks, phaseTasks } = useTasks();
+  const recurringTasks = filterRecurringTasks(props.tasks);
+  const phaseTasks = filterPhaseTasks(props.tasks);
 
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const selectedWeek = getWeekDaysFor(selectedDate);
