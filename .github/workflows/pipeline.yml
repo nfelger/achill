@@ -10,6 +10,7 @@ on:
 
 env:
   IMAGE_NAME: ${{ github.repository }}-remix
+  NOCODB_BASE_URL: "https://metrics.ds4g.dev:38081"
 
 jobs:
   build:
