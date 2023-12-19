@@ -1,4 +1,5 @@
 import { ActionFunctionArgs, redirect } from "@remix-run/node";
+import { AuthenticationFailed } from "troi-library";
 import { isSessionValid } from "~/sessions";
 import { addTimeEntry } from "~/troi/troiApiController";
 
@@ -33,13 +34,21 @@ export async function action({ request, params }: ActionFunctionArgs) {
     throw redirect("/login");
   }
 
-  await addTimeEntry(
-    request,
-    parseInt(calculationPositionId, 10),
-    date,
-    parseFloat(hours),
-    description,
-  );
+  try {
+    await addTimeEntry(
+      request,
+      parseInt(calculationPositionId, 10),
+      date,
+      parseFloat(hours),
+      description,
+    );
+  } catch (e) {
+    if (e instanceof AuthenticationFailed) {
+      throw redirect("/login");
+    }
+
+    throw e;
+  }
 
   return new Response(null, { status: 201 });
 }

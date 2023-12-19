@@ -1,4 +1,5 @@
 import { ActionFunctionArgs, redirect } from "@remix-run/node";
+import { AuthenticationFailed } from "troi-library";
 import { isSessionValid } from "~/sessions";
 import { deleteTimeEntry, updateTimeEntry } from "~/troi/troiApiController";
 
@@ -13,7 +14,16 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   switch (request.method) {
     case "DELETE":
-      await deleteTimeEntry(request, Number.parseInt(params.id));
+      try {
+        await deleteTimeEntry(request, Number.parseInt(params.id));
+      } catch (e) {
+        if (e instanceof AuthenticationFailed) {
+          throw redirect("/login");
+        }
+
+        throw e;
+      }
+
       return new Response(null, { status: 204 });
     case "PUT":
       const body = await request.formData();
@@ -28,12 +38,19 @@ export async function action({ request, params }: ActionFunctionArgs) {
         throw new Response("Missing description", { status: 400 });
       }
 
-      await updateTimeEntry(
-        request,
-        Number.parseInt(params.id),
-        parseFloat(hours),
-        description,
-      );
+      try {
+        await updateTimeEntry(
+          request,
+          Number.parseInt(params.id),
+          parseFloat(hours),
+          description,
+        );
+      } catch (e) {
+        if (e instanceof AuthenticationFailed) {
+          throw redirect("/login");
+        }
+        throw e;
+      }
 
       return new Response(null, { status: 201 });
     default:

@@ -15,6 +15,7 @@ import {
 } from "~/troi/troiApiController";
 import { getSession, isSessionValid } from "~/sessions";
 import { loadTasks } from "~/tasks/TrackyTask";
+import { AuthenticationFailed } from "troi-library";
 
 let isHydrating = true;
 
@@ -40,20 +41,28 @@ export async function loader({ request }: LoaderFunctionArgs) {
     throw redirect("/login");
   }
 
-  const calculationPositions = await getCalculationPositions(request);
-  const [calendarEvents, timeEntries, tasks] = await Promise.all([
-    getCalendarEvents(request),
-    getTimeEntries(request),
-    loadTasks(),
-  ]);
+  try {
+    const calculationPositions = await getCalculationPositions(request);
+    const [calendarEvents, timeEntries, tasks] = await Promise.all([
+      getCalendarEvents(request),
+      getTimeEntries(request),
+      loadTasks(),
+    ]);
 
-  return json({
-    username: session.get("username")!,
-    calculationPositions,
-    calendarEvents,
-    timeEntries,
-    tasks,
-  });
+    return json({
+      username: session.get("username")!,
+      calculationPositions,
+      calendarEvents,
+      timeEntries,
+      tasks,
+    });
+  } catch (e) {
+    if (e instanceof AuthenticationFailed) {
+      throw redirect("/login");
+    }
+
+    throw e;
+  }
 }
 
 export default function Index() {

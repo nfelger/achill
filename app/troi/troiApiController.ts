@@ -1,7 +1,7 @@
 import type { CalendarEvent } from "troi-library";
-import TroiApiService from "troi-library";
+import TroiApiService, { AuthenticationFailed } from "troi-library";
 import type { SessionData } from "~/sessions";
-import { commitSession, getSession } from "~/sessions";
+import { commitSession, destroySession, getSession } from "~/sessions";
 import { addDaysToDate, formatDateToYYYYMMDD } from "~/utils/dateUtils";
 import type { TimeEntries, TimeEntry } from "./TimeEntry";
 import type { CalculationPosition } from "./CalculationPosition";
@@ -362,7 +362,13 @@ async function staleWhileRevalidate<Key extends keyof SessionData>(
   if (cacheData !== undefined) {
     if (shouldRevalidate) {
       // fetch in background
-      void fetcher(request);
+      void fetcher(request).catch((e) => {
+        if (e instanceof AuthenticationFailed) {
+          destroySession(session);
+        } else {
+          throw e;
+        }
+      });
     }
     return cacheData;
   }
