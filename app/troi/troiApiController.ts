@@ -54,6 +54,7 @@ export async function getClientId(request: Request): Promise<number> {
     session.get("username"),
     session.get("troiPassword"),
   );
+  console.log("[TroiAPI]", "getClientId()");
   const clientId = await troiApi.getClientId();
 
   session.set("troiClientId", clientId);
@@ -76,6 +77,7 @@ export async function getEmployeeId(request: Request): Promise<number> {
     session.get("troiPassword"),
     await getClientId(request),
   );
+  console.log("[TroiAPI]", "getEmployeeId()");
   const employeeId = await troiApi.getEmployeeId();
 
   session.set("troiEmployeeId", employeeId);
@@ -94,6 +96,8 @@ async function fetchCalculationPositionsAndSaveToSession(request: Request) {
     session.get("username"),
     session.get("troiPassword"),
   );
+
+  console.log("[TroiAPI]", "GET /calculationPositions");
 
   const calculationPositions: CalculationPosition[] = (
     (await troiApi.makeRequest({
@@ -141,6 +145,9 @@ async function fetchCalendarEventsAndSaveToSession(request: Request) {
     session.get("username"),
     session.get("troiPassword"),
   );
+
+  console.log("[TroiAPI]", "getCalendarEvents()");
+
   const calendarEvents = await troiApi.getCalendarEvents(
     formatDateToYYYYMMDD(addDaysToDate(new Date(), -366)),
     formatDateToYYYYMMDD(addDaysToDate(new Date(), 366)),
@@ -177,27 +184,31 @@ async function fetchTimeEntriesAndSaveToSession(request: Request) {
   const calculationPositions = await getCalculationPositions(request);
   const entries: TimeEntry[] = (
     await Promise.all(
-      calculationPositions.map(
-        (calcPos) =>
-          troiApi.makeRequest({
-            url: "/billings/hours",
-            params: {
-              clientId: clientId.toString(),
-              employeeId: employeeId.toString(),
-              calculationPositionId: calcPos.id.toString(),
-              startDate: formatDateToYYYYMMDD(addDaysToDate(new Date(), -366)),
-              endDate: formatDateToYYYYMMDD(addDaysToDate(new Date(), 366)),
-            },
-          }) as Promise<{
+      calculationPositions.map((calcPos) => {
+        console.log(
+          "[TroiAPI]",
+          `GET /billings/hours for CalculationPosition ${calcPos.id}`,
+        );
+
+        return troiApi.makeRequest({
+          url: "/billings/hours",
+          params: {
+            clientId: clientId.toString(),
+            employeeId: employeeId.toString(),
+            calculationPositionId: calcPos.id.toString(),
+            startDate: formatDateToYYYYMMDD(addDaysToDate(new Date(), -366)),
+            endDate: formatDateToYYYYMMDD(addDaysToDate(new Date(), 366)),
+          },
+        }) as Promise<{
+          id: number;
+          Date: string;
+          Quantity: string;
+          Remark: string;
+          CalculationPosition: {
             id: number;
-            Date: string;
-            Quantity: string;
-            Remark: string;
-            CalculationPosition: {
-              id: number;
-            };
-          }>,
-      ),
+          };
+        }>;
+      }),
     )
   )
     .flat()
@@ -247,6 +258,8 @@ export async function addTimeEntry(
     await getEmployeeId(request),
   );
 
+  console.log("[TroiAPI]", "postTimeEntry()");
+
   const result = (await troiApi.postTimeEntry(
     calculationPostionId,
     date,
@@ -283,6 +296,8 @@ export async function deleteTimeEntry(request: Request, id: number) {
     session.get("troiPassword"),
   );
 
+  console.log("[TroiAPI]", "deleteTimeEntry()");
+
   await troiApi.deleteTimeEntry(id);
 
   const existingEntries = session.get("troiTimeEntries");
@@ -318,6 +333,8 @@ export async function updateTimeEntry(
     Quantity: hours,
     Remark: description,
   };
+
+  console.log("[TroiAPI]", `PUT /billings/hours/${id}`);
 
   const res = (await troiApi.makeRequest({
     url: `/billings/hours/${id}`,
