@@ -83,12 +83,16 @@ export function TimeEntryForm({
   );
   const [errors, setErrors] = useState<TimeEntryFormErrors>({});
 
-  const phaseFetcher = useFetcher<TrackyPhase[]>();
+  const phaseFetcher = useFetcher<TrackyPhase[]>({
+    key: `/phases?calculationPositionId=${calculationPosition.id}`,
+  });
   useEffect(() => {
-    phaseFetcher.load(
-      `/phases?calculationPositionId=${calculationPosition.id}`,
-    );
-  }, [calculationPosition.id]);
+    if (phaseFetcher.data == undefined) {
+      phaseFetcher.load(
+        `/phases?calculationPositionId=${calculationPosition.id}`,
+      );
+    }
+  }, []);
 
   const phaseNames =
     phaseFetcher.data?.map((phase) => phase["Phase Name"]) ?? [];
