@@ -11,6 +11,8 @@ fileignoreconfig:
     checksum: 446eff0044854604c36e380d186aab48077af382668430ad518ef49b37d4fa02
   - filename: SECURITY.md
     checksum: b1743150cdd537be3a66f5308f887d130f0f320ab21628b63713808090a84e3f
+  - filename: .env.example
+    checksum: 71ab6e499db835e32c6656aafe28833d7d49b4e1441ba8404dc28691da023609
   - filename: app/tasks/nocodbClient.server.ts
     checksum: f4bcc85b1fbacd2a8dd8da7675849a40024fb1f7d909b4692954412aa2473319
   - filename: app/mocks/stubs/calculationPositions.json
