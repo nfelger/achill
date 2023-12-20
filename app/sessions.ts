@@ -20,9 +20,16 @@ export type SessionData = {
   troiCalendarEvents: CalendarEvent[];
 };
 
+const sessionCookieSecret = process.env.SESSION_COOKIE_SECRET;
+if (sessionCookieSecret === undefined) {
+  throw new Error(
+    "Missing secret for session cookie (enviroment variable SESSION_COOKIE_SECRET)",
+  );
+}
+
 const sessionCookie = createCookie("__session", {
   maxAge: 30 * 24 * 60 * 60,
-  secrets: ["todo_create_a_secret_and_load_from_env"],
+  secrets: [sessionCookieSecret],
   sameSite: "lax",
   secure: true,
   httpOnly: true,

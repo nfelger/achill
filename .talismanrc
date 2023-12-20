@@ -1,6 +1,6 @@
 fileignoreconfig:
   - filename: .github/workflows/pipeline.yml
-    checksum: 294aacbf197c9189c66b49f79ccc255abf40494a3641eda54f26d5c442144489
+    checksum: 701ab9412bdcc492900dde4a2f5dd383e3c54aba3ca080c9b43c4c25e9334ffb
   - filename: .github/workflows/scan.yml
     checksum: 14fd20b334e55e9f6ee23d13fa82d2c17d94cb59928b7dd5828e8adca40cf1d8
   - filename: README.md
@@ -12,7 +12,9 @@ fileignoreconfig:
   - filename: SECURITY.md
     checksum: b1743150cdd537be3a66f5308f887d130f0f320ab21628b63713808090a84e3f
   - filename: .env.example
-    checksum: 71ab6e499db835e32c6656aafe28833d7d49b4e1441ba8404dc28691da023609
+    checksum: d8f34bb85e049048eda804484e9928cc82d9524b639a23117b2faf94fcd9a8ab
+  - filename: start.sh
+    checksum: 7546c3e95fbdb1c515680d6319ee31ee6c27aef9aa7415f132d63700f9692226
   - filename: app/tasks/nocodbClient.server.ts
     checksum: f4bcc85b1fbacd2a8dd8da7675849a40024fb1f7d909b4692954412aa2473319
   - filename: app/mocks/stubs/calculationPositions.json
@@ -28,7 +30,7 @@ fileignoreconfig:
   - filename: tests/e2e/LoginPage.ts
     allowed_patterns: [password]
   - filename: app/sessions.ts
-    allowed_patterns: [todo_create_a_secret_and_load_from_env]
+    allowed_patterns: [sessionCookieSecret, SESSION_COOKIE_SECRET]
 
 version: ""
 scopeconfig:
