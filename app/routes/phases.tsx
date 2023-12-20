@@ -3,7 +3,7 @@ import { isSessionValid } from "~/sessions.server";
 import { loadPhases } from "~/tasks/TrackyPhase";
 import { getCalculationPositions } from "~/troi/troiApiController";
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   if (!url.searchParams.has("calculationPositionId")) {
     throw new Response("Missing calculationPositionId", { status: 400 });

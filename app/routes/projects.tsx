@@ -40,11 +40,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   try {
     const calculationPositions = await getCalculationPositions(request);
-    const [calendarEvents, timeEntries, tasks] = await Promise.all([
-      getCalendarEvents(request),
-      getTimeEntries(request),
-      loadTasks(),
-    ]);
+    const calendarEvents = await getCalendarEvents(request);
+    const timeEntries = await getTimeEntries(request);
+    const tasks = await loadTasks();
 
     return json({
       username: session.get("username")!,

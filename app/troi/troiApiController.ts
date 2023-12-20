@@ -152,7 +152,6 @@ async function fetchCalendarEventsAndSaveToSession(request: Request) {
     formatDateToYYYYMMDD(addDaysToDate(new Date(), -366)),
     formatDateToYYYYMMDD(addDaysToDate(new Date(), 366)),
   );
-
   session.set("troiCalendarEvents", calendarEvents);
   await commitSession(session);
 
@@ -377,6 +376,7 @@ async function staleWhileRevalidate<Key extends keyof SessionData>(
 
   const cacheData: SessionData[Key] | undefined = session.get(sessionKey);
   if (cacheData !== undefined) {
+    console.debug(`Cache hit:`, sessionKey);
     if (shouldRevalidate) {
       // fetch in background
       void fetcher(request).catch((e) => {
@@ -389,6 +389,7 @@ async function staleWhileRevalidate<Key extends keyof SessionData>(
     }
     return cacheData;
   }
+  console.debug(`Cache miss:`, sessionKey);
 
   return await fetcher(request);
 }
