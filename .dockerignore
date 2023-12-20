@@ -15,3 +15,4 @@ public/build
 !security.txt
 !tailwind.config.js
 !tsconfig.json
+!start.sh
