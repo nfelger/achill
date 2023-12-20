@@ -1,7 +1,7 @@
 import type { CalendarEvent } from "troi-library";
 import TroiApiService, { AuthenticationFailed } from "troi-library";
-import type { SessionData } from "~/sessions";
-import { commitSession, destroySession, getSession } from "~/sessions";
+import type { SessionData } from "~/sessions.server";
+import { commitSession, destroySession, getSession } from "~/sessions.server";
 import { addDaysToDate, formatDateToYYYYMMDD } from "~/utils/dateUtils";
 import type { TimeEntries, TimeEntry } from "./TimeEntry";
 import type { CalculationPosition } from "./CalculationPosition";

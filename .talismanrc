@@ -29,7 +29,7 @@ fileignoreconfig:
     allowed_patterns: [key]
   - filename: tests/e2e/LoginPage.ts
     allowed_patterns: [password]
-  - filename: app/sessions.ts
+  - filename: app/sessions.server.ts
     allowed_patterns: [sessionCookieSecret, SESSION_COOKIE_SECRET]
 
 version: ""

@@ -12,7 +12,7 @@ import {
   getCalendarEvents,
   getTimeEntries,
 } from "~/troi/troiApiController";
-import { getSession, isSessionValid } from "~/sessions";
+import { getSession, isSessionValid } from "~/sessions.server";
 import { loadTasks } from "~/tasks/TrackyTask";
 import { AuthenticationFailed } from "troi-library";
 

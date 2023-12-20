@@ -1,11 +1,5 @@
 import type { CalendarEvent } from "troi-library";
 
-// how to invalidate:
-// 1. shortish ttl for session-cookie
-// 2. revalidate after request was send (stale-while-revalidate)
-
-// split login & troi data sessions in two and add a ttl to the session data cookie? or save it as a session cookie?
-
 import { createCookie, createFileSessionStorage } from "@remix-run/node";
 import type { TimeEntries } from "./troi/TimeEntry";
 import type { CalculationPosition } from "./troi/CalculationPosition";

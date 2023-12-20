@@ -7,7 +7,7 @@ import {
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 import TroiApiService, { AuthenticationFailed } from "troi-library";
 import { LoadingOverlay } from "~/components/LoadingOverlay";
-import { commitSession, getSession } from "~/sessions";
+import { commitSession, getSession } from "~/sessions.server";
 
 export const meta: MetaFunction = () => {
   return [

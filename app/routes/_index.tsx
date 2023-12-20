@@ -3,7 +3,7 @@ import {
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "@remix-run/node";
-import { isSessionValid } from "~/sessions";
+import { isSessionValid } from "~/sessions.server";
 
 export const meta: MetaFunction = () => {
   return [

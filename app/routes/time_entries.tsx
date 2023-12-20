@@ -1,6 +1,6 @@
 import { ActionFunctionArgs, redirect } from "@remix-run/node";
 import { AuthenticationFailed } from "troi-library";
-import { isSessionValid } from "~/sessions";
+import { isSessionValid } from "~/sessions.server";
 import { addTimeEntry } from "~/troi/troiApiController";
 
 export async function action({ request, params }: ActionFunctionArgs) {

@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs, json, redirect } from "@remix-run/node";
-import { isSessionValid } from "~/sessions";
+import { isSessionValid } from "~/sessions.server";
 import { loadPhases } from "~/tasks/TrackyPhase";
 import { getCalculationPositions } from "~/troi/troiApiController";
 
