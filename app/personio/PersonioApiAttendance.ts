@@ -4,7 +4,7 @@ interface Metadata {
   total_pages: number;
 }
 
-interface AttendancePeriod {
+export interface PersonioAttendancePeriod {
   id: number;
   type: "AttendancePeriod";
   attributes: {
@@ -25,7 +25,7 @@ interface AttendancePeriod {
 export interface PersonioApiAttendance {
   success: boolean;
   metadata: Metadata;
-  data: AttendancePeriod[];
+  data: PersonioAttendancePeriod[];
   offset: string;
   limit: string;
 }

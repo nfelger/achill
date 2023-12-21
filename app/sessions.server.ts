@@ -3,6 +3,8 @@ import type { CalendarEvent } from "troi-library";
 import { createCookie, createFileSessionStorage } from "@remix-run/node";
 import type { TimeEntries } from "./troi/TimeEntry";
 import type { CalculationPosition } from "./troi/CalculationPosition";
+import type { PersonioEmployee } from "./personio/PersonioEmployee";
+import type { PersonioAttendancePeriod } from "./personio/PersonioApiAttendance";
 
 export type SessionData = {
   username: string;
@@ -12,6 +14,8 @@ export type SessionData = {
   troiCalculationPositions: CalculationPosition[];
   troiTimeEntries: TimeEntries;
   troiCalendarEvents: CalendarEvent[];
+  personioEmployee: PersonioEmployee;
+  personioAttendances: PersonioAttendancePeriod[];
 };
 
 const sessionCookieSecret = process.env.SESSION_COOKIE_SECRET;

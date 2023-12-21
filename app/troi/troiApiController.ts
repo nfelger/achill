@@ -1,10 +1,10 @@
 import type { CalendarEvent } from "troi-library";
-import TroiApiService, { AuthenticationFailed } from "troi-library";
-import type { SessionData } from "~/sessions.server";
-import { commitSession, destroySession, getSession } from "~/sessions.server";
+import TroiApiService from "troi-library";
+import { commitSession, getSession } from "~/sessions.server";
 import { addDaysToDate, formatDateToYYYYMMDD } from "~/utils/dateUtils";
 import type { TimeEntries, TimeEntry } from "./TimeEntry";
 import type { CalculationPosition } from "./CalculationPosition";
+import { staleWhileRevalidate } from "../utils/staleWhileRevalidate";
 
 const BASE_URL = "https://digitalservice.troi.software/api/v2/rest";
 const CLIENT_NAME = "DigitalService GmbH des Bundes";
@@ -119,9 +119,6 @@ async function fetchCalculationPositionsAndSaveToSession(request: Request) {
     subprojectId: obj.Subproject.id,
   }));
 
-  session.set("troiCalculationPositions", calculationPositions);
-  await commitSession(session);
-
   return calculationPositions;
 }
 
@@ -152,8 +149,6 @@ async function fetchCalendarEventsAndSaveToSession(request: Request) {
     formatDateToYYYYMMDD(addDaysToDate(new Date(), -366)),
     formatDateToYYYYMMDD(addDaysToDate(new Date(), 366)),
   );
-  session.set("troiCalendarEvents", calendarEvents);
-  await commitSession(session);
 
   return calendarEvents;
 }
@@ -225,9 +220,6 @@ async function fetchTimeEntriesAndSaveToSession(request: Request) {
   for (const entry of entries) {
     entriesById[entry.id] = entry;
   }
-
-  session.set("troiTimeEntries", entriesById);
-  await commitSession(session);
 
   return entriesById;
 }
@@ -353,43 +345,4 @@ export async function updateTimeEntry(
     session.set("troiTimeEntries", existingEntries);
     await commitSession(session);
   }
-}
-
-/**
- * Return data from the session cache and revalidate cached data in the background.
- *
- * see also:  https://web.dev/articles/stale-while-revalidate
- *
- * @param request
- * @param fetcher - Fetch the data and commit it to the session cache
- * @param sessionKey
- * @returns
- */
-async function staleWhileRevalidate<Key extends keyof SessionData>(
-  request: Request,
-  fetcher: (request: Request) => Promise<SessionData[Key]>,
-  sessionKey: Key,
-  shouldRevalidate = true,
-): Promise<SessionData[Key]> {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
-
-  const cacheData: SessionData[Key] | undefined = session.get(sessionKey);
-  if (cacheData !== undefined) {
-    console.debug(`Cache hit:`, sessionKey);
-    if (shouldRevalidate) {
-      // fetch in background
-      void fetcher(request).catch((e) => {
-        if (e instanceof AuthenticationFailed) {
-          destroySession(session);
-        } else {
-          throw e;
-        }
-      });
-    }
-    return cacheData;
-  }
-  console.debug(`Cache miss:`, sessionKey);
-
-  return await fetcher(request);
 }

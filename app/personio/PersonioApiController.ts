@@ -5,6 +5,7 @@ import type {
 } from "./PersonioApiEmployee";
 import moment from "moment";
 import type { PersonioApiAttendance } from "./PersonioApiAttendance";
+import type { PersonioEmployee } from "./PersonioEmployee";
 
 const PERSONIO_BASE_URL = "https://api.personio.de/v1";
 const PERSONIO_AUTH_URL = `${PERSONIO_BASE_URL}/auth`;
@@ -48,13 +49,13 @@ async function getAuthToken(): Promise<string> {
   return data.token;
 }
 
-let authToken: string | undefined;
+let authToken: Promise<string> | undefined;
 async function fetchWithPersonioAuth(
   input: RequestInfo | URL,
   init?: RequestInit | undefined,
 ): Promise<Response> {
   if (authToken === undefined) {
-    authToken = await getAuthToken();
+    authToken = getAuthToken();
   }
 
   const fetchData = async (authToken: string) => {
@@ -75,16 +76,18 @@ async function fetchWithPersonioAuth(
     return response;
   };
 
-  const response = await fetchData(authToken);
+  const response = await fetchData(await authToken);
   if (response.status === 401) {
-    authToken = await getAuthToken();
-    return fetchData(authToken);
+    authToken = getAuthToken();
+    return fetchData(await authToken);
   }
 
   return response;
 }
 
-export async function getEmployeeDataByMailAddress(mailAddress: string) {
+export async function getEmployeeDataByMailAddress(
+  mailAddress: string,
+): Promise<PersonioEmployee> {
   const url = new URL(PERSONIO_EMPLOYEES_URL);
   url.searchParams.set("email", mailAddress);
 
@@ -105,7 +108,9 @@ export async function getEmployeeDataByMailAddress(mailAddress: string) {
   };
 }
 
-export async function getEmployeeData(employeeId: number) {
+export async function getEmployeeData(
+  employeeId: number,
+): Promise<PersonioEmployee> {
   const response = await fetchWithPersonioAuth(
     `${PERSONIO_EMPLOYEES_URL}/${employeeId}`,
   );
@@ -128,13 +133,15 @@ export async function getAttendances(
   employeeId: number,
   startDate: Date,
   endDate: Date,
+  limit: number = 200,
+  offset: number = 0,
 ) {
   const url = new URL(PERSONIO_ATTENDANCES_URL);
   url.searchParams.set("start_date", moment(startDate).format("YYYY-MM-DD"));
   url.searchParams.set("end_date", moment(endDate).format("YYYY-MM-DD"));
   url.searchParams.append("employees", employeeId.toString());
-  url.searchParams.set("limit", "200");
-  url.searchParams.set("offset", "0");
+  url.searchParams.set("limit", limit.toString());
+  url.searchParams.set("offset", offset.toString());
 
   const response = await fetchWithPersonioAuth(url);
 
