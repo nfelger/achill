@@ -4,7 +4,7 @@ import { createCookie, createFileSessionStorage } from "@remix-run/node";
 import type { TimeEntries } from "./troi/TimeEntry";
 import type { CalculationPosition } from "./troi/CalculationPosition";
 import type { PersonioEmployee } from "./personio/PersonioEmployee";
-import type { PersonioAttendancePeriod } from "./personio/PersonioApiAttendance";
+import type { PersonioAttendance } from "./personio/PersonioAttendance";
 
 export type SessionData = {
   username: string;
@@ -15,7 +15,7 @@ export type SessionData = {
   troiTimeEntries: TimeEntries;
   troiCalendarEvents: CalendarEvent[];
   personioEmployee: PersonioEmployee;
-  personioAttendances: PersonioAttendancePeriod[];
+  personioAttendances: PersonioAttendance[];
 };
 
 const sessionCookieSecret = process.env.SESSION_COOKIE_SECRET;
