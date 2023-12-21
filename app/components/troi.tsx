@@ -18,6 +18,7 @@ import { TimeEntries, TimeEntry } from "~/troi/TimeEntry";
 import { CalculationPosition } from "~/troi/CalculationPosition";
 import { useFetcher } from "@remix-run/react";
 import { LoadingOverlay } from "./LoadingOverlay";
+import { WorkingTimeForm } from "./WorkingTimeForm";
 
 interface Props {
   calculationPositions: CalculationPosition[];
@@ -146,6 +147,8 @@ export default function Troi(props: Props) {
           event={event}
         />
       ))}
+
+      <WorkingTimeForm selectedDate={selectedDate} />
 
       {!selectedDayEvents?.some((event) => event.type == "Holiday") && (
         <TroiTimeEntries

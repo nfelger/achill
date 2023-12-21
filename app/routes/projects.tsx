@@ -43,6 +43,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const calendarEvents = await getCalendarEvents(request);
     const timeEntries = await getTimeEntries(request);
     const tasks = await loadTasks();
+    // todo (Malte Laukötter, 2023-12-21): load personio attendances & working hours
 
     return json({
       username: session.get("username")!,
