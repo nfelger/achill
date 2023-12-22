@@ -19,12 +19,16 @@ import { CalculationPosition } from "~/troi/CalculationPosition";
 import { useFetcher } from "@remix-run/react";
 import { LoadingOverlay } from "./LoadingOverlay";
 import { WorkingTimeForm } from "./WorkingTimeForm";
+import { WorkingHours } from "~/personio/PersonioEmployee";
+import { PersonioAttendance } from "~/personio/PersonioAttendance";
 
 interface Props {
   calculationPositions: CalculationPosition[];
   calendarEvents: CalendarEvent[];
   timeEntries: TimeEntries;
   tasks: TrackyTask[];
+  workingHours: WorkingHours;
+  attendances: PersonioAttendance[];
 }
 
 function findEventsOfDate(
@@ -49,6 +53,14 @@ function calcHoursOfDate(timeEntries: TimeEntries, date: Date) {
   );
 }
 
+const DAYS_OF_WEEK: Array<keyof WorkingHours> = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+];
+
 export default function Troi(props: Props) {
   const recurringTasks = filterRecurringTasks(props.tasks);
   const phaseTasks = filterPhaseTasks(props.tasks);
@@ -70,6 +82,12 @@ export default function Troi(props: Props) {
     hours: calcHoursOfDate(props.timeEntries, weekday),
     events: findEventsOfDate(calendarEvents, weekday),
   }));
+  const workingHoursOfSelectedDate =
+    props.workingHours[DAYS_OF_WEEK[moment(selectedDate).weekday() - 1]];
+  const attendanceOfSelectedDate = props.attendances.find(
+    (attendance) =>
+      attendance.date === moment(selectedDate).format("YYYY-MM-DD"),
+  );
 
   const positions = props.calculationPositions;
 
@@ -148,7 +166,11 @@ export default function Troi(props: Props) {
         />
       ))}
 
-      <WorkingTimeForm selectedDate={selectedDate} />
+      <WorkingTimeForm
+        selectedDate={selectedDate}
+        workingHours={workingHoursOfSelectedDate}
+        attendance={attendanceOfSelectedDate}
+      />
 
       {!selectedDayEvents?.some((event) => event.type == "Holiday") && (
         <TroiTimeEntries

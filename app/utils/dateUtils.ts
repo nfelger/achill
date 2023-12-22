@@ -76,3 +76,19 @@ export function getWeekNumberFor(date: Date) {
 export function getDayNumberFor(date: Date) {
   return (date.getDay() + 6) % 7;
 }
+
+export function minutesToTime(minutes: number) {
+  return moment()
+    .set("minutes", 0)
+    .set("hours", 0)
+    .add(minutes, "minutes")
+    .format("HH:mm");
+}
+
+export function hoursToTime(hours: number) {
+  return moment()
+    .set("minutes", 0)
+    .set("hours", 0)
+    .add(hours, "hours")
+    .format("HH:mm");
+}

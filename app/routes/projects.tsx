@@ -15,6 +15,10 @@ import {
 import { getSession, isSessionValid } from "~/sessions.server";
 import { loadTasks } from "~/tasks/TrackyTask";
 import { AuthenticationFailed } from "troi-library";
+import {
+  getAttendances,
+  getEmployeeData,
+} from "~/personio/PersonioCacheController";
 
 export const meta: MetaFunction = () => {
   return [
@@ -43,7 +47,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const calendarEvents = await getCalendarEvents(request);
     const timeEntries = await getTimeEntries(request);
     const tasks = await loadTasks();
-    // todo (Malte Laukötter, 2023-12-21): load personio attendances & working hours
+    const { workingHours } = await getEmployeeData(request);
+    const attendances = await getAttendances(request);
 
     return json({
       username: session.get("username")!,
@@ -51,6 +56,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
       calendarEvents,
       timeEntries,
       tasks,
+      workingHours,
+      attendances,
     });
   } catch (e) {
     if (e instanceof AuthenticationFailed) {
@@ -62,8 +69,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function Index() {
-  const { username, calculationPositions, calendarEvents, timeEntries, tasks } =
-    useLoaderData<typeof loader>();
+  const {
+    username,
+    calculationPositions,
+    calendarEvents,
+    timeEntries,
+    tasks,
+    workingHours,
+    attendances,
+  } = useLoaderData<typeof loader>();
 
   return (
     <main>
@@ -101,6 +115,8 @@ export default function Index() {
           timeEntries={timeEntries}
           calculationPositions={calculationPositions}
           tasks={tasks}
+          workingHours={workingHours}
+          attendances={attendances}
         />
       </div>
     </main>
