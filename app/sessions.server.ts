@@ -1,6 +1,11 @@
 import type { CalendarEvent } from "troi-library";
 
-import { createCookie, createFileSessionStorage } from "@remix-run/node";
+import type { Cookie } from "@remix-run/node";
+import {
+  createCookie,
+  createFileSessionStorage,
+  createMemorySessionStorage,
+} from "@remix-run/node";
 import type { TimeEntries } from "./troi/TimeEntry";
 import type { CalculationPosition } from "./troi/CalculationPosition";
 import type { PersonioEmployee } from "./personio/PersonioEmployee";
@@ -18,6 +23,19 @@ export type SessionData = {
   personioAttendances: PersonioAttendance[];
 };
 
+function createSesssionStorage(cookie: Cookie) {
+  if (process.env.MOCK_EXTERNAL_APIS && process.env.NODE_ENV !== "production") {
+    return createMemorySessionStorage({
+      cookie,
+    });
+  }
+
+  return createFileSessionStorage<SessionData>({
+    dir: "./sessions",
+    cookie,
+  });
+}
+
 const sessionCookieSecret = process.env.SESSION_COOKIE_SECRET;
 if (sessionCookieSecret === undefined) {
   throw new Error(
@@ -34,10 +52,7 @@ const sessionCookie = createCookie("__session", {
 });
 
 const { getSession, commitSession, destroySession } =
-  createFileSessionStorage<SessionData>({
-    dir: "./sessions",
-    cookie: sessionCookie,
-  });
+  createSesssionStorage(sessionCookie);
 
 export async function isSessionValid(request: Request): Promise<boolean> {
   const cookieHeader = request.headers.get("Cookie");
