@@ -12,8 +12,9 @@ export function WorkingTimeForm({ selectedDate }: Props) {
     <div>
       <fetcher.Form method="post" action="/work_time">
         <input name="startTime" type="time" />
-        <input name="breakTime" type="text" />
-        <input name="workTime" type="text" />
+        <input name="breakTime" type="time" />
+        <input name="workTime" type="time" />
+        <input name="comment" type="text" value={"Personio API Test"} hidden />
         <input
           name="date"
           value={moment(selectedDate).format("YYYY-MM-DD")}
