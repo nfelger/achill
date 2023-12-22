@@ -2,6 +2,7 @@ import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { postAttendance } from "~/personio/PersonioCacheController";
 import {
   workTimeFormDataSchema,
+  workTimeFormDataToEndDate,
   workTimeFormDataToStartDate,
 } from "~/utils/WorkTimeFormData";
 import { timeToMinutes } from "~/utils/Time";
@@ -29,7 +30,7 @@ export async function action({ request }: ActionFunctionArgs) {
   return postAttendance(
     request,
     workTimeFormDataToStartDate(workTimeFormData),
-    workTimeFormDataToStartDate(workTimeFormData),
+    workTimeFormDataToEndDate(workTimeFormData),
     timeToMinutes(workTimeFormData.breakTime),
     workTimeFormData.comment,
   );
