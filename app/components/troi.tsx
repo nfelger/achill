@@ -96,6 +96,10 @@ export default function Troi(props: Props) {
     selectedDate,
   );
 
+  // const sumOfBookedHours = entriesForSelectedDate.reduce((acc, current) => {
+  //   return acc + current.hours;
+  // }, 0);
+
   const fetcher = useFetcher();
 
   async function onAddEntryClicked(
@@ -166,12 +170,24 @@ export default function Troi(props: Props) {
         />
       ))}
 
+      <h2
+        className="mb-4 text-lg font-semibold text-gray-900"
+        title="Working hours"
+      >
+        Working hours
+      </h2>
       <WorkingTimeForm
         selectedDate={selectedDate}
-        workingHours={workingHoursOfSelectedDate}
+        workTime={workingHoursOfSelectedDate}
         attendance={attendanceOfSelectedDate}
       />
 
+      <h2
+        className="mt-8 text-lg font-semibold text-gray-900"
+        title="Working hours"
+      >
+        Project hours
+      </h2>
       {!selectedDayEvents?.some((event) => event.type == "Holiday") && (
         <TroiTimeEntries
           calculationPositions={positions ?? []}

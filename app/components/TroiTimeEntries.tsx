@@ -54,7 +54,7 @@ export function TroiTimeEntries({
       className="bg-white p-4"
       data-testid={`project-section-${position.id}`}
     >
-      <div className="container mx-auto pb-2 pt-4">
+      <div className="container mx-auto pb-2">
         {entries.find(
           ({ calculationPosition }) => calculationPosition === position.id,
         ) === undefined ? (
