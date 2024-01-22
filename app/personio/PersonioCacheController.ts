@@ -144,7 +144,9 @@ export async function deleteAttendance(request: Request, attendanceId: number) {
   if (response.success && existingAttendances !== undefined) {
     session.set(
       "personioAttendances",
-      existingAttendances.filter(({ id }) => id !== attendanceId),
+      existingAttendances.filter(
+        ({ id }) => id.toString() !== attendanceId.toString(),
+      ),
     );
     await commitSession(session);
   }

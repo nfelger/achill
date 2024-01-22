@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { timeToMinutes } from "~/utils/Time";
 import {
@@ -9,7 +10,7 @@ import {
   deleteAttendance,
   patchAttendance,
 } from "~/personio/PersonioCacheController";
-import { isSessionValid } from "~/sessions.server";
+import { getSession, isSessionValid } from "~/sessions.server";
 
 export async function action({ request, params }: ActionFunctionArgs) {
   if (!params.id) {
@@ -23,6 +24,36 @@ export async function action({ request, params }: ActionFunctionArgs) {
   switch (request.method) {
     case "DELETE":
       // todo (Malte Laukötter, 2023-12-22): check that params.id is an attendance of the current employee
+      const cookieHeader = request.headers.get("Cookie");
+      const session = await getSession(cookieHeader);
+      const existingAttendances = session.get("personioAttendances");
+      // console.log("params.id", params.id);
+      // console.log("existingAttendances", existingAttendances);
+      // console.log(
+      //   "filter",
+      //   existingAttendances.filter(({ id }) => {
+      //     console.log(id, params.id);
+      //     console.log(id.toString() === params.id!.toString());
+      //     return id === params.id;
+      //   })
+      // );
+      // console.log(
+      //   existingAttendances.filter(
+      //     ({ id }) => id.toString() === params.id!.toString()
+      //   )
+      // );
+
+      if (
+        existingAttendances.filter(
+          ({ id }) => id.toString() === params.id!.toString(),
+        ).length === 0
+      ) {
+        throw new Response(
+          "Deleting an entry that was not created by you is forbidden",
+          { status: 400 },
+        );
+      }
+
       const response = await deleteAttendance(
         request,
         Number.parseInt(params.id, 10),

@@ -9,7 +9,7 @@ const YYYY_MM_DD_FORMAT = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/;
 export type WorkTimeFormData = {
   startTime: Time;
   breakTime: Time;
-  workTime: Time;
+  endTime: Time;
   comment: string;
   date: string;
 };
@@ -17,7 +17,7 @@ export type WorkTimeFormData = {
 export const workTimeFormDataSchema = z.object({
   startTime: timeSchema,
   breakTime: timeSchema,
-  workTime: timeSchema,
+  endTime: timeSchema,
   comment: z.string(),
   date: z.string().regex(YYYY_MM_DD_FORMAT),
 }) satisfies ZodSchema<WorkTimeFormData, ZodTypeDef, unknown>;
@@ -32,17 +32,9 @@ export function workTimeFormDataToStartDate({
     .toDate();
 }
 
-export function workTimeFormDataToEndDate({
-  date,
-  startTime,
-  breakTime,
-  workTime,
-}: WorkTimeFormData) {
+export function workTimeFormDataToEndDate({ date, endTime }: WorkTimeFormData) {
   return moment(date)
-    .set("hours", startTime.hours)
-    .set("minutes", startTime.minutes)
-    .add(breakTime.hours, "hours")
-    .add(breakTime.minutes, "minutes")
-    .add(workTime.hours, "hours")
+    .set("hours", endTime.hours)
+    .set("minutes", endTime.minutes)
     .toDate();
 }
