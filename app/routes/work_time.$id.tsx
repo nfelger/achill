@@ -27,29 +27,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
       const cookieHeader = request.headers.get("Cookie");
       const session = await getSession(cookieHeader);
       const existingAttendances = session.get("personioAttendances");
-      // console.log("params.id", params.id);
-      // console.log("existingAttendances", existingAttendances);
-      // console.log(
-      //   "filter",
-      //   existingAttendances.filter(({ id }) => {
-      //     console.log(id, params.id);
-      //     console.log(id.toString() === params.id!.toString());
-      //     return id === params.id;
-      //   })
-      // );
-      // console.log(
-      //   existingAttendances.filter(
-      //     ({ id }) => id.toString() === params.id!.toString()
-      //   )
-      // );
-
+      const idToDelete = params.id.toString();
       if (
-        existingAttendances.filter(
-          ({ id }) => id.toString() === params.id!.toString(),
-        ).length === 0
+        existingAttendances.filter(({ id }) => id.toString() === idToDelete)
+          .length === 0
       ) {
         throw new Response(
-          "Deleting an entry that was not created by you is forbidden",
+          "You were about to delete an attendance that was not created by you. This is forbidden",
           { status: 400 },
         );
       }

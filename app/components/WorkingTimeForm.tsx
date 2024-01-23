@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import type { PersonioAttendance } from "~/personio/PersonioAttendance";
 import { minutesToTime } from "~/utils/dateUtils";
 import { LoadingOverlay } from "./LoadingOverlay";
-import { TroiButton } from "./TroiButton";
-import { buttonRed } from "~/utils/colors";
 
 interface Props {
   selectedDate: Date;
@@ -21,6 +19,8 @@ export function WorkingTimeForm({ selectedDate, workTime, attendance }: Props) {
   const [startTime, setStartTime] = useState(DEFAULT_START_TIME);
   const [breakTime, setBreakTime] = useState(DEFAULT_BREAK_TIME);
   const [endTime, setEndTime] = useState(DEFAULT_END_TIME);
+  const [method, setMethod] = useState<HTMLFormMethod>("POST");
+  const [action, setAction] = useState("");
 
   useEffect(() => {
     setStartTime(attendance?.start_time ?? DEFAULT_START_TIME);
@@ -53,10 +53,7 @@ export function WorkingTimeForm({ selectedDate, workTime, attendance }: Props) {
   return (
     <div className="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
       {fetcher.state !== "idle" && <LoadingOverlay message="Please wait..." />}
-      <fetcher.Form
-        method={attendance ? "PATCH" : "POST"}
-        action={attendance ? `/work_time/${attendance?.id}` : "/work_time"}
-      >
+      <fetcher.Form method={method} action={action}>
         <div className="flex flex-col gap-3">
           <div className="flex justify-start items-center">
             <label className="inline-block w-24" htmlFor="startTime">
@@ -168,33 +165,43 @@ export function WorkingTimeForm({ selectedDate, workTime, attendance }: Props) {
                 type="submit"
                 data-test="add-button"
                 className="ease rounded bg-blue-600 text-s px-6 py-2.5 font-medium text-white shadow-md transition duration-150 ease-in-out hover:bg-blue-600 hover:shadow-lg focus:bg-blue-600 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-600 active:shadow-lg"
+                onClick={() => {
+                  setAction(`/work_time`);
+                  setMethod("POST");
+                }}
               >
                 Save
               </button>
             )}
             {attendance && (
-              <button
-                type="submit"
-                data-test="update-button"
-                className="ease rounded bg-blue-600 text-s px-6 py-2.5 font-medium text-white shadow-md transition duration-150 ease-in-out hover:bg-blue-600 hover:shadow-lg focus:bg-blue-600 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-600 active:shadow-lg"
-              >
-                Update
-              </button>
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  data-test="delete-button"
+                  className="ease rounded bg-red-600 text-s px-6 py-2.5 font-medium text-white shadow-md transition duration-150 ease-in-out hover:bg-red-600 hover:shadow-lg focus:bg-red-600 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-600 active:shadow-lg"
+                  onClick={() => {
+                    setAction(`/work_time/${attendance?.id}`);
+                    setMethod("DELETE");
+                  }}
+                >
+                  Delete
+                </button>
+                <button
+                  type="submit"
+                  data-test="update-button"
+                  className="ease rounded bg-blue-600 text-s px-6 py-2.5 font-medium text-white shadow-md transition duration-150 ease-in-out hover:bg-blue-600 hover:shadow-lg focus:bg-blue-600 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-600 active:shadow-lg"
+                  onClick={() => {
+                    setAction(`/work_time/${attendance?.id}`);
+                    setMethod("PATCH");
+                  }}
+                >
+                  Update
+                </button>
+              </div>
             )}
           </div>
         </div>
       </fetcher.Form>
-      {attendance && (
-        <fetcher.Form method="DELETE" action={`/work_time/${attendance.id}`}>
-          <button
-            type="submit"
-            data-test="delete-button"
-            className="ease rounded bg-red-600 text-s px-6 py-2.5 font-medium text-white shadow-md transition duration-150 ease-in-out hover:bg-red-600 hover:shadow-lg focus:bg-red-600 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-600 active:shadow-lg"
-          >
-            Delete
-          </button>
-        </fetcher.Form>
-      )}
     </div>
   );
 }
