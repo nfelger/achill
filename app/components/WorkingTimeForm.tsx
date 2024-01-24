@@ -13,36 +13,36 @@ interface Props {
 
 const DEFAULT_START_TIME = "09:00";
 const DEFAULT_BREAK_TIME = "01:00";
-const DEFAULT_END_TIME = "18:00";
 
 export function WorkingTimeForm({ selectedDate, workTime, attendance }: Props) {
-  const [startTime, setStartTime] = useState(DEFAULT_START_TIME);
-  const [breakTime, setBreakTime] = useState(DEFAULT_BREAK_TIME);
-  const [endTime, setEndTime] = useState(DEFAULT_END_TIME);
-  const [method, setMethod] = useState<HTMLFormMethod>("POST");
+  const [startTime, setStartTime] = useState("");
+  const [breakTime, setBreakTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [method, setMethod] = useState<"POST" | "PATCH" | "DELETE">("POST");
   const [action, setAction] = useState("");
 
   useEffect(() => {
-    setStartTime(attendance?.start_time ?? DEFAULT_START_TIME);
-    setBreakTime(
-      attendance ? minutesToTime(attendance.breakTime) : DEFAULT_BREAK_TIME,
-    );
-  }, [selectedDate, attendance]);
+    if (attendance) {
+      setStartTime(attendance.start_time);
+      setBreakTime(minutesToTime(attendance.breakTime));
+      setEndTime(attendance.end_time);
+    } else {
+      setStartTime(DEFAULT_START_TIME);
+      setBreakTime(DEFAULT_BREAK_TIME);
+      // calculate end time base the daily work time from personio
+      const momentStartTime = moment(DEFAULT_START_TIME, "HH:mm");
+      const momentBreakTime = moment(DEFAULT_BREAK_TIME, "HH:mm");
+      const momentWorkTime = moment(minutesToTime(workTime * 60), "HH:mm");
 
-  useEffect(() => {
-    const momentStartTime = moment(startTime, "HH:mm");
-    const momentBreakTime = moment(breakTime, "HH:mm");
-    const momentWorkTime = moment(minutesToTime(workTime * 60), "HH:mm");
-
-    const newEndTime = momentStartTime
-      .add(momentBreakTime.hours(), "hours")
-      .add(momentBreakTime.minutes(), "minutes")
-      .add(momentWorkTime.hours(), "hours")
-      .add(momentWorkTime.minutes(), "minutes")
-      .format("HH:mm");
-
-    setEndTime(newEndTime);
-  }, [startTime, breakTime, workTime]);
+      const newEndTime = momentStartTime
+        .add(momentBreakTime.hours(), "hours")
+        .add(momentBreakTime.minutes(), "minutes")
+        .add(momentWorkTime.hours(), "hours")
+        .add(momentWorkTime.minutes(), "minutes")
+        .format("HH:mm");
+      setEndTime(newEndTime);
+    }
+  }, [selectedDate, attendance, workTime]);
 
   const fetcher = useFetcher();
 
