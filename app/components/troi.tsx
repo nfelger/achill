@@ -96,9 +96,11 @@ export default function Troi(props: Props) {
     selectedDate,
   );
 
-  // const sumOfBookedHours = entriesForSelectedDate.reduce((acc, current) => {
-  //   return acc + current.hours;
-  // }, 0);
+  const attendancesOfSelectedWeek: (PersonioAttendance | undefined)[] =
+    selectedWeek.map((element) => {
+      const date = moment(element).format("YYYY-MM-DD");
+      return props.attendances.find((attendance) => attendance.date === date);
+    });
 
   const fetcher = useFetcher();
 
@@ -160,6 +162,7 @@ export default function Troi(props: Props) {
           timesAndEventsOfSelectedWeek={timesAndEventsOfSelectedWeek}
           selectedDate={selectedDate}
           onSelectDate={setSelectedDate}
+          attendancesOfSelectedWeek={attendancesOfSelectedWeek}
         />
       </section>
 
@@ -203,8 +206,8 @@ export default function Troi(props: Props) {
 
       <section className="mt-8 text-xs text-gray-600">
         <p>
-          Project not showing up? Make sure it's available in Troi and marked as
-          a "favorite".
+          Project not showing up? Make sure it&apos;s available in Troi and
+          marked as a &quot;favorite&quot;.
         </p>
       </section>
 

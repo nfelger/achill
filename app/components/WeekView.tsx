@@ -1,6 +1,7 @@
 import { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
 import { WeekTable } from "./WeekTable";
 import { WeekSelect } from "./WeekSelect";
+import { PersonioAttendance } from "~/personio/PersonioAttendance";
 
 interface Props {
   timesAndEventsOfSelectedWeek: {
@@ -9,12 +10,14 @@ interface Props {
   }[];
   selectedDate: Date;
   onSelectDate: (newDate: Date) => unknown;
+  attendancesOfSelectedWeek: (PersonioAttendance | undefined)[];
 }
 
 export function WeekView({
   timesAndEventsOfSelectedWeek,
   selectedDate,
   onSelectDate,
+  attendancesOfSelectedWeek,
 }: Props) {
   return (
     <div className="flex p-4">
@@ -45,6 +48,7 @@ export function WeekView({
                 selectedDate={selectedDate}
                 onSelectDate={onSelectDate}
                 timesAndEventsOfSelectedWeek={timesAndEventsOfSelectedWeek}
+                attendancesOfSelectedWeek={attendancesOfSelectedWeek}
               />
             </div>
           </div>

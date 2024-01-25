@@ -1,5 +1,7 @@
+import moment from "moment";
+import { PersonioAttendance } from "~/personio/PersonioAttendance";
 import { getItemForEventType } from "~/utils/calendarEventUtils";
-import { datesEqual, getWeekDaysFor } from "~/utils/dateUtils";
+import { datesEqual, getWeekDaysFor, minutesToTime } from "~/utils/dateUtils";
 import { convertFloatTimeToHHMM } from "~/utils/timeConverter";
 import { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
 
@@ -10,12 +12,14 @@ interface Props {
   }[];
   selectedDate: Date;
   onSelectDate: (newDate: Date) => unknown;
+  attendancesOfSelectedWeek: (PersonioAttendance | undefined)[];
 }
 
 export function WeekTable({
   timesAndEventsOfSelectedWeek,
   selectedDate,
   onSelectDate,
+  attendancesOfSelectedWeek,
 }: Props) {
   const weekdays = ["M", "T", "W", "T", "F"];
   const selectedWeek = getWeekDaysFor(selectedDate);
@@ -43,6 +47,21 @@ export function WeekTable({
     }
 
     return getItemForEventType(event.type);
+  }
+
+  function calculateWorkTime(attendance: PersonioAttendance): string {
+    const momentBreakTime = moment(
+      minutesToTime(attendance.breakTime),
+      "HH:mm",
+    );
+    const momentStartTime = moment(attendance.start_time, "HH:mm");
+
+    return moment(attendance.end_time, "HH:mm")
+      .subtract(momentBreakTime.hours(), "hours")
+      .subtract(momentBreakTime.minutes(), "minutes")
+      .subtract(momentStartTime.hours(), "hours")
+      .subtract(momentStartTime.minutes(), "minutes")
+      .format("HH:mm");
   }
 
   return (
@@ -79,6 +98,34 @@ export function WeekTable({
                       {date.getDate()}
                     </p>
                   </div>
+                </div>
+              </td>
+            ))}
+          </tr>
+          <tr>
+            {attendancesOfSelectedWeek.map((attendance, index) => (
+              <td key={selectedWeek[index].getTime()}>
+                <div
+                  className="flex min-w-[6ch] cursor-pointer justify-center px-2 py-2"
+                  onClick={() => onSelectDate(selectedWeek[index])}
+                >
+                  <p
+                    data-testid={
+                      [
+                        "workhours-mon",
+                        "workhours-tue",
+                        "workhours-wed",
+                        "workhours-thu",
+                        "workhours-fri",
+                      ][index]
+                    }
+                    className={`text-base font-medium ${
+                      attendance ? "text-black" : "text-gray-500"
+                    }`}
+                  >
+                    {attendance && calculateWorkTime(attendance)}
+                    {!attendance && 0}
+                  </p>
                 </div>
               </td>
             ))}

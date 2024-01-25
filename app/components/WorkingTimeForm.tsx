@@ -29,7 +29,7 @@ export function WorkingTimeForm({ selectedDate, workTime, attendance }: Props) {
     } else {
       setStartTime(DEFAULT_START_TIME);
       setBreakTime(DEFAULT_BREAK_TIME);
-      // calculate end time base the daily work time from personio
+      // calculate end time based on daily work time from personio
       const momentStartTime = moment(DEFAULT_START_TIME, "HH:mm");
       const momentBreakTime = moment(DEFAULT_BREAK_TIME, "HH:mm");
       const momentWorkTime = moment(minutesToTime(workTime * 60), "HH:mm");
