@@ -206,8 +206,15 @@ export default function Troi(props: Props) {
 
       <section className="mt-8 text-xs text-gray-600">
         <p>
-          Project not showing up? Make sure it&apos;s available in Troi and
-          marked as a &quot;favorite&quot;.
+          Project not showing up?{" "}
+          <a
+            className="angie-link"
+            href="https://digitalservicebund.atlassian.net/wiki/x/T4BfJg"
+            target="_blank"
+          >
+            Make sure it&apos;s available in Troi and marked as a
+            &quot;favorite&quot;.
+          </a>
         </p>
       </section>
 
