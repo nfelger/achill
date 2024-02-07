@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: validate github workflow files to have pinned versions
-        uses: digitalservicebund/github-actions/github-actions-linter@5009471245d84903ea1af84104eb1908f8e2b2a2
+        uses: digitalservicebund/github-actions/github-actions-linter@a9479ef95842280372a310120ce42dc49c4735e1
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -106,7 +106,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: validate github workflow files to have pinned versions
-        uses: digitalservicebund/github-actions/github-actions-linter@5009471245d84903ea1af84104eb1908f8e2b2a2
+        uses: digitalservicebund/github-actions/github-actions-linter@a9479ef95842280372a310120ce42dc49c4735e1
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -189,7 +189,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: validate github workflow files to have pinned versions
-        uses: digitalservicebund/github-actions/github-actions-linter@5009471245d84903ea1af84104eb1908f8e2b2a2
+        uses: digitalservicebund/github-actions/github-actions-linter@a9479ef95842280372a310120ce42dc49c4735e1
 
       - name: Build image from Dockerfile
         run: |
