@@ -89,12 +89,12 @@ jobs:
           docker build -t ${{ env.IMAGE_NAME }}:${{ github.sha }} . --build-arg COMMIT_SHA=${{ github.sha }}
 
       - name: Create SBOM
-        uses: digitalservicebund/github-actions/create-sbom@24b9a8a55f22d21cebeae777aede3ae1b2fd3889
+        uses: digitalservicebund/github-actions/create-sbom@a9479ef95842280372a310120ce42dc49c4735e1
         with:
           image_name: ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Send failure to Slack
-        uses: digitalservicebund/github-actions/notify-on-failure@b1492a10bdcc4a4f78a5706f9447d0908e856a53
+        uses: digitalservicebund/github-actions/notify-on-failure@a9479ef95842280372a310120ce42dc49c4735e1
         if: ${{ failure() }}
         with:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -251,7 +251,7 @@ jobs:
     environment: staging
     steps:
       - name: Deploy new image
-        uses: digitalservicebund/github-actions/argocd-deploy@9b15fba0ce0e874d9af5be33ebeea7d476f808d0
+        uses: digitalservicebund/github-actions/argocd-deploy@a9479ef95842280372a310120ce42dc49c4735e1
         with:
           environment: staging
           version: ${{ github.sha }}
