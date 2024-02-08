@@ -25,7 +25,7 @@ export type SessionData = {
 
 function createSessionStorage(cookie: Cookie) {
   if (process.env.MOCK_EXTERNAL_APIS && process.env.NODE_ENV !== "production") {
-    return createMemorySessionStorage({
+    return createMemorySessionStorage<SessionData>({
       cookie,
     });
   }
