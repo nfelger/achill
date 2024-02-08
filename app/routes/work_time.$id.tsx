@@ -29,7 +29,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       const existingAttendances = session.get("personioAttendances");
       const idToDelete = params.id.toString();
       if (
-        existingAttendances.filter(({ id }) => id.toString() === idToDelete)
+        existingAttendances?.filter(({ id }) => id.toString() === idToDelete)
           .length === 0
       ) {
         throw new Response(
