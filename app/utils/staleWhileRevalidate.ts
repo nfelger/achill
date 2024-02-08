@@ -19,15 +19,17 @@ export async function staleWhileRevalidate<Key extends keyof SessionData>(
   shouldRevalidate = true,
 ): Promise<SessionData[Key]> {
   const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
 
   const fetchAndUpdateCache = async () => {
     const response = await fetcher(request);
+    // get session again to prevent race conditions
+    const session = await getSession(cookieHeader);
     session.set(sessionKey, response);
     await commitSession(session);
     return response;
   };
 
+  const session = await getSession(cookieHeader);
   const cacheData: SessionData[Key] | undefined = session.get(sessionKey);
   if (cacheData !== undefined) {
     console.debug(`Cache hit:`, sessionKey);
