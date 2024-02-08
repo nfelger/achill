@@ -23,7 +23,7 @@ export type SessionData = {
   personioAttendances: PersonioAttendance[];
 };
 
-function createSesssionStorage(cookie: Cookie) {
+function createSessionStorage(cookie: Cookie) {
   if (process.env.MOCK_EXTERNAL_APIS && process.env.NODE_ENV !== "production") {
     return createMemorySessionStorage({
       cookie,
@@ -52,7 +52,7 @@ const sessionCookie = createCookie("__session", {
 });
 
 const { getSession, commitSession, destroySession } =
-  createSesssionStorage(sessionCookie);
+  createSessionStorage(sessionCookie);
 
 export async function isSessionValid(request: Request): Promise<boolean> {
   const cookieHeader = request.headers.get("Cookie");
