@@ -180,6 +180,7 @@ export default function Troi(props: Props) {
         Working hours
       </h2>
       <WorkingTimeForm
+        key={selectedDate.getDate()}
         selectedDate={selectedDate}
         workTime={workingHoursOfSelectedDate}
         attendance={attendanceOfSelectedDate}
