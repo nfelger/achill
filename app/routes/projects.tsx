@@ -6,7 +6,7 @@ import {
   type MetaFunction,
 } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
-import Troi from "../components/troi";
+import TrackYourTime from "../components/TrackYourTime";
 import {
   getCalculationPositions,
   getCalendarEvents,
@@ -116,7 +116,7 @@ export default function Index() {
             </div>
           </div>
         </nav>
-        <Troi
+        <TrackYourTime
           calendarEvents={calendarEvents}
           timeEntries={timeEntries}
           calculationPositions={calculationPositions}

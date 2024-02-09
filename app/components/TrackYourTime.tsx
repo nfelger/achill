@@ -61,7 +61,7 @@ const DAYS_OF_WEEK: Array<keyof WorkingHours> = [
   "friday",
 ];
 
-export default function Troi(props: Props) {
+export default function TrackYourTime(props: Props) {
   const recurringTasks = filterRecurringTasks(props.tasks);
   const phaseTasks = filterPhaseTasks(props.tasks);
 
