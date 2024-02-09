@@ -13,11 +13,11 @@ import {
 } from "~/personio/PersonioCacheController";
 import { getSessionAndThrowIfInvalid } from "~/sessions.server";
 
-function checkIDAndPermission(
+function checkIDAndPermissionOrThrow(
   session: Session,
   ID: string | undefined,
 ): asserts ID is NonNullable<string> {
-  if (ID === undefined || ID === null) {
+  if (ID === undefined) {
     throw new Response("Attendance ID is required.", { status: 400 });
   }
 
@@ -58,7 +58,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
         workTimeFormData.comment,
       );
     case "DELETE":
-      checkIDAndPermission(session, params.id);
+      checkIDAndPermissionOrThrow(session, params.id);
+
       const response = await deleteAttendance(
         session,
         Number.parseInt(params.id, 10),
@@ -70,7 +71,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
       return new Response(null, { status: 204 });
     case "PATCH":
-      checkIDAndPermission(session, params.id);
+      checkIDAndPermissionOrThrow(session, params.id);
+
       return patchAttendance(
         session,
         Number.parseInt(params.id, 10),
