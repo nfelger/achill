@@ -1,19 +1,14 @@
 import { ActionFunctionArgs, redirect } from "@remix-run/node";
 import { AuthenticationFailed } from "troi-library";
-import { getSession, isSessionValid } from "~/sessions.server";
+import { getSessionAndThrowIfInvalid } from "~/sessions.server";
 import { addTimeEntry } from "~/troi/troiApiController";
 
 export async function action({ request, params }: ActionFunctionArgs) {
+  const session = await getSessionAndThrowIfInvalid(request);
+
   if (request.method !== "POST") {
     throw new Response("Method Not Allowed", { status: 405 });
   }
-
-  if (!(await isSessionValid(request))) {
-    throw redirect("/login");
-  }
-
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
 
   const body = await request.formData();
 

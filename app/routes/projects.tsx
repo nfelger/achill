@@ -12,7 +12,7 @@ import {
   getCalendarEvents,
   getTimeEntries,
 } from "~/troi/troiApiController";
-import { commitSession, getSession, isSessionValid } from "~/sessions.server";
+import { commitSession, getSessionAndThrowIfInvalid } from "~/sessions.server";
 import { loadTasks } from "~/tasks/TrackyTask";
 import { AuthenticationFailed } from "troi-library";
 import {
@@ -35,12 +35,7 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
-
-  if (!(await isSessionValid(request))) {
-    throw redirect("/login");
-  }
+  const session = await getSessionAndThrowIfInvalid(request);
 
   try {
     // await all the promises in parallel

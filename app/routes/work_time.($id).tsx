@@ -11,7 +11,7 @@ import {
   patchAttendance,
   postAttendance,
 } from "~/personio/PersonioCacheController";
-import { getSession, isSessionValid } from "~/sessions.server";
+import { getSessionAndThrowIfInvalid } from "~/sessions.server";
 
 function checkIDAndPermission(
   session: Session,
@@ -36,12 +36,7 @@ function checkIDAndPermission(
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  if (!(await isSessionValid(request))) {
-    throw redirect("/login");
-  }
-
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
+  const session = await getSessionAndThrowIfInvalid(request);
 
   const formData = await request.formData();
   const parseResult = workTimeFormDataSchema.safeParse(

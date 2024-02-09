@@ -19,7 +19,6 @@ export const meta: MetaFunction = () => {
 const troiBaseUrl = "https://digitalservice.troi.software/api/v2/rest";
 
 export async function action({ request }: ActionFunctionArgs) {
-  const cookieHeader = request.headers.get("Cookie");
   const bodyParams = await request.formData();
 
   const username = bodyParams.get("username");
@@ -50,6 +49,7 @@ export async function action({ request }: ActionFunctionArgs) {
     }
   }
 
+  const cookieHeader = request.headers.get("Cookie");
   const session = await getSession(cookieHeader);
   session.set("username", username);
   session.set("troiPassword", password);

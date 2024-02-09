@@ -3,7 +3,7 @@ import {
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "@remix-run/node";
-import { isSessionValid } from "~/sessions.server";
+import { getSessionAndThrowIfInvalid } from "~/sessions.server";
 
 export const meta: MetaFunction = () => {
   return [
@@ -13,9 +13,6 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  if (!(await isSessionValid(request))) {
-    return redirect("/login");
-  }
-
+  await getSessionAndThrowIfInvalid(request);
   return redirect("/projects");
 }

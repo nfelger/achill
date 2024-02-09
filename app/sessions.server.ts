@@ -1,10 +1,11 @@
 import type { CalendarEvent } from "troi-library";
 
-import type { Cookie } from "@remix-run/node";
+import type { Cookie, Session } from "@remix-run/node";
 import {
   createCookie,
   createFileSessionStorage,
   createMemorySessionStorage,
+  redirect,
 } from "@remix-run/node";
 import type { TimeEntries } from "./troi/TimeEntry";
 import type { CalculationPosition } from "./troi/CalculationPosition";
@@ -54,11 +55,19 @@ const sessionCookie = createCookie("__session", {
 const { getSession, commitSession, destroySession } =
   createSessionStorage(sessionCookie);
 
-export async function isSessionValid(request: Request): Promise<boolean> {
+export async function isSessionValid(session: Session): Promise<boolean> {
+  return session.has("username") && session.has("troiPassword");
+}
+
+export async function getSessionAndThrowIfInvalid(
+  request: Request,
+): Promise<Session> {
   const cookieHeader = request.headers.get("Cookie");
   const session = await getSession(cookieHeader);
-
-  return session.has("username") && session.has("troiPassword");
+  if (!(await isSessionValid(session))) {
+    throw redirect("/login");
+  }
+  return session;
 }
 
 export { getSession, commitSession, destroySession };

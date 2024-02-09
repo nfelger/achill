@@ -1,19 +1,14 @@
 import { ActionFunctionArgs, redirect } from "@remix-run/node";
 import { AuthenticationFailed } from "troi-library";
-import { getSession, isSessionValid } from "~/sessions.server";
+import { getSessionAndThrowIfInvalid } from "~/sessions.server";
 import { deleteTimeEntry, updateTimeEntry } from "~/troi/troiApiController";
 
 export async function action({ request, params }: ActionFunctionArgs) {
+  const session = await getSessionAndThrowIfInvalid(request);
+
   if (!params.id) {
     throw new Response("entry id required", { status: 400 });
   }
-
-  if (!(await isSessionValid(request))) {
-    throw redirect("/login");
-  }
-
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
 
   switch (request.method) {
     case "DELETE":

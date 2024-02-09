@@ -1,9 +1,11 @@
-import { LoaderFunctionArgs, json, redirect } from "@remix-run/node";
-import { getSession, isSessionValid } from "~/sessions.server";
+import { LoaderFunctionArgs, json } from "@remix-run/node";
+import { getSessionAndThrowIfInvalid } from "~/sessions.server";
 import { loadPhases } from "~/tasks/TrackyPhase";
 import { getCalculationPositions } from "~/troi/troiApiController";
 
 export async function loader({ request }: LoaderFunctionArgs) {
+  const session = await getSessionAndThrowIfInvalid(request);
+
   const url = new URL(request.url);
   if (!url.searchParams.has("calculationPositionId")) {
     throw new Response("Missing calculationPositionId", { status: 400 });
@@ -13,12 +15,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
     10,
   );
 
-  if (!(await isSessionValid(request))) {
-    throw redirect("/login");
-  }
-
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
   const calculationPositions = await getCalculationPositions(session, false);
   const calculationPosition = calculationPositions.find(
     ({ id }) => id === calculationPositionId,
