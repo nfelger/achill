@@ -1,12 +1,19 @@
 import { ActionFunctionArgs, redirect } from "@remix-run/node";
 import { AuthenticationFailed } from "troi-library";
-import { isSessionValid } from "~/sessions.server";
+import { getSession, isSessionValid } from "~/sessions.server";
 import { addTimeEntry } from "~/troi/troiApiController";
 
 export async function action({ request, params }: ActionFunctionArgs) {
   if (request.method !== "POST") {
     throw new Response("Method Not Allowed", { status: 405 });
   }
+
+  if (!(await isSessionValid(request))) {
+    throw redirect("/login");
+  }
+
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader);
 
   const body = await request.formData();
 
@@ -30,13 +37,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
     throw new Response("Missing description", { status: 400 });
   }
 
-  if (!(await isSessionValid(request))) {
-    throw redirect("/login");
-  }
-
   try {
     await addTimeEntry(
-      request,
+      session,
       parseInt(calculationPositionId, 10),
       date,
       parseFloat(hours),

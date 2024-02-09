@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs, json, redirect } from "@remix-run/node";
-import { isSessionValid } from "~/sessions.server";
+import { getSession, isSessionValid } from "~/sessions.server";
 import { loadPhases } from "~/tasks/TrackyPhase";
 import { getCalculationPositions } from "~/troi/troiApiController";
 
@@ -17,7 +17,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     throw redirect("/login");
   }
 
-  const calculationPositions = await getCalculationPositions(request, false);
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader);
+  const calculationPositions = await getCalculationPositions(session, false);
   const calculationPosition = calculationPositions.find(
     ({ id }) => id === calculationPositionId,
   );

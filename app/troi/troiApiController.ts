@@ -1,10 +1,10 @@
 import type { CalendarEvent } from "troi-library";
 import TroiApiService from "troi-library";
-import { commitSession, getSession } from "~/sessions.server";
 import { addDaysToDate, formatDateToYYYYMMDD } from "~/utils/dateUtils";
 import type { TimeEntries, TimeEntry } from "./TimeEntry";
 import type { CalculationPosition } from "./CalculationPosition";
 import { staleWhileRevalidate } from "../utils/staleWhileRevalidate";
+import { Session } from "@remix-run/node";
 
 const BASE_URL = "https://digitalservice.troi.software/api/v2/rest";
 const CLIENT_NAME = "DigitalService GmbH des Bundes";
@@ -41,10 +41,7 @@ async function getTroiApi(
   return troiApi;
 }
 
-export async function getClientId(request: Request): Promise<number> {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
-
+export async function getClientId(session: Session): Promise<number> {
   const cacheClientId = session.get("troiClientId");
   if (cacheClientId !== undefined) {
     return cacheClientId;
@@ -58,15 +55,11 @@ export async function getClientId(request: Request): Promise<number> {
   const clientId = await troiApi.getClientId();
 
   session.set("troiClientId", clientId);
-  await commitSession(session);
 
   return clientId;
 }
 
-export async function getEmployeeId(request: Request): Promise<number> {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
-
+export async function getEmployeeId(session: Session): Promise<number> {
   const cacheEmployeeId = session.get("troiEmployeeId");
   if (cacheEmployeeId !== undefined) {
     return cacheEmployeeId;
@@ -75,22 +68,18 @@ export async function getEmployeeId(request: Request): Promise<number> {
   const troiApi = await getTroiApi(
     session.get("username"),
     session.get("troiPassword"),
-    await getClientId(request),
+    await getClientId(session),
   );
   console.log("[TroiAPI]", "getEmployeeId()");
   const employeeId = await troiApi.getEmployeeId();
 
   session.set("troiEmployeeId", employeeId);
-  await commitSession(session);
 
   return employeeId;
 }
 
-async function fetchCalculationPositionsAndSaveToSession(request: Request) {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
-
-  const clientId = await getClientId(request);
+async function fetchCalculationPositionsAndSaveToSession(session: Session) {
+  const clientId = await getClientId(session);
 
   const troiApi = await getTroiApi(
     session.get("username"),
@@ -123,21 +112,18 @@ async function fetchCalculationPositionsAndSaveToSession(request: Request) {
 }
 
 export async function getCalculationPositions(
-  request: Request,
+  session: Session,
   shouldRevalidate = true,
 ): Promise<CalculationPosition[]> {
   return staleWhileRevalidate(
-    request,
+    session,
     fetchCalculationPositionsAndSaveToSession,
     "troiCalculationPositions",
     shouldRevalidate,
   );
 }
 
-async function fetchCalendarEventsAndSaveToSession(request: Request) {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
-
+async function fetchCalendarEventsAndSaveToSession(session: Session) {
   const troiApi = await getTroiApi(
     session.get("username"),
     session.get("troiPassword"),
@@ -154,28 +140,25 @@ async function fetchCalendarEventsAndSaveToSession(request: Request) {
 }
 
 export async function getCalendarEvents(
-  request: Request,
+  session: Session,
 ): Promise<CalendarEvent[]> {
   return staleWhileRevalidate(
-    request,
+    session,
     fetchCalendarEventsAndSaveToSession,
     "troiCalendarEvents",
   );
 }
 
-async function fetchTimeEntriesAndSaveToSession(request: Request) {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
-
-  const clientId = await getClientId(request);
-  const employeeId = await getEmployeeId(request);
+async function fetchTimeEntriesAndSaveToSession(session: Session) {
+  const clientId = await getClientId(session);
+  const employeeId = await getEmployeeId(session);
 
   const troiApi = await getTroiApi(
     session.get("username"),
     session.get("troiPassword"),
   );
 
-  const calculationPositions = await getCalculationPositions(request);
+  const calculationPositions = await getCalculationPositions(session);
   const entries: TimeEntry[] = (
     await Promise.all(
       calculationPositions.map((calcPos) => {
@@ -224,29 +207,26 @@ async function fetchTimeEntriesAndSaveToSession(request: Request) {
   return entriesById;
 }
 
-export async function getTimeEntries(request: Request): Promise<TimeEntries> {
+export async function getTimeEntries(session: Session): Promise<TimeEntries> {
   return staleWhileRevalidate(
-    request,
+    session,
     fetchTimeEntriesAndSaveToSession,
     "troiTimeEntries",
   );
 }
 
 export async function addTimeEntry(
-  request: Request,
+  session: Session,
   calculationPostionId: number,
   date: string,
   hours: number,
   description: string,
 ) {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
-
   const troiApi = await getTroiApi(
     session.get("username"),
     session.get("troiPassword"),
-    await getClientId(request),
-    await getEmployeeId(request),
+    await getClientId(session),
+    await getEmployeeId(session),
   );
 
   console.log("[TroiAPI]", "postTimeEntry()");
@@ -272,16 +252,12 @@ export async function addTimeEntry(
       calculationPosition: calculationPostionId,
     };
     session.set("troiTimeEntries", existingEntries);
-    await commitSession(session);
   }
 
   return result;
 }
 
-export async function deleteTimeEntry(request: Request, id: number) {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
-
+export async function deleteTimeEntry(session: Session, id: number) {
   const troiApi = await getTroiApi(
     session.get("username"),
     session.get("troiPassword"),
@@ -296,19 +272,15 @@ export async function deleteTimeEntry(request: Request, id: number) {
   if (existingEntries) {
     delete existingEntries[id];
     session.set("troiTimeEntries", existingEntries);
-    await commitSession(session);
   }
 }
 
 export async function updateTimeEntry(
-  request: Request,
+  session: Session,
   id: number,
   hours: number,
   description: string,
 ) {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
-
   const troiApi = await getTroiApi(
     session.get("username"),
     session.get("troiPassword"),
@@ -316,10 +288,10 @@ export async function updateTimeEntry(
 
   const payload = {
     Client: {
-      Path: `/clients/${await getClientId(request)}`,
+      Path: `/clients/${await getClientId(session)}`,
     },
     Employee: {
-      Path: `/employees/${await getEmployeeId(request)}`,
+      Path: `/employees/${await getEmployeeId(session)}`,
     },
     Quantity: hours,
     Remark: description,
@@ -343,6 +315,5 @@ export async function updateTimeEntry(
     existingEntries[id].hours = parseFloat(res.Quantity);
     existingEntries[id].description = res.Name;
     session.set("troiTimeEntries", existingEntries);
-    await commitSession(session);
   }
 }

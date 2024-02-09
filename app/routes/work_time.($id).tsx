@@ -56,7 +56,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   switch (request.method) {
     case "POST":
       return postAttendance(
-        request,
+        session,
         workTimeFormDataToStartDate(workTimeFormData),
         workTimeFormDataToEndDate(workTimeFormData),
         timeToMinutes(workTimeFormData.breakTime),
@@ -65,7 +65,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     case "DELETE":
       checkIDAndPermission(session, params.id);
       const response = await deleteAttendance(
-        request,
+        session,
         Number.parseInt(params.id, 10),
       );
 
@@ -77,7 +77,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     case "PATCH":
       checkIDAndPermission(session, params.id);
       return patchAttendance(
-        request,
+        session,
         Number.parseInt(params.id, 10),
         workTimeFormDataToStartDate(workTimeFormData),
         workTimeFormDataToEndDate(workTimeFormData),

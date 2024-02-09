@@ -7,8 +7,7 @@ import {
   deleteAttendance as _deleteAttendance,
   patchAttendance as _patchAttendance,
 } from "./PersonioApiController";
-import { commitSession, getSession } from "~/sessions.server";
-import { redirect } from "@remix-run/node";
+import { Session, redirect } from "@remix-run/node";
 import { addDaysToDate } from "~/utils/dateUtils";
 import type { PersonioAttendance } from "./PersonioAttendance";
 import moment from "moment";
@@ -17,10 +16,7 @@ function usernameToDigitalserviceMail(username: string) {
   return `${username}@digitalservice.bund.de`;
 }
 
-export async function getEmployeeData(request: Request) {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
-
+export async function getEmployeeData(session: Session) {
   const username = session.get("username");
   if (username === undefined) {
     throw redirect("/login");
@@ -30,26 +26,26 @@ export async function getEmployeeData(request: Request) {
 
   if (employeeId) {
     return staleWhileRevalidate(
-      request,
+      session,
       () => getEmployeeDataById(employeeId),
       "personioEmployee",
     );
   }
 
   return staleWhileRevalidate(
-    request,
+    session,
     () => getEmployeeDataByMailAddress(usernameToDigitalserviceMail(username)),
     "personioEmployee",
   );
 }
 
 export async function getAttendances(
-  request: Request,
+  session: Session,
 ): Promise<PersonioAttendance[]> {
-  const employeeId = (await getEmployeeData(request)).id;
+  const employeeId = (await getEmployeeData(session)).id;
 
   return staleWhileRevalidate(
-    request,
+    session,
     async () => {
       const result = await _getAttendances(
         employeeId,
@@ -98,16 +94,13 @@ export async function getAttendances(
 }
 
 export async function postAttendance(
-  request: Request,
+  session: Session,
   startTime: Date,
   endTime: Date,
   breakTime: number,
   comment: string,
 ) {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
-
-  const employeeId = (await getEmployeeData(request)).id;
+  const employeeId = (await getEmployeeData(session)).id;
 
   const response = await _postAttendance(
     employeeId,
@@ -129,42 +122,34 @@ export async function postAttendance(
       comment,
     });
     session.set("personioAttendances", existingAttendances);
-    await commitSession(session);
   }
 
   return response;
 }
 
-export async function deleteAttendance(request: Request, attendanceId: number) {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
-
+export async function deleteAttendance(session: Session, attendanceId: number) {
   const response = await _deleteAttendance(attendanceId);
   const existingAttendances = session.get("personioAttendances");
   if (response.success && existingAttendances !== undefined) {
     session.set(
       "personioAttendances",
       existingAttendances.filter(
-        ({ id }) => id.toString() !== attendanceId.toString(),
+        ({ id }: { id: number }) => id.toString() !== attendanceId.toString(),
       ),
     );
-    await commitSession(session);
   }
 
   return response;
 }
 
 export async function patchAttendance(
-  request: Request,
+  session: Session,
   attendanceId: number,
   startTime: Date,
   endTime: Date,
   breakTime: number,
   comment: string,
 ) {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
-
   const response = await _patchAttendance(
     attendanceId,
     startTime,
@@ -193,7 +178,6 @@ export async function patchAttendance(
         }
       }),
     );
-    await commitSession(session);
   }
 
   return response;

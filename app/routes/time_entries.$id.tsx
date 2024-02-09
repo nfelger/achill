@@ -1,6 +1,6 @@
 import { ActionFunctionArgs, redirect } from "@remix-run/node";
 import { AuthenticationFailed } from "troi-library";
-import { isSessionValid } from "~/sessions.server";
+import { getSession, isSessionValid } from "~/sessions.server";
 import { deleteTimeEntry, updateTimeEntry } from "~/troi/troiApiController";
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -12,10 +12,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
     throw redirect("/login");
   }
 
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader);
+
   switch (request.method) {
     case "DELETE":
       try {
-        await deleteTimeEntry(request, Number.parseInt(params.id));
+        await deleteTimeEntry(session, Number.parseInt(params.id));
       } catch (e) {
         if (e instanceof AuthenticationFailed) {
           throw redirect("/login");
@@ -40,7 +43,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
       try {
         await updateTimeEntry(
-          request,
+          session,
           Number.parseInt(params.id),
           parseFloat(hours),
           description,

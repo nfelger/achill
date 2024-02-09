@@ -12,7 +12,7 @@ import {
   getCalendarEvents,
   getTimeEntries,
 } from "~/troi/troiApiController";
-import { getSession, isSessionValid } from "~/sessions.server";
+import { commitSession, getSession, isSessionValid } from "~/sessions.server";
 import { loadTasks } from "~/tasks/TrackyTask";
 import { AuthenticationFailed } from "troi-library";
 import {
@@ -52,13 +52,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
       { workingHours },
       attendances,
     ] = await Promise.all([
-      getCalculationPositions(request),
-      getCalendarEvents(request),
-      getTimeEntries(request),
+      getCalculationPositions(session),
+      getCalendarEvents(session),
+      getTimeEntries(session),
       loadTasks(),
-      getEmployeeData(request),
-      getAttendances(request),
+      getEmployeeData(session),
+      getAttendances(session),
     ]);
+    await commitSession(session);
 
     return json({
       username: session.get("username")!,
