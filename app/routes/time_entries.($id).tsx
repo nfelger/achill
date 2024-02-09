@@ -19,7 +19,7 @@ function getFromFormDataOrThrow(formData: FormData, keys: string[]): string[] {
   return keys.map((key) => {
     const value = formData.get(key);
     if (typeof value !== "string") {
-      throw new Response(`Missing ${value}`, { status: 400 });
+      throw new Response(`Missing ${key}`, { status: 400 });
     }
     return value;
   });
