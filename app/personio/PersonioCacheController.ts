@@ -23,74 +23,64 @@ export async function getEmployeeData(session: Session) {
   }
 
   const employeeId = session.get("personioEmployee")?.id;
+  const mailAddress = usernameToDigitalserviceMail(username);
+  const fetcher = employeeId
+    ? async () => getEmployeeDataById(employeeId)
+    : async () => getEmployeeDataByMailAddress(mailAddress);
 
-  if (employeeId) {
-    return staleWhileRevalidate(
-      session,
-      () => getEmployeeDataById(employeeId),
-      "personioEmployee",
-    );
-  }
-
-  return staleWhileRevalidate(
-    session,
-    () => getEmployeeDataByMailAddress(usernameToDigitalserviceMail(username)),
-    "personioEmployee",
-  );
+  return staleWhileRevalidate(session, fetcher, "personioEmployee");
 }
 
-export async function getAttendances(
-  session: Session,
-): Promise<PersonioAttendance[]> {
-  const employeeId = (await getEmployeeData(session)).id;
+export async function getAttendances(session: Session) {
+  const employeeId =
+    session.get("personioEmployee")?.id ?? (await getEmployeeData(session)).id;
 
-  return staleWhileRevalidate(
-    session,
-    async () => {
-      const result = await _getAttendances(
+  const fetcher = async () => {
+    const startDate = addDaysToDate(new Date(), -366);
+    const endDate = addDaysToDate(new Date(), 366);
+    const result = await _getAttendances(
+      employeeId,
+      startDate,
+      endDate,
+      200,
+      0,
+    );
+    let data = result.data;
+
+    if (result.metadata.total_pages > 1) {
+      const result2 = await _getAttendances(
         employeeId,
-        addDaysToDate(new Date(), -366),
-        addDaysToDate(new Date(), 366),
+        startDate,
+        endDate,
         200,
-        0,
+        200,
       );
 
-      let data = result.data;
-
-      if (result.metadata.total_pages > 1) {
-        const result2 = await _getAttendances(
-          employeeId,
-          addDaysToDate(new Date(), -366),
-          addDaysToDate(new Date(), 366),
-          200,
-          200,
+      if (result.metadata.total_pages > 2) {
+        console.error(
+          "There are more than 400 personio attendances, please adjust the pagination logic :)",
         );
-
-        if (result.metadata.total_pages > 2) {
-          console.error(
-            "There are more than 400 personio attendances, please adjust the pagination logic :)",
-          );
-        }
-
-        data = [...data, ...result2.data];
       }
 
-      return data.map(
-        ({
-          id,
-          attributes: { date, start_time, end_time, break: breakTime, comment },
-        }) => ({
-          id,
-          date,
-          start_time,
-          end_time,
-          breakTime,
-          comment,
-        }),
-      );
-    },
-    "personioAttendances",
-  );
+      data = [...data, ...result2.data];
+    }
+
+    return data.map(
+      ({
+        id,
+        attributes: { date, start_time, end_time, break: breakTime, comment },
+      }) => ({
+        id,
+        date,
+        start_time,
+        end_time,
+        breakTime,
+        comment,
+      }),
+    );
+  };
+
+  return staleWhileRevalidate(session, fetcher, "personioAttendances");
 }
 
 export async function postAttendance(
@@ -163,7 +153,7 @@ export async function patchAttendance(
   if (response.success && existingAttendances !== undefined) {
     session.set(
       "personioAttendances",
-      existingAttendances.map((attendance) => {
+      existingAttendances.map((attendance: PersonioAttendance) => {
         if (attendance.id === attendanceId) {
           return {
             id: attendanceId,
