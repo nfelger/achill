@@ -40,9 +40,11 @@ export function TroiTimeEntries({
     entry: TimeEntry | undefined = undefined,
   ) {
     if (entry) {
-      entry.hours = convertTimeStringToFloat(newHours);
-      entry.description = newDescription;
-      updateEntry(entry);
+      updateEntry({
+        ...entry,
+        hours: convertTimeStringToFloat(newHours),
+        description: newDescription,
+      });
     } else {
       addEntry(position, convertTimeStringToFloat(newHours), newDescription);
     }
