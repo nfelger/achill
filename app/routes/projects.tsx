@@ -20,6 +20,8 @@ import {
   getEmployeeData,
 } from "~/personio/PersonioCacheController";
 import { LoadingOverlay } from "~/components/LoadingOverlay";
+import { TrackyButton } from "~/components/TrackyButton";
+import { buttonBlue } from "~/utils/colors";
 
 export const meta: MetaFunction = () => {
   return [
@@ -112,13 +114,9 @@ export default function Index() {
                   <div className="text-sm">Logged in as {username}.</div>
                 </div>
                 <Form method="post" action="/logout">
-                  <button
-                    type="submit"
-                    data-test="add-button"
-                    className="inline-block h-auto rounded bg-blue-600 px-6 py-2.5 text-xs font-medium uppercase leading-tight text-white shadow-md transition duration-150 ease-in-out hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg"
-                  >
+                  <TrackyButton testId="add-button" color={buttonBlue}>
                     Logout
-                  </button>
+                  </TrackyButton>
                 </Form>
               </div>
             </div>

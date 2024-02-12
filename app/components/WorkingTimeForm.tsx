@@ -3,6 +3,8 @@ import moment from "moment";
 import { useState } from "react";
 import type { PersonioAttendance } from "~/personio/PersonioAttendance";
 import { minutesToTime } from "~/utils/dateUtils";
+import { TrackyButton } from "./TrackyButton";
+import { buttonBlue, buttonRed } from "~/utils/colors";
 
 interface Props {
   selectedDate: Date;
@@ -153,44 +155,40 @@ export function WorkingTimeForm({ selectedDate, workTime, attendance }: Props) {
             hidden
           />
           <div>
-            {!attendance && (
-              <button
-                type="submit"
-                data-test="add-button"
-                className="ease rounded bg-blue-600 text-s px-6 py-2.5 font-medium text-white shadow-md transition duration-150 ease-in-out hover:bg-blue-600 hover:shadow-lg focus:bg-blue-600 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-600 active:shadow-lg"
-                onClick={() => {
-                  setAction(`/work_time`);
-                  setMethod("POST");
-                }}
-              >
-                Save
-              </button>
-            )}
-            {attendance && (
+            {attendance ? (
               <div className="flex gap-2">
-                <button
-                  type="submit"
-                  data-test="delete-button"
-                  className="ease rounded bg-red-600 text-s px-6 py-2.5 font-medium text-white shadow-md transition duration-150 ease-in-out hover:bg-red-600 hover:shadow-lg focus:bg-red-600 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-600 active:shadow-lg"
+                <TrackyButton
+                  testId="delete-button"
                   onClick={() => {
                     setAction(`/work_time/${attendance?.id}`);
                     setMethod("DELETE");
                   }}
+                  color={buttonRed}
                 >
                   Delete
-                </button>
-                <button
-                  type="submit"
-                  data-test="update-button"
-                  className="ease rounded bg-blue-600 text-s px-6 py-2.5 font-medium text-white shadow-md transition duration-150 ease-in-out hover:bg-blue-600 hover:shadow-lg focus:bg-blue-600 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-600 active:shadow-lg"
+                </TrackyButton>
+                <TrackyButton
+                  testId="delete-button"
                   onClick={() => {
                     setAction(`/work_time/${attendance?.id}`);
                     setMethod("PATCH");
                   }}
+                  color={buttonBlue}
                 >
                   Update
-                </button>
+                </TrackyButton>
               </div>
+            ) : (
+              <TrackyButton
+                testId="add-button"
+                onClick={() => {
+                  setAction(`/work_time`);
+                  setMethod("POST");
+                }}
+                color={buttonBlue}
+              >
+                Save
+              </TrackyButton>
             )}
           </div>
         </div>

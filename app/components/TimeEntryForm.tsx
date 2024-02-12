@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TroiButton } from "./TroiButton";
+import { TrackyButton } from "./TrackyButton";
 import { buttonBlue, buttonRed } from "~/utils/colors";
 import { TrackyTask } from "~/tasks/TrackyTask";
 import { TrackyPhase } from "~/tasks/TrackyPhase";
@@ -368,19 +368,21 @@ export function TimeEntryForm({
                   <div className="flex flex-row space-x-2 md:flex-col md:space-x-0 md:space-y-2">
                     {!disabled && updateMode && (
                       <>
-                        <TroiButton
-                          text={"Save"}
+                        <TrackyButton
                           testId={`update-${calculationPosition.id}`}
                           onClick={submit}
                           color={buttonBlue}
-                        />
+                        >
+                          Save
+                        </TrackyButton>
                         {values.hours && values.description && (
-                          <TroiButton
-                            text={"Cancel"}
+                          <TrackyButton
                             testId={`cancel-${calculationPosition.id}`}
                             onClick={handleCancel}
                             color={buttonRed}
-                          />
+                          >
+                            Cancel
+                          </TrackyButton>
                         )}
                       </>
                     )}
@@ -394,24 +396,26 @@ export function TimeEntryForm({
                 <p>{values.description}</p>
                 <br />
                 <div className="flex flex-row space-x-2">
-                  <TroiButton
-                    text={"Delete"}
+                  <TrackyButton
                     testId={`delete-${calculationPosition.id}`}
                     onClick={() => {
                       deleteClicked?.();
                     }}
                     color={buttonRed}
-                  />
+                  >
+                    Delete
+                  </TrackyButton>
                   {!disabled && (
-                    <TroiButton
-                      text={"Edit"}
+                    <TrackyButton
                       testId={`edit-${calculationPosition.id}`}
                       onClick={() => {
                         // openPhases();
                         setUpdateMode(true);
                       }}
                       color={buttonBlue}
-                    />
+                    >
+                      Edit
+                    </TrackyButton>
                   )}
                 </div>
               </div>

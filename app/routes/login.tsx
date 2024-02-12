@@ -6,8 +6,10 @@ import {
 } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 import TroiApiService, { AuthenticationFailed } from "troi-library";
-import { LoadingOverlay } from "~/components/LoadingOverlay";
+import Spinner from "~/components/Spinner";
+import { TrackyButton } from "~/components/TrackyButton";
 import { commitSession, getSession } from "~/sessions.server";
+import { buttonBlue } from "~/utils/colors";
 
 export const meta: MetaFunction = () => {
   return [
@@ -71,8 +73,6 @@ export default function Index() {
   return (
     <main>
       <div className="mx-auto mt-8 w-full max-w-sm overflow-hidden rounded-sm bg-white px-8 py-6 shadow-md">
-        {!isIdle && <LoadingOverlay message="Logging in..."></LoadingOverlay>}
-
         <h1 className="mb-8 mt-4 text-center text-3xl font-bold text-blue-600">
           Enter. Time.
         </h1>
@@ -126,12 +126,13 @@ export default function Index() {
           </div>
 
           <div className="mb-4 mt-8">
-            <button
-              type="submit"
-              className="w-full transform rounded-sm bg-blue-600 px-4 py-2 tracking-wide text-white transition-colors duration-200 hover:bg-blue-400 focus:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50"
+            <TrackyButton
+              color={buttonBlue}
+              additionalClasses="w-full inline-flex justify-center"
+              loading={!isIdle}
             >
               Sign in
-            </button>
+            </TrackyButton>
           </div>
         </Form>
       </div>
