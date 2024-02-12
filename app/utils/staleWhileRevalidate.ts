@@ -20,7 +20,7 @@ export async function staleWhileRevalidate<Key extends keyof SessionData>(
   shouldRevalidate = true,
 ): Promise<SessionData[Key]> {
   const fetchAndUpdateCache = async () => {
-    const session = await getSession(cookieHeader);
+    const response = await fetcher(session);
     session.set(sessionKey, response);
     await commitSession(session);
     console.debug(`Key:`, sessionKey);
@@ -29,7 +29,7 @@ export async function staleWhileRevalidate<Key extends keyof SessionData>(
     return response;
   };
 
-  // disable cache as it potentilly leads to corrupted sessions
+  // disable cache as it potentially leads to corrupted sessions
   const cacheData: SessionData[Key] | undefined = session.get(sessionKey);
   if (cacheData !== undefined) {
     console.debug(`Cache hit:`, sessionKey);
