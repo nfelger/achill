@@ -39,7 +39,7 @@ export function WorkingTimeForm({ selectedDate, workTime, attendance }: Props) {
   const [method, setMethod] = useState<"POST" | "PATCH" | "DELETE">("POST");
   const [action, setAction] = useState("");
 
-  const fetcher = useFetcher();
+  const personioFetcher = useFetcher({ key: "Personio" });
 
   function addMinutesToTime(minutes: number, time: string) {
     return moment(time, "HH:mm").add(minutes, "minutes").format("HH:mm");
@@ -48,7 +48,7 @@ export function WorkingTimeForm({ selectedDate, workTime, attendance }: Props) {
   return (
     <div className="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
       {fetcher.state !== "idle" && <LoadingOverlay message="Please wait..." />}
-      <fetcher.Form method={method} action={action}>
+      <personioFetcher.Form method={method} action={action}>
         <div className="flex flex-col gap-3">
           <div className="flex justify-start items-center">
             <label className="inline-block w-24" htmlFor="startTime">
@@ -196,7 +196,7 @@ export function WorkingTimeForm({ selectedDate, workTime, attendance }: Props) {
             )}
           </div>
         </div>
-      </fetcher.Form>
+      </personioFetcher.Form>
     </div>
   );
 }

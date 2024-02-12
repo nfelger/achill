@@ -102,14 +102,14 @@ export default function TrackYourTime(props: Props) {
       return props.attendances.find((attendance) => attendance.date === date);
     });
 
-  const fetcher = useFetcher();
+  const troiFetcher = useFetcher({ key: "Troi" });
 
   async function onAddEntryClicked(
     position: CalculationPosition,
     hours: number,
     description: string,
   ) {
-    fetcher.submit(
+    troiFetcher.submit(
       {
         hours,
         description,
@@ -124,7 +124,7 @@ export default function TrackYourTime(props: Props) {
   }
 
   async function onUpdateEntryClicked(entry: TimeEntry) {
-    fetcher.submit(
+    troiFetcher.submit(
       {
         hours: entry.hours,
         description: entry.description,
@@ -137,7 +137,7 @@ export default function TrackYourTime(props: Props) {
   }
 
   async function onDeleteEntryClicked(entry: TimeEntry) {
-    fetcher.submit(
+    troiFetcher.submit(
       {},
       {
         method: "DELETE",
