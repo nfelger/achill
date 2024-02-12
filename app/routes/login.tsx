@@ -131,7 +131,14 @@ export default function Index() {
               additionalClasses="w-full inline-flex justify-center"
               loading={!isIdle}
             >
-              Sign in
+              {isIdle ? (
+                "Sign in"
+              ) : (
+                <>
+                  <Spinner />
+                  Signing in
+                </>
+              )}
             </TrackyButton>
           </div>
         </Form>
