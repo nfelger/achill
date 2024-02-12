@@ -7,7 +7,8 @@ import {
   deleteAttendance as _deleteAttendance,
   patchAttendance as _patchAttendance,
 } from "./PersonioApiController";
-import { Session, redirect } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
+import type { Session } from "@remix-run/node";
 import { addDaysToDate } from "~/utils/dateUtils";
 import type { PersonioAttendance } from "./PersonioAttendance";
 import moment from "moment";
