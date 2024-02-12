@@ -5,7 +5,7 @@ import {
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, useFetchers, useLoaderData } from "@remix-run/react";
 import TrackYourTime from "../components/TrackYourTime";
 import {
   getCalculationPositions,
@@ -19,6 +19,7 @@ import {
   getAttendances,
   getEmployeeData,
 } from "~/personio/PersonioCacheController";
+import { LoadingOverlay } from "~/components/LoadingOverlay";
 
 export const meta: MetaFunction = () => {
   return [
@@ -47,14 +48,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
       { workingHours },
       attendances,
     ] = await Promise.all([
+      // TROI API calls
       getCalculationPositions(session),
       getCalendarEvents(session),
       getTimeEntries(session),
+      // NOCODB API call
       loadTasks(),
+      // PERSONIO API calls
       getEmployeeData(session),
       getAttendances(session),
     ]);
-    await commitSession(session);
 
     return json({
       username: session.get("username")!,
@@ -85,8 +88,13 @@ export default function Index() {
     attendances,
   } = useLoaderData<typeof loader>();
 
+  const anyFetcherNotIdle = useFetchers().some(
+    (fetcher) => fetcher.state !== "idle",
+  );
+
   return (
     <main>
+      {anyFetcherNotIdle && <LoadingOverlay message="Loading data..." />}
       <div className="rounded-sm bg-white px-2 py-2 shadow-md sm:w-full md:px-8 md:py-6">
         <nav className="border-1 w-full border-b pb-1 text-center md:text-left">
           <div className=" ">

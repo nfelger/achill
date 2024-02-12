@@ -3,7 +3,6 @@ import moment from "moment";
 import { useState } from "react";
 import type { PersonioAttendance } from "~/personio/PersonioAttendance";
 import { minutesToTime } from "~/utils/dateUtils";
-import { LoadingOverlay } from "./LoadingOverlay";
 
 interface Props {
   selectedDate: Date;
@@ -47,7 +46,6 @@ export function WorkingTimeForm({ selectedDate, workTime, attendance }: Props) {
 
   return (
     <div className="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
-      {fetcher.state !== "idle" && <LoadingOverlay message="Please wait..." />}
       <personioFetcher.Form method={method} action={action}>
         <div className="flex flex-col gap-3">
           <div className="flex justify-start items-center">

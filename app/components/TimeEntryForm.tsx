@@ -201,9 +201,6 @@ export function TimeEntryForm({
 
   return (
     <div data-test="entry-form" className="flex justify-center">
-      {phaseFetcher.state !== "idle" && (
-        <LoadingOverlay message="Please wait..." />
-      )}
       <div className="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
         <div className="flex flex-col">
           <div className="basis-3/4 p-1">

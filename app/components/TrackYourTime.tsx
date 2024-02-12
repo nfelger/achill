@@ -17,7 +17,6 @@ import moment from "moment";
 import { TimeEntries, TimeEntry } from "~/troi/TimeEntry";
 import { CalculationPosition } from "~/troi/CalculationPosition";
 import { useFetcher } from "@remix-run/react";
-import { LoadingOverlay } from "./LoadingOverlay";
 import { WorkingTimeForm } from "./WorkingTimeForm";
 import { WorkingHours } from "~/personio/PersonioEmployee";
 import { PersonioAttendance } from "~/personio/PersonioAttendance";
@@ -151,7 +150,7 @@ export default function TrackYourTime(props: Props) {
       <section className="p-4">
         <a
           className="angie-link"
-          href="https://digitalservicebund.atlassian.net/wiki/spaces/DIGITALSER/pages/359301512/Time+Tracking"
+          href="https://digitalservicebund.atlassian.net/wiki/x/iIFqFQ"
           target="_blank"
         >
           Read about how to track your time in confluence
@@ -210,7 +209,7 @@ export default function TrackYourTime(props: Props) {
           Project not showing up?{" "}
           <a
             className="angie-link"
-            href="https://digitalservicebund.atlassian.net/wiki/x/T4BfJg"
+            href="https:// digitalservicebund.atlassian.net/wiki/x/T4BfJg"
             target="_blank"
           >
             Make sure it&apos;s available in Troi and marked as a
@@ -218,8 +217,6 @@ export default function TrackYourTime(props: Props) {
           </a>
         </p>
       </section>
-
-      {fetcher.state !== "idle" && <LoadingOverlay message="Please wait..." />}
     </div>
   );
 }
