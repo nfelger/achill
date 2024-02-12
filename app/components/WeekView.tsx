@@ -1,7 +1,7 @@
 import { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
 import { WeekTable } from "./WeekTable";
 import { WeekSelect } from "./WeekSelect";
-import { PersonioAttendance } from "~/personio/PersonioAttendance";
+import { PersonioAttendance } from "~/personio/Personio.types";
 
 interface Props {
   timesAndEventsOfSelectedWeek: {

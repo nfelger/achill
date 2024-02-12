@@ -4,7 +4,7 @@ import { buttonBlue, buttonRed } from "~/utils/colors";
 import { TrackyTask } from "~/tasks/TrackyTask";
 import { TrackyPhase } from "~/tasks/TrackyPhase";
 import { validateForm } from "~/utils/timeEntryFormValidator";
-import { CalculationPosition } from "~/troi/CalculationPosition";
+import { CalculationPosition } from "~/troi/troi.types";
 import { useFetcher } from "@remix-run/react";
 import { LoadingOverlay } from "./LoadingOverlay";
 

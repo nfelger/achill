@@ -1,3 +1,9 @@
+export type CalculationPosition = {
+  name: string;
+  id: number;
+  subprojectId: number;
+};
+
 export type TimeEntry = {
   id: number;
   date: string;

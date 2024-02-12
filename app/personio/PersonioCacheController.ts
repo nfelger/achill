@@ -10,7 +10,7 @@ import {
 import { redirect } from "@remix-run/node";
 import type { Session } from "@remix-run/node";
 import { addDaysToDate } from "~/utils/dateUtils";
-import type { PersonioAttendance } from "./PersonioAttendance";
+import type { PersonioAttendance } from "./Personio.types";
 import moment from "moment";
 
 function usernameToDigitalserviceMail(username: string) {

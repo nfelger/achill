@@ -14,12 +14,10 @@ import {
   transformCalendarEvent,
 } from "~/utils/transformCalendarEvents";
 import moment from "moment";
-import { TimeEntries, TimeEntry } from "~/troi/TimeEntry";
-import { CalculationPosition } from "~/troi/CalculationPosition";
+import { CalculationPosition, TimeEntries, TimeEntry } from "~/troi/troi.types";
 import { useFetcher } from "@remix-run/react";
 import { WorkingTimeForm } from "./WorkingTimeForm";
-import { WorkingHours } from "~/personio/PersonioEmployee";
-import { PersonioAttendance } from "~/personio/PersonioAttendance";
+import { PersonioAttendance, WorkingHours } from "~/personio/Personio.types";
 
 interface Props {
   calculationPositions: CalculationPosition[];

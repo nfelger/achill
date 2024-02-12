@@ -5,8 +5,8 @@ import {
 import { TimeEntryForm } from "./TimeEntryForm";
 import { TrackyTask } from "~/tasks/TrackyTask";
 import { Fragment } from "react";
-import { CalculationPosition } from "~/troi/CalculationPosition";
-import { TimeEntry } from "~/troi/TimeEntry";
+import { CalculationPosition } from "~/troi/troi.types";
+import { TimeEntry } from "~/troi/troi.types";
 
 interface Props {
   calculationPositions: CalculationPosition[];

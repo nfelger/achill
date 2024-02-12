@@ -2,10 +2,10 @@ import { convertTimeStringToFloat } from "~/utils/timeConverter";
 import type {
   PersonioApiEmployee,
   PersonioApiEmployees,
-} from "./PersonioApiEmployee";
+  PersonioApiAttendance,
+  PersonioEmployee,
+} from "./Personio.types";
 import moment from "moment";
-import type { PersonioApiAttendance } from "./PersonioApiAttendance";
-import type { PersonioEmployee } from "./PersonioEmployee";
 
 const PERSONIO_BASE_URL = "https://api.personio.de/v1";
 const PERSONIO_AUTH_URL = `${PERSONIO_BASE_URL}/auth`;
