@@ -4,7 +4,7 @@ import { addDaysToDate, formatDateToYYYYMMDD } from "~/utils/dateUtils";
 import type { TimeEntries, TimeEntry } from "./TimeEntry";
 import type { CalculationPosition } from "./CalculationPosition";
 import { staleWhileRevalidate } from "../utils/staleWhileRevalidate";
-import { Session } from "@remix-run/node";
+import type { Session } from "@remix-run/node";
 
 const BASE_URL = "https://digitalservice.troi.software/api/v2/rest";
 const CLIENT_NAME = "DigitalService GmbH des Bundes";

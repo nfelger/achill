@@ -1,4 +1,4 @@
-import { Session } from "@remix-run/node";
+import type { Session } from "@remix-run/node";
 import { AuthenticationFailed } from "troi-library";
 import type { SessionData } from "~/sessions.server";
 import { destroySession } from "~/sessions.server";
