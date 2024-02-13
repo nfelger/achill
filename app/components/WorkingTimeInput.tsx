@@ -25,7 +25,7 @@ export function WorkingTimeInput({
       <span
         className="material-symbols-outlined cursor-pointer select-none"
         onClick={() => {
-          onChangeTime(addMinutesToTime(-30, value));
+          onChangeTime(addMinutesToTime(-15, value));
         }}
       >
         Remove
@@ -43,7 +43,7 @@ export function WorkingTimeInput({
       <span
         className="material-symbols-outlined cursor-pointer select-none"
         onClick={() => {
-          onChangeTime(addMinutesToTime(30, value));
+          onChangeTime(addMinutesToTime(15, value));
         }}
       >
         Add
