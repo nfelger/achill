@@ -1,6 +1,7 @@
 import { ButtonColor, buttonBlue } from "~/utils/colors";
 
 interface Props {
+  type?: "button" | "submit" | "reset";
   name?: string;
   value?: string;
   onClick?: () => void;
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export function TrackyButton({
+  type = "submit",
   name,
   value,
   onClick,
@@ -21,6 +23,7 @@ export function TrackyButton({
 }: Props) {
   return (
     <button
+      type={type}
       name={name}
       value={value}
       onClick={onClick}
