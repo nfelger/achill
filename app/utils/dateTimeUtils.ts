@@ -41,9 +41,10 @@ export function minutesToTime(minutes: number) {
     .format("HH:mm");
 }
 
-export function padLeadingZeros(num: string, size: number) {
-  var s = "0" + num;
-  return s.substring(s.length - size);
+export function padLeadingZeros(num: string) {
+  const s = "0" + num;
+  const length = 2;
+  return s.substring(s.length - length);
 }
 
 export function convertFloatTimeToHHMM(time: number) {
@@ -51,7 +52,8 @@ export function convertFloatTimeToHHMM(time: number) {
   // times are float input and we need to parse them to "H:MM", e.g 2.25 -> 2:15
   const minutes = time % 1; // extracts 0.25 from 2.25
   const displayMinutes = (+minutes * 60).toFixed(0);
-  return `${Math.floor(time)}:${padLeadingZeros(displayMinutes, 2)}`;
+  const displayHours = Math.floor(time).toFixed(0);
+  return `${padLeadingZeros(displayHours)}:${padLeadingZeros(displayMinutes)}`;
 }
 
 export function minuteStringToInt(minutes: string): number {
