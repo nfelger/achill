@@ -45,7 +45,7 @@ export function WorkingTimeForm({ selectedDate, workTime, attendance }: Props) {
     <div className="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
       <personioFetcher.Form
         method="POST"
-        action={`/work_time/${attendance?.id}`}
+        action={`/work_time/${attendance?.id ?? ""}`}
       >
         <div className="flex flex-col gap-3">
           <WorkingTimeInput
