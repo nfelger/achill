@@ -5,6 +5,7 @@ import type { PersonioAttendance } from "~/personio/Personio.types";
 import { minutesToTime } from "~/utils/dateUtils";
 import { TrackyButton } from "./TrackyButton";
 import { buttonBlue, buttonRed } from "~/utils/colors";
+import { WorkingTimeInput } from "./WorkingTimeInput";
 
 interface Props {
   selectedDate: Date;
@@ -42,105 +43,28 @@ export function WorkingTimeForm({ selectedDate, workTime, attendance }: Props) {
 
   const personioFetcher = useFetcher({ key: "Personio" });
 
-  function addMinutesToTime(minutes: number, time: string) {
-    return moment(time, "HH:mm").add(minutes, "minutes").format("HH:mm");
-  }
-
   return (
     <div className="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
       <personioFetcher.Form method={method} action={action}>
         <div className="flex flex-col gap-3">
-          <div className="flex justify-start items-center">
-            <label className="inline-block w-24" htmlFor="startTime">
-              Start time
-            </label>
-            <span
-              className="material-symbols-outlined cursor-pointer select-none"
-              onClick={() => {
-                setStartTime(addMinutesToTime(-30, startTime));
-              }}
-            >
-              Remove
-            </span>
-            <input
-              className="mx-4"
-              id="startTime"
-              name="startTime"
-              type="time"
-              value={startTime}
-              onChange={(e) => {
-                setStartTime(e.target.value);
-              }}
-            />
-            <span
-              className="material-symbols-outlined cursor-pointer select-none"
-              onClick={() => {
-                setStartTime(addMinutesToTime(30, startTime));
-              }}
-            >
-              Add
-            </span>
-          </div>
-          <div className="flex justify-start items-center">
-            <label className="inline-block w-24" htmlFor="breakTime">
-              Break
-            </label>
-            <span
-              className="material-symbols-outlined cursor-pointer select-none"
-              onClick={() => {
-                setBreakTime(addMinutesToTime(-15, breakTime));
-              }}
-            >
-              Remove
-            </span>
-            <input
-              className="mx-4"
-              id="breakTime"
-              name="breakTime"
-              type="time"
-              value={breakTime}
-              onChange={(e) => {
-                setBreakTime(e.target.value);
-              }}
-            />
-            <span
-              className="material-symbols-outlined cursor-pointer select-none"
-              onClick={() => {
-                setBreakTime(addMinutesToTime(15, breakTime));
-              }}
-            >
-              Add
-            </span>
-          </div>
-          <div className="flex justify-start items-center">
-            <label className="inline-block w-24" htmlFor="endTime">
-              End time
-            </label>
-            <span
-              className="material-symbols-outlined cursor-pointer select-none"
-              onClick={() => {
-                setEndTime(addMinutesToTime(-30, endTime));
-              }}
-            >
-              Remove
-            </span>
-            <input
-              className="mx-4"
-              id="endTime"
-              name="endTime"
-              type="time"
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
-            />
-            <span
-              className="material-symbols-outlined cursor-pointer select-none"
-              onClick={() => {
-                setEndTime(addMinutesToTime(30, endTime));
-              }}
-            >
-              Add
-            </span>
-          </div>
+          <WorkingTimeInput
+            name="startTime"
+            value={startTime}
+            onChangeTime={setStartTime}
+            label="Start time"
+          />
+          <WorkingTimeInput
+            name="breakTime"
+            value={breakTime}
+            onChangeTime={setBreakTime}
+            label="Break"
+          />
+          <WorkingTimeInput
+            name="endTime"
+            value={endTime}
+            onChangeTime={setEndTime}
+            label="End time"
+          />
           <input
             name="comment"
             type="text"
