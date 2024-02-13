@@ -129,7 +129,6 @@ export default function Index() {
             <TrackyButton
               color={buttonBlue}
               additionalClasses="w-full inline-flex justify-center"
-              loading={!isIdle}
             >
               {isIdle ? (
                 "Sign in"
