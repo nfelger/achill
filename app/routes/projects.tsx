@@ -114,9 +114,7 @@ export default function Index() {
                   <div className="text-sm">Logged in as {username}.</div>
                 </div>
                 <Form method="post" action="/logout">
-                  <TrackyButton color={buttonBlue} testId="logout-button">
-                    Logout
-                  </TrackyButton>
+                  <TrackyButton testId="logout-button">Logout</TrackyButton>
                 </Form>
               </div>
             </div>
