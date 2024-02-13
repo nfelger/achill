@@ -16,7 +16,7 @@ interface Props {
 const DEFAULT_START_TIME = "09:00";
 const DEFAULT_BREAK_TIME = "01:00";
 
-export function WorkingTimeForm({ selectedDate, workTime, attendance }: Props) {
+export function WorkTimeForm({ selectedDate, workTime, attendance }: Props) {
   // calculate end time based on daily work time from personio
   const momentStartTime = moment(DEFAULT_START_TIME, "HH:mm");
   const momentBreakTime = moment(DEFAULT_BREAK_TIME, "HH:mm");

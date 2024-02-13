@@ -15,7 +15,7 @@ import {
 } from "~/utils/transformCalendarEvents";
 import moment from "moment";
 import { CalculationPosition, TimeEntries, TimeEntry } from "~/troi/troi.types";
-import { WorkingTimeForm } from "./WorkingTimeForm";
+import { WorkTimeForm } from "./WorkTimeForm";
 import { PersonioAttendance, WorkingHours } from "~/personio/Personio.types";
 
 interface Props {
@@ -131,7 +131,7 @@ export default function TrackYourTime(props: Props) {
       >
         Working hours
       </h2>
-      <WorkingTimeForm
+      <WorkTimeForm
         key={selectedDate.getDate()}
         selectedDate={selectedDate}
         workTime={workingHoursOfSelectedDate}
