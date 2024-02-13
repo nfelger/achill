@@ -15,7 +15,6 @@ import {
 } from "~/utils/transformCalendarEvents";
 import moment from "moment";
 import { CalculationPosition, TimeEntries, TimeEntry } from "~/troi/troi.types";
-import { useFetcher } from "@remix-run/react";
 import { WorkingTimeForm } from "./WorkingTimeForm";
 import { PersonioAttendance, WorkingHours } from "~/personio/Personio.types";
 
@@ -99,50 +98,6 @@ export default function TrackYourTime(props: Props) {
       return props.attendances.find((attendance) => attendance.date === date);
     });
 
-  const troiFetcher = useFetcher({ key: "Troi" });
-
-  async function onAddEntryClicked(
-    position: CalculationPosition,
-    hours: number,
-    description: string,
-  ) {
-    troiFetcher.submit(
-      {
-        hours,
-        description,
-        calculationPositionId: position.id,
-        date: moment(selectedDate).format("YYYY-MM-DD"),
-      },
-      {
-        method: "POST",
-        action: `/time_entries`,
-      },
-    );
-  }
-
-  async function onUpdateEntryClicked(entry: TimeEntry) {
-    troiFetcher.submit(
-      {
-        hours: entry.hours,
-        description: entry.description,
-      },
-      {
-        method: "PUT",
-        action: `/time_entries/${entry.id}`,
-      },
-    );
-  }
-
-  async function onDeleteEntryClicked(entry: TimeEntry) {
-    troiFetcher.submit(
-      {},
-      {
-        method: "DELETE",
-        action: `/time_entries/${entry.id}`,
-      },
-    );
-  }
-
   return (
     <div>
       <section className="p-4">
@@ -191,13 +146,11 @@ export default function TrackYourTime(props: Props) {
       </h2>
       {!selectedDayEvents?.some((event) => event.type == "Holiday") && (
         <TroiTimeEntries
+          selectedDate={selectedDate}
           calculationPositions={positions ?? []}
           recurringTasks={recurringTasks}
           phaseTasks={phaseTasks}
           entries={entriesForSelectedDate}
-          deleteEntry={onDeleteEntryClicked}
-          updateEntry={onUpdateEntryClicked}
-          addEntry={onAddEntryClicked}
           disabled={false}
         />
       )}

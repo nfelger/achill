@@ -7,32 +7,70 @@ import { TrackyTask } from "~/tasks/TrackyTask";
 import { Fragment } from "react";
 import { CalculationPosition } from "~/troi/troi.types";
 import { TimeEntry } from "~/troi/troi.types";
+import moment from "moment";
+import { useFetcher } from "@remix-run/react";
 
 interface Props {
+  selectedDate: Date;
   calculationPositions: CalculationPosition[];
   recurringTasks: TrackyTask[];
   phaseTasks: TrackyTask[];
   entries: TimeEntry[];
-  deleteEntry: (entry: TimeEntry) => unknown;
-  updateEntry: (entry: TimeEntry) => unknown;
-  addEntry: (
-    position: CalculationPosition,
-    hours: number,
-    description: string,
-  ) => unknown;
   disabled: boolean;
 }
 
 export function TroiTimeEntries({
+  selectedDate,
   calculationPositions,
   recurringTasks,
   phaseTasks,
   entries,
-  deleteEntry,
-  updateEntry,
-  addEntry,
   disabled = false,
 }: Props) {
+  const troiFetcher = useFetcher({ key: "Troi" });
+
+  async function addEntry(
+    position: CalculationPosition,
+    hours: number,
+    description: string,
+  ) {
+    troiFetcher.submit(
+      {
+        hours,
+        description,
+        calculationPositionId: position.id,
+        date: moment(selectedDate).format("YYYY-MM-DD"),
+      },
+      {
+        method: "POST",
+        action: `/time_entries`,
+      },
+    );
+  }
+
+  async function updateEntry(entry: TimeEntry) {
+    troiFetcher.submit(
+      {
+        hours: entry.hours,
+        description: entry.description,
+      },
+      {
+        method: "PUT",
+        action: `/time_entries/${entry.id}`,
+      },
+    );
+  }
+
+  async function deleteEntry(entry: TimeEntry) {
+    troiFetcher.submit(
+      {},
+      {
+        method: "DELETE",
+        action: `/time_entries/${entry.id}`,
+      },
+    );
+  }
+
   async function submitEntry(
     position: CalculationPosition,
     newHours: string,
