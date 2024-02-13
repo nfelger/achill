@@ -139,7 +139,7 @@ export default function TrackYourTime(props: Props) {
       />
 
       <h2
-        className="mt-8 text-lg font-semibold text-gray-900"
+        className="mt-8 mb-4 text-lg font-semibold text-gray-900"
         title="Working hours"
       >
         Project hours

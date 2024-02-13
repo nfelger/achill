@@ -25,7 +25,7 @@ export function TroiTimeEntries({
   return calculationPositions.map((position) => (
     <section
       key={position.id}
-      className="bg-white p-4"
+      className="bg-white"
       data-testid={`project-section-${position.id}`}
     >
       <div className="container mx-auto pb-2">
@@ -45,30 +45,27 @@ export function TroiTimeEntries({
               ({ calculationPosition }) => calculationPosition === position.id,
             )
             .map((entry) => (
-              <Fragment key={entry.id}>
-                <div data-testid={`entryCard-${position.id}`}>
-                  <div
-                    data-test="entry-form"
-                    className="my-2 flex justify-center"
-                  >
-                    <div className="block w-full">
-                      <TimeEntryForm
-                        date={selectedDate}
-                        entryId={entry.id}
-                        values={{
-                          hours: convertFloatTimeToHHMM(entry.hours),
-                          description: entry.description,
-                        }}
-                        recurringTasks={recurringTasks}
-                        phaseTasks={phaseTasks}
-                        calculationPosition={position}
-                        disabled={disabled}
-                      />
-                    </div>
+              <div key={entry.id} data-testid={`entryCard-${position.id}`}>
+                <div
+                  data-test="entry-form"
+                  className="my-2 flex justify-center"
+                >
+                  <div className="block w-full">
+                    <TimeEntryForm
+                      date={selectedDate}
+                      entryId={entry.id}
+                      values={{
+                        hours: convertFloatTimeToHHMM(entry.hours),
+                        description: entry.description,
+                      }}
+                      recurringTasks={recurringTasks}
+                      phaseTasks={phaseTasks}
+                      calculationPosition={position}
+                      disabled={disabled}
+                    />
                   </div>
                 </div>
-                <br />
-              </Fragment>
+              </div>
             ))
         )}
       </div>

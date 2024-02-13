@@ -41,7 +41,7 @@ export function WorkTimeForm({ selectedDate, workTime, attendance }: Props) {
   const personioFetcher = useFetcher({ key: "Personio" });
 
   return (
-    <div className="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
+    <section className="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
       <personioFetcher.Form
         method="POST"
         action={`/work_time/${attendance?.id ?? ""}`}
@@ -105,6 +105,6 @@ export function WorkTimeForm({ selectedDate, workTime, attendance }: Props) {
           </div>
         </div>
       </personioFetcher.Form>
-    </div>
+    </section>
   );
 }
