@@ -2,9 +2,7 @@ import moment from "moment";
 import type { ZodSchema, ZodTypeDef } from "zod";
 import { z } from "zod";
 import type { Time } from "./Time";
-import { timeSchema } from "./Time";
-
-const YYYY_MM_DD_FORMAT = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/;
+import { timeSchema, YYYY_MM_DD_FORMAT } from "./Time";
 
 export type WorkTimeFormData = {
   startTime: Time;

@@ -35,19 +35,18 @@ function checkIDAndPermissionOrThrow(
   }
 }
 
+function parseWorkTimeFormData(formData: FormData) {
+  try {
+    return workTimeFormDataSchema.parse(Object.fromEntries(formData.entries()));
+  } catch (error) {
+    throw json(error, { status: 400 });
+  }
+}
+
 export async function action({ request, params }: ActionFunctionArgs) {
   const session = await getSessionAndThrowIfInvalid(request);
-
   const formData = await request.formData();
-  const parseResult = workTimeFormDataSchema.safeParse(
-    Object.fromEntries(formData.entries()),
-  );
-
-  if (!parseResult.success) {
-    throw json(parseResult.error, { status: 400 });
-  }
-  const workTimeFormData = parseResult.data;
-  console.log(workTimeFormData);
+  const workTimeFormData = parseWorkTimeFormData(formData);
 
   switch (workTimeFormData._intent) {
     case "POST":
