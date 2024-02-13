@@ -31,12 +31,12 @@ export function TroiTimeEntries({
 
   async function addEntry(
     position: CalculationPosition,
-    hours: number,
+    hours: string,
     description: string,
   ) {
     troiFetcher.submit(
       {
-        hours,
+        hours: convertTimeStringToFloat(hours),
         description,
         calculationPositionId: position.id,
         date: moment(selectedDate).format("YYYY-MM-DD"),
@@ -48,44 +48,31 @@ export function TroiTimeEntries({
     );
   }
 
-  async function updateEntry(entry: TimeEntry) {
+  async function updateEntry(
+    hours: string,
+    description: string,
+    entryId: number,
+  ) {
     troiFetcher.submit(
       {
-        hours: entry.hours,
-        description: entry.description,
+        hours: hours,
+        description: description,
       },
       {
         method: "PUT",
-        action: `/time_entries/${entry.id}`,
+        action: `/time_entries/${entryId}`,
       },
     );
   }
 
-  async function deleteEntry(entry: TimeEntry) {
+  async function deleteEntry(entryId: number) {
     troiFetcher.submit(
       {},
       {
         method: "DELETE",
-        action: `/time_entries/${entry.id}`,
+        action: `/time_entries/${entryId}`,
       },
     );
-  }
-
-  async function submitEntry(
-    position: CalculationPosition,
-    newHours: string,
-    newDescription: string,
-    entry: TimeEntry | undefined = undefined,
-  ) {
-    if (entry) {
-      updateEntry({
-        ...entry,
-        hours: convertTimeStringToFloat(newHours),
-        description: newDescription,
-      });
-    } else {
-      addEntry(position, convertTimeStringToFloat(newHours), newDescription);
-    }
   }
 
   return calculationPositions.map((position) => (
@@ -95,15 +82,15 @@ export function TroiTimeEntries({
       data-testid={`project-section-${position.id}`}
     >
       <div className="container mx-auto pb-2">
-        {entries.find(
+        {!entries.some(
           ({ calculationPosition }) => calculationPosition === position.id,
-        ) === undefined ? (
+        ) ? (
           <TimeEntryForm
             calculationPosition={position}
             recurringTasks={recurringTasks}
             phaseTasks={phaseTasks}
-            addOrUpdateClicked={(hours, description) =>
-              submitEntry(position, hours, description)
+            saveClickedNew={(hours, description) =>
+              addEntry(position, hours, description)
             }
             disabled={disabled}
           />
@@ -125,10 +112,10 @@ export function TroiTimeEntries({
                           hours: convertFloatTimeToHHMM(entry.hours),
                           description: entry.description,
                         }}
-                        addOrUpdateClicked={(hours, description) =>
-                          submitEntry(position, hours, description, entry)
+                        saveClickedUpdate={(hours, description) =>
+                          updateEntry(hours, description, entry.id)
                         }
-                        deleteClicked={() => deleteEntry(entry)}
+                        deleteClicked={() => deleteEntry(entry.id)}
                         recurringTasks={recurringTasks}
                         phaseTasks={phaseTasks}
                         calculationPosition={position}

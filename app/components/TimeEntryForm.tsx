@@ -16,7 +16,8 @@ interface Props {
     hours: string;
     description: string;
   };
-  addOrUpdateClicked: (hours: string, description: string) => unknown;
+  saveClickedNew?: (hours: string, description: string) => unknown;
+  saveClickedUpdate?: (hours: string, description: string) => unknown;
   deleteClicked?: () => unknown;
   recurringTasks: TrackyTask[];
   phaseTasks: TrackyTask[];
@@ -44,7 +45,8 @@ export function TimeEntryForm({
     hours: "",
     description: "",
   },
-  addOrUpdateClicked,
+  saveClickedNew,
+  saveClickedUpdate,
   deleteClicked,
   recurringTasks,
   phaseTasks,
@@ -171,7 +173,11 @@ export function TimeEntryForm({
     const formErrors = await validateForm({ hours, description });
     setErrors(formErrors);
     if (Object.keys(formErrors).length === 0) {
-      addOrUpdateClicked(hours, description);
+      if (values.hours && values.description) {
+        saveClickedUpdate?.(hours, description);
+      } else {
+        saveClickedNew?.(hours, description);
+      }
       setUpdateMode(false);
     }
   }
