@@ -63,6 +63,12 @@ export function minuteStringToInt(minutes: string): number {
   return parseInt(minutes);
 }
 
+export function convertTimeToFloat(time: Time) {
+  let { hours, minutes } = time;
+  let minuteFractions = minutes / 60;
+  return Number(hours) + minuteFractions;
+}
+
 export function convertTimeStringToFloat(time: string) {
   if (time.includes(":")) {
     let [hours, minutes] = time.split(":");

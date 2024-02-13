@@ -1,4 +1,4 @@
-import { ActionFunctionArgs, redirect } from "@remix-run/node";
+import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { AuthenticationFailed } from "troi-library";
 import { getSessionAndThrowIfInvalid } from "~/sessions.server";
 import {
@@ -6,6 +6,9 @@ import {
   deleteTimeEntry,
   updateTimeEntry,
 } from "~/troi/troiApiController";
+import { convertTimeToFloat } from "~/utils/dateTimeUtils";
+import type { TimeEntrySaveFormData } from "~/utils/timeEntryFormValidator";
+import { timeEntrySaveFormSchema } from "~/utils/timeEntryFormValidator";
 
 function checkIDOrThrow(
   ID: string | undefined,
@@ -15,52 +18,42 @@ function checkIDOrThrow(
   }
 }
 
-function getFromFormDataOrThrow(formData: FormData, keys: string[]): string[] {
-  return keys.map((key) => {
-    const value = formData.get(key);
-    if (typeof value !== "string") {
-      throw new Response(`Missing ${key}`, { status: 400 });
-    }
-    return value;
-  });
+function parseTimeEntryFormData(formData: FormData): TimeEntrySaveFormData {
+  try {
+    return timeEntrySaveFormSchema.parse(
+      Object.fromEntries(formData.entries()),
+    );
+  } catch (error) {
+    throw json(error, { status: 400 });
+  }
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const session = await getSessionAndThrowIfInvalid(request);
-  const body = await request.formData();
-  let date, hours, description, calculationPositionId;
+  const formData = await request.formData();
+  const { calculationPositionId, date, hours, description } =
+    parseTimeEntryFormData(formData);
+  const hoursFloat = convertTimeToFloat(hours);
 
   try {
     switch (request.method) {
       case "POST":
-        [date, hours, description, calculationPositionId] =
-          getFromFormDataOrThrow(body, [
-            "date",
-            "hours",
-            "description",
-            "calculationPositionId",
-          ]);
-
         await addTimeEntry(
           session,
-          parseInt(calculationPositionId, 10),
+          parseInt(calculationPositionId),
           date,
-          parseFloat(hours),
+          hoursFloat,
           description,
         );
 
         return new Response(null, { status: 201 });
       case "PUT":
         checkIDOrThrow(params.id);
-        [hours, description] = getFromFormDataOrThrow(body, [
-          "hours",
-          "description",
-        ]);
 
         await updateTimeEntry(
           session,
-          Number.parseInt(params.id),
-          parseFloat(hours),
+          parseInt(params.id),
+          hoursFloat,
           description,
         );
 
@@ -68,7 +61,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       case "DELETE":
         checkIDOrThrow(params.id);
 
-        await deleteTimeEntry(session, Number.parseInt(params.id));
+        await deleteTimeEntry(session, parseInt(params.id));
 
         return new Response(null, { status: 204 });
       default:

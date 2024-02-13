@@ -1,24 +1,26 @@
 import { useEffect, useState } from "react";
 import { TrackyButton } from "./TrackyButton";
-import { buttonBlue, buttonRed } from "~/utils/colors";
+import { buttonRed } from "~/utils/colors";
 import { TrackyTask } from "~/tasks/TrackyTask";
 import { TrackyPhase } from "~/tasks/TrackyPhase";
-import { validateForm } from "~/utils/timeEntryFormValidator";
 import { CalculationPosition } from "~/troi/troi.types";
-import { useFetcher } from "@remix-run/react";
+import { useActionData, useFetcher } from "@remix-run/react";
+import { TimeInput } from "./TimeInput";
+import moment from "moment";
+import { action } from "~/routes/time_entries.($id)";
+import { timeEntrySaveFormSchema } from "~/utils/timeEntryFormValidator";
 
 export interface TimeEntryFormErrors {
   hours?: string;
   description?: string;
 }
 interface Props {
+  date: Date;
+  entryId?: number;
   values?: {
     hours: string;
     description: string;
   };
-  saveClickedNew?: (hours: string, description: string) => unknown;
-  saveClickedUpdate?: (hours: string, description: string) => unknown;
-  deleteClicked?: () => unknown;
   recurringTasks: TrackyTask[];
   phaseTasks: TrackyTask[];
   calculationPosition: CalculationPosition;
@@ -41,13 +43,12 @@ function segmentsToDescription(segments: string[]): string {
 }
 
 export function TimeEntryForm({
+  date,
+  entryId,
   values = {
-    hours: "",
+    hours: "04:00",
     description: "",
   },
-  saveClickedNew,
-  saveClickedUpdate,
-  deleteClicked,
   recurringTasks,
   phaseTasks,
   calculationPosition,
@@ -62,11 +63,6 @@ export function TimeEntryForm({
   const errorAppearance =
     "border border-b-2 border-red-500 focus:ring-red-500 focus:border-red-500";
 
-  const inputClass =
-    "w-full basis-3/4 rounded px-3 py-2 text-sm placeholder:italic placeholder:text-gray-400 leading-6 ";
-  const inputNormalAppearance = inputClass + normalAppearance;
-  const inputErrorAppearance = inputClass + errorAppearance;
-
   const textAreaClass =
     "inherit border-box absolute top-0 overflow-hidden p-[0.5em] leading-4 ";
   const textareaNormalAppearance = textAreaClass + normalAppearance;
@@ -76,14 +72,12 @@ export function TimeEntryForm({
   const maxHeight = maxRows ? `${1 + maxRows * 1.2}em` : `auto`;
 
   const [description, setDescription] = useState(() => values.description);
-
   const descriptionSegments = descriptionToSegments(description);
   const [hours, setHours] = useState(values.hours);
-  const [updateMode, setUpdateMode] = useState(
-    values.hours && values.description ? false : true,
-  );
+  const [updateMode, setUpdateMode] = useState(entryId ? false : true);
   const [errors, setErrors] = useState<TimeEntryFormErrors>({});
 
+  const troiFetcher = useFetcher({ key: "Troi" });
   const phaseFetcher = useFetcher<TrackyPhase[]>({
     key: `/phases?calculationPositionId=${calculationPosition.id}`,
   });
@@ -165,21 +159,30 @@ export function TimeEntryForm({
 
   async function onKeyDown(e: React.KeyboardEvent) {
     if (e.key === "Enter") {
-      submit();
+      submit(entryId ? "PUT" : "POST");
     }
   }
 
-  async function submit() {
-    const formErrors = await validateForm({ hours, description });
-    setErrors(formErrors);
-    if (Object.keys(formErrors).length === 0) {
-      if (values.hours && values.description) {
-        saveClickedUpdate?.(hours, description);
-      } else {
-        saveClickedNew?.(hours, description);
+  async function submit(method: "POST" | "PUT" | "DELETE") {
+    setErrors({});
+    const formData = {
+      date: moment(date).format("YYYY-MM-DD"),
+      calculationPositionId: calculationPosition.id.toString(),
+      hours,
+      description,
+    };
+    const parseResult = timeEntrySaveFormSchema.safeParse(formData);
+    if (!parseResult.success) {
+      for (const issue of parseResult.error.issues) {
+        const field = issue.path[0];
+        setErrors({ ...errors, [field]: issue.message });
       }
-      setUpdateMode(false);
+      return;
     }
+    await troiFetcher.submit(formData, {
+      method,
+      action: `/time_entries/${entryId ?? ""}`,
+    });
   }
 
   function handleCancel() {
@@ -219,27 +222,13 @@ export function TimeEntryForm({
             {updateMode ? (
               <div id="timeEntryForm">
                 <div className="relative flex w-full items-center">
-                  <div>
-                    <label htmlFor="hours" className="pr-2">
-                      Hours
-                    </label>
-                    <input
-                      value={hours}
-                      onKeyDown={onKeyDown}
-                      onChange={(e) => {
-                        setHours(e.target.value);
-                      }}
-                      type="text"
-                      id="hours"
-                      data-testid={hoursTestId}
-                      className={`${
-                        errors.hours
-                          ? inputErrorAppearance
-                          : inputNormalAppearance
-                      } w-3/12`}
-                      placeholder="2:15"
-                    />
-                  </div>
+                  <TimeInput
+                    name="hours"
+                    value={hours}
+                    onChangeTime={setHours}
+                    label="Hours"
+                    // data-testid={hoursTestId}
+                  />
                   <div className="mt-1">
                     {Object.values(errors).length > 0 && (
                       <div className="font-bold text-red-600">
@@ -357,6 +346,7 @@ export function TimeEntryForm({
                     </pre>
 
                     <textarea
+                      name="description"
                       value={description}
                       onKeyDown={onKeyDown}
                       onInput={handleDescriptionChange}
@@ -373,14 +363,24 @@ export function TimeEntryForm({
                   <div className="flex flex-row space-x-2 md:flex-col md:space-x-0 md:space-y-2">
                     {!disabled && updateMode && (
                       <>
-                        <TrackyButton
-                          onClick={submit}
-                          testId={`update-${calculationPosition.id}`}
-                        >
-                          Save
-                        </TrackyButton>
+                        {entryId ? (
+                          <TrackyButton
+                            onClick={() => submit("PUT")}
+                            testId={`update-${calculationPosition.id}`}
+                          >
+                            Update
+                          </TrackyButton>
+                        ) : (
+                          <TrackyButton
+                            onClick={() => submit("POST")}
+                            testId={`add-${calculationPosition.id}`}
+                          >
+                            Save
+                          </TrackyButton>
+                        )}
                         {values.hours && values.description && (
                           <TrackyButton
+                            type="reset"
                             onClick={handleCancel}
                             color={buttonRed}
                             testId={`cancel-${calculationPosition.id}`}
@@ -401,9 +401,7 @@ export function TimeEntryForm({
                 <br />
                 <div className="flex flex-row space-x-2">
                   <TrackyButton
-                    onClick={() => {
-                      deleteClicked?.();
-                    }}
+                    onClick={() => submit("DELETE")}
                     color={buttonRed}
                     testId={`delete-${calculationPosition.id}`}
                   >
@@ -411,6 +409,7 @@ export function TimeEntryForm({
                   </TrackyButton>
                   {!disabled && (
                     <TrackyButton
+                      type="button"
                       onClick={() => {
                         // openPhases();
                         setUpdateMode(true);

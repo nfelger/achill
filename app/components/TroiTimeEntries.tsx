@@ -4,8 +4,6 @@ import { TrackyTask } from "~/tasks/TrackyTask";
 import { Fragment } from "react";
 import { CalculationPosition } from "~/troi/troi.types";
 import { TimeEntry } from "~/troi/troi.types";
-import moment from "moment";
-import { useFetcher } from "@remix-run/react";
 
 interface Props {
   selectedDate: Date;
@@ -24,54 +22,6 @@ export function TroiTimeEntries({
   entries,
   disabled = false,
 }: Props) {
-  const troiFetcher = useFetcher({ key: "Troi" });
-
-  async function addEntry(
-    position: CalculationPosition,
-    hours: string,
-    description: string,
-  ) {
-    troiFetcher.submit(
-      {
-        hours: convertTimeStringToFloat(hours),
-        description,
-        calculationPositionId: position.id,
-        date: moment(selectedDate).format("YYYY-MM-DD"),
-      },
-      {
-        method: "POST",
-        action: `/time_entries`,
-      },
-    );
-  }
-
-  async function updateEntry(
-    hours: string,
-    description: string,
-    entryId: number,
-  ) {
-    troiFetcher.submit(
-      {
-        hours: hours,
-        description: description,
-      },
-      {
-        method: "PUT",
-        action: `/time_entries/${entryId}`,
-      },
-    );
-  }
-
-  async function deleteEntry(entryId: number) {
-    troiFetcher.submit(
-      {},
-      {
-        method: "DELETE",
-        action: `/time_entries/${entryId}`,
-      },
-    );
-  }
-
   return calculationPositions.map((position) => (
     <section
       key={position.id}
@@ -83,12 +33,10 @@ export function TroiTimeEntries({
           ({ calculationPosition }) => calculationPosition === position.id,
         ) ? (
           <TimeEntryForm
+            date={selectedDate}
             calculationPosition={position}
             recurringTasks={recurringTasks}
             phaseTasks={phaseTasks}
-            saveClickedNew={(hours, description) =>
-              addEntry(position, hours, description)
-            }
             disabled={disabled}
           />
         ) : (
@@ -105,14 +53,12 @@ export function TroiTimeEntries({
                   >
                     <div className="block w-full">
                       <TimeEntryForm
+                        date={selectedDate}
+                        entryId={entry.id}
                         values={{
                           hours: convertFloatTimeToHHMM(entry.hours),
                           description: entry.description,
                         }}
-                        saveClickedUpdate={(hours, description) =>
-                          updateEntry(hours, description, entry.id)
-                        }
-                        deleteClicked={() => deleteEntry(entry.id)}
                         recurringTasks={recurringTasks}
                         phaseTasks={phaseTasks}
                         calculationPosition={position}

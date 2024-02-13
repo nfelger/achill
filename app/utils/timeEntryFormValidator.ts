@@ -1,40 +1,18 @@
-import * as yup from "yup";
-import type { TimeEntryFormErrors } from "~/components/TimeEntryForm";
+import type { ZodSchema, ZodTypeDef } from "zod";
+import { z } from "zod";
+import type { Time } from "./dateTimeUtils";
+import { YYYY_MM_DD_FORMAT, timeSchema } from "./dateTimeUtils";
 
-export const entryFormValidationScheme = yup.object().shape({
-  hours: yup
-    .string()
-    .required()
-    .matches(/^(\d?\d|\d?\d[:,.]\d\d?)$/, {
-      message: "Hours format must be either 5:30 or 5.5 or 5,5",
-    }),
-  description: yup.string().required().matches(/\w+/, {
-    message: "Provide a description",
-  }),
-});
-
-export async function validateForm(values: {
-  hours: string;
+export type TimeEntrySaveFormData = {
+  calculationPositionId: string;
+  date: string;
+  hours: Time;
   description: string;
-}): Promise<TimeEntryFormErrors> {
-  let errors = {};
-  try {
-    // `abortEarly: false` to get all the errors
-    await entryFormValidationScheme.validate(values, {
-      abortEarly: false,
-    });
-    errors = {};
-  } catch (err) {
-    if (err instanceof yup.ValidationError) {
-      errors = err.inner.reduce((acc, err) => {
-        if (err.path) {
-          return { ...acc, [err.path]: err.message };
-        } else {
-          return acc;
-        }
-      }, {});
-    }
-  }
+};
 
-  return errors;
-}
+export const timeEntrySaveFormSchema = z.object({
+  calculationPositionId: z.string(),
+  date: z.string().regex(YYYY_MM_DD_FORMAT),
+  hours: timeSchema,
+  description: z.string().min(1, "Description is required."),
+}) satisfies ZodSchema<TimeEntrySaveFormData, ZodTypeDef, unknown>;
