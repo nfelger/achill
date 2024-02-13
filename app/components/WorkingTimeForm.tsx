@@ -5,7 +5,7 @@ import type { PersonioAttendance } from "~/personio/Personio.types";
 import { minutesToTime } from "~/utils/dateTimeUtils";
 import { TrackyButton } from "./TrackyButton";
 import { buttonBlue, buttonRed } from "~/utils/colors";
-import { WorkingTimeInput } from "./WorkingTimeInput";
+import { TimeInput } from "./TimeInput";
 
 interface Props {
   selectedDate: Date;
@@ -48,19 +48,19 @@ export function WorkingTimeForm({ selectedDate, workTime, attendance }: Props) {
         action={`/work_time/${attendance?.id ?? ""}`}
       >
         <div className="flex flex-col gap-3">
-          <WorkingTimeInput
+          <TimeInput
             name="startTime"
             value={startTime}
             onChangeTime={setStartTime}
             label="Start time"
           />
-          <WorkingTimeInput
+          <TimeInput
             name="breakTime"
             value={breakTime}
             onChangeTime={setBreakTime}
             label="Break"
           />
-          <WorkingTimeInput
+          <TimeInput
             name="endTime"
             value={endTime}
             onChangeTime={setEndTime}

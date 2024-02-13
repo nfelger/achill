@@ -7,7 +7,7 @@ type WorkingTimeInputProps = {
   label: string;
 };
 
-export function WorkingTimeInput({
+export function TimeInput({
   name,
   value,
   onChangeTime,
