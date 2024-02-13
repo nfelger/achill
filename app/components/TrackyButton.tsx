@@ -1,10 +1,10 @@
-import { ButtonColor } from "~/utils/colors";
+import { ButtonColor, buttonBlue } from "~/utils/colors";
 
 interface Props {
   name?: string;
   value?: string;
   onClick?: () => void;
-  color: ButtonColor;
+  color?: ButtonColor;
   children?: React.ReactNode;
   additionalClasses?: string;
   testId?: string;
@@ -14,7 +14,7 @@ export function TrackyButton({
   name,
   value,
   onClick,
-  color,
+  color = buttonBlue,
   children,
   additionalClasses,
   testId,

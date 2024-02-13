@@ -126,10 +126,7 @@ export default function Index() {
           </div>
 
           <div className="mb-4 mt-8">
-            <TrackyButton
-              color={buttonBlue}
-              additionalClasses="w-full inline-flex justify-center"
-            >
+            <TrackyButton additionalClasses="w-full inline-flex justify-center">
               {isIdle ? (
                 "Sign in"
               ) : (

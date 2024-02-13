@@ -374,17 +374,16 @@ export function TimeEntryForm({
                     {!disabled && updateMode && (
                       <>
                         <TrackyButton
-                          testId={`update-${calculationPosition.id}`}
                           onClick={submit}
-                          color={buttonBlue}
+                          testId={`update-${calculationPosition.id}`}
                         >
                           Save
                         </TrackyButton>
                         {values.hours && values.description && (
                           <TrackyButton
-                            testId={`cancel-${calculationPosition.id}`}
                             onClick={handleCancel}
                             color={buttonRed}
+                            testId={`cancel-${calculationPosition.id}`}
                           >
                             Cancel
                           </TrackyButton>
@@ -402,22 +401,21 @@ export function TimeEntryForm({
                 <br />
                 <div className="flex flex-row space-x-2">
                   <TrackyButton
-                    testId={`delete-${calculationPosition.id}`}
                     onClick={() => {
                       deleteClicked?.();
                     }}
                     color={buttonRed}
+                    testId={`delete-${calculationPosition.id}`}
                   >
                     Delete
                   </TrackyButton>
                   {!disabled && (
                     <TrackyButton
-                      testId={`edit-${calculationPosition.id}`}
                       onClick={() => {
                         // openPhases();
                         setUpdateMode(true);
                       }}
-                      color={buttonBlue}
+                      testId={`edit-${calculationPosition.id}`}
                     >
                       Edit
                     </TrackyButton>

@@ -93,19 +93,13 @@ export function WorkingTimeForm({ selectedDate, workTime, attendance }: Props) {
                 <TrackyButton
                   name="_intent"
                   value="PATCH"
-                  color={buttonBlue}
                   testId="update-button"
                 >
                   Update
                 </TrackyButton>
               </div>
             ) : (
-              <TrackyButton
-                name="_intent"
-                value="POST"
-                color={buttonBlue}
-                testId="add-button"
-              >
+              <TrackyButton name="_intent" value="POST" testId="add-button">
                 Save
               </TrackyButton>
             )}
