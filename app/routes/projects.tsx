@@ -21,7 +21,6 @@ import {
 } from "~/personio/PersonioCacheController";
 import { LoadingOverlay } from "~/components/LoadingOverlay";
 import { TrackyButton } from "~/components/TrackyButton";
-import { buttonBlue } from "~/utils/colors";
 
 export const meta: MetaFunction = () => {
   return [
