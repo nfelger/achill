@@ -5,7 +5,7 @@ import {
   workTimeFormDataSchema,
   workTimeFormDataToEndDate,
   workTimeFormDataToStartDate,
-} from "~/utils/WorkTimeFormData";
+} from "~/utils/workTimeFormValidator";
 import {
   deleteAttendance,
   patchAttendance,
