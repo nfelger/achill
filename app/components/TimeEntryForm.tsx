@@ -27,7 +27,7 @@ interface Props {
   maxRows?: number;
 }
 
-function descriptionToSegmenets(description: string): string[] {
+function descriptionToSegments(description: string): string[] {
   return description !== ""
     ? description
         .split(",")
@@ -77,7 +77,7 @@ export function TimeEntryForm({
 
   const [description, setDescription] = useState(() => values.description);
 
-  const descriptionSegments = descriptionToSegmenets(description);
+  const descriptionSegments = descriptionToSegments(description);
   const [hours, setHours] = useState(values.hours);
   const [updateMode, setUpdateMode] = useState(
     values.hours && values.description ? false : true,
@@ -108,13 +108,13 @@ export function TimeEntryForm({
 
   function addDescriptionSegment(segment: string) {
     setDescription((description) =>
-      segmentsToDescription([...descriptionToSegmenets(description), segment]),
+      segmentsToDescription([...descriptionToSegments(description), segment]),
     );
   }
 
   function removeDescriptionSegment(segment: string) {
     setDescription((description) => {
-      const segments = descriptionToSegmenets(description);
+      const segments = descriptionToSegments(description);
       return segmentsToDescription(
         segments.filter((entry) => entry !== segment),
       );
@@ -130,7 +130,7 @@ export function TimeEntryForm({
   }
 
   function removeDuplicatedCommas(description: string) {
-    const segments = descriptionToSegmenets(description);
+    const segments = descriptionToSegments(description);
     return segmentsToDescription(
       segments.filter(
         (entry, index) => entry !== "" || index === segments.length - 1,
