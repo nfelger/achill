@@ -12,6 +12,7 @@ export type WorkTimeFormData = {
   endTime: Time;
   comment: string;
   date: string;
+  _intent: "POST" | "PATCH" | "DELETE";
 };
 
 export const workTimeFormDataSchema = z.object({
@@ -20,6 +21,7 @@ export const workTimeFormDataSchema = z.object({
   endTime: timeSchema,
   comment: z.string(),
   date: z.string().regex(YYYY_MM_DD_FORMAT),
+  _intent: z.enum(["POST", "PATCH", "DELETE"]),
 }) satisfies ZodSchema<WorkTimeFormData, ZodTypeDef, unknown>;
 
 export function workTimeFormDataToStartDate({

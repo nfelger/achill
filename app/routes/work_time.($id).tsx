@@ -1,5 +1,5 @@
 /* eslint-disable no-case-declarations */
-import { ActionFunctionArgs, Session, json, redirect } from "@remix-run/node";
+import { ActionFunctionArgs, Session, json } from "@remix-run/node";
 import { timeToMinutes } from "~/utils/Time";
 import {
   workTimeFormDataSchema,
@@ -47,8 +47,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
     throw json(parseResult.error, { status: 400 });
   }
   const workTimeFormData = parseResult.data;
+  console.log(workTimeFormData);
 
-  switch (request.method) {
+  switch (workTimeFormData._intent) {
     case "POST":
       return postAttendance(
         session,

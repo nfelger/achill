@@ -38,14 +38,15 @@ export function WorkingTimeForm({ selectedDate, workTime, attendance }: Props) {
   const [endTime, setEndTime] = useState(
     attendance ? attendance.end_time : newEndTime,
   );
-  const [method, setMethod] = useState<"POST" | "PATCH" | "DELETE">("POST");
-  const [action, setAction] = useState("");
 
   const personioFetcher = useFetcher({ key: "Personio" });
 
   return (
     <div className="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
-      <personioFetcher.Form method={method} action={action}>
+      <personioFetcher.Form
+        method="POST"
+        action={`/work_time/${attendance?.id}`}
+      >
         <div className="flex flex-col gap-3">
           <WorkingTimeInput
             name="startTime"
@@ -82,34 +83,28 @@ export function WorkingTimeForm({ selectedDate, workTime, attendance }: Props) {
             {attendance ? (
               <div className="flex gap-2">
                 <TrackyButton
-                  testId="delete-button"
-                  onClick={() => {
-                    setAction(`/work_time/${attendance?.id}`);
-                    setMethod("DELETE");
-                  }}
+                  name="_intent"
+                  value="DELETE"
                   color={buttonRed}
+                  testId="delete-button"
                 >
                   Delete
                 </TrackyButton>
                 <TrackyButton
-                  testId="delete-button"
-                  onClick={() => {
-                    setAction(`/work_time/${attendance?.id}`);
-                    setMethod("PATCH");
-                  }}
+                  name="_intent"
+                  value="PATCH"
                   color={buttonBlue}
+                  testId="update-button"
                 >
                   Update
                 </TrackyButton>
               </div>
             ) : (
               <TrackyButton
-                testId="add-button"
-                onClick={() => {
-                  setAction(`/work_time`);
-                  setMethod("POST");
-                }}
+                name="_intent"
+                value="POST"
                 color={buttonBlue}
+                testId="add-button"
               >
                 Save
               </TrackyButton>
