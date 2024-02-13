@@ -3,7 +3,7 @@ import {
   convertToUTCMidnight,
   getDatesBetween,
   utcMidnightDateFromString,
-} from "./dateUtils";
+} from "./dateTimeUtils";
 import moment from "moment";
 
 export type TransformedCalendarEvent = {

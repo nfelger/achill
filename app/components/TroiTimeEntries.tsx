@@ -1,7 +1,4 @@
-import {
-  convertFloatTimeToHHMM,
-  convertTimeStringToFloat,
-} from "~/utils/timeConverter";
+import { convertFloatTimeToHHMM } from "~/utils/dateTimeUtils";
 import { TimeEntryForm } from "./TimeEntryForm";
 import { TrackyTask } from "~/tasks/TrackyTask";
 import { Fragment } from "react";

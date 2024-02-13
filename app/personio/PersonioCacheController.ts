@@ -9,7 +9,7 @@ import {
 } from "./PersonioApiController";
 import { redirect } from "@remix-run/node";
 import type { Session } from "@remix-run/node";
-import { addDaysToDate } from "~/utils/dateUtils";
+import { addDaysToDate } from "~/utils/dateTimeUtils";
 import type { PersonioAttendance } from "./Personio.types";
 import moment from "moment";
 

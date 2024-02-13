@@ -1,4 +1,4 @@
-import { convertTimeStringToFloat } from "~/utils/timeConverter";
+import { convertTimeStringToFloat } from "~/utils/dateTimeUtils";
 import type {
   PersonioApiEmployee,
   PersonioApiEmployees,

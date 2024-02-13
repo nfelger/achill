@@ -1,5 +1,5 @@
 import type { CalendarEvent } from "troi-library";
-import { utcMidnightDateFromString } from "~/utils/dateUtils";
+import { utcMidnightDateFromString } from "~/utils/dateTimeUtils";
 import { transformCalendarEvent } from "~/utils/transformCalendarEvents";
 
 const singleDayEventsMockData: { [key: string]: CalendarEvent } = {

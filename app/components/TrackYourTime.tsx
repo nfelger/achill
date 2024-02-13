@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { InfoBanner } from "./InfoBanner";
-import { addDaysToDate, getWeekDaysFor } from "~/utils/dateUtils";
+import { addDaysToDate, getWeekDaysFor } from "~/utils/dateTimeUtils";
 import { WeekView } from "./WeekView";
 import { TroiTimeEntries } from "./TroiTimeEntries";
 import {

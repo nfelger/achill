@@ -1,4 +1,4 @@
-import { addDaysToDate, getWeekNumberFor } from "~/utils/dateUtils";
+import { addDaysToDate, getWeekNumberFor } from "~/utils/dateTimeUtils";
 
 interface Props {
   selectedDate: Date;

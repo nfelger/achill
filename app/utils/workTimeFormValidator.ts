@@ -1,7 +1,7 @@
 import type { ZodSchema, ZodTypeDef } from "zod";
 import { z } from "zod";
-import type { Time } from "./Time";
-import { timeSchema, YYYY_MM_DD_FORMAT } from "./Time";
+import type { Time } from "./dateTimeUtils";
+import { timeSchema, YYYY_MM_DD_FORMAT } from "./dateTimeUtils";
 
 export type WorkTimeFormData = {
   startTime: Time;

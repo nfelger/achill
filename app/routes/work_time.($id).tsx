@@ -1,6 +1,6 @@
 /* eslint-disable no-case-declarations */
 import { ActionFunctionArgs, Session, json } from "@remix-run/node";
-import { getDateTime, timeToMinutes } from "~/utils/Time";
+import { getDateTime, timeToMinutes } from "~/utils/dateTimeUtils";
 import { workTimeFormDataSchema } from "~/utils/workTimeFormValidator";
 import {
   deleteAttendance,

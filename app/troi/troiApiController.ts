@@ -1,6 +1,6 @@
 import type { CalendarEvent } from "troi-library";
 import TroiApiService from "troi-library";
-import { addDaysToDate, formatDateToYYYYMMDD } from "~/utils/dateUtils";
+import { addDaysToDate, formatDateToYYYYMMDD } from "~/utils/dateTimeUtils";
 import type { CalculationPosition, TimeEntries, TimeEntry } from "./troi.types";
 import { staleWhileRevalidate } from "../utils/staleWhileRevalidate";
 import type { Session } from "@remix-run/node";

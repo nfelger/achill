@@ -1,4 +1,75 @@
 import moment from "moment";
+import type { ZodSchema, ZodTypeDef } from "zod";
+import { z } from "zod";
+
+const HH_MM_FORMAT_WITH_LEADING_0 = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/;
+export const YYYY_MM_DD_FORMAT =
+  /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/;
+
+export type Time = {
+  hours: number;
+  minutes: number;
+};
+
+export const timeSchema = z
+  .string()
+  .regex(HH_MM_FORMAT_WITH_LEADING_0)
+  .transform((time): Time => {
+    const [hours, minutes] = time.split(":");
+    return {
+      hours: parseInt(hours, 10),
+      minutes: parseInt(minutes, 10),
+    };
+  }) satisfies ZodSchema<Time, ZodTypeDef, unknown>;
+
+export function timeToMinutes(time: Time) {
+  return time.hours * 60 + time.minutes;
+}
+
+export function getDateTime(date: string, time: Time) {
+  return moment(date)
+    .set("hours", time.hours)
+    .set("minutes", time.minutes)
+    .toDate();
+}
+
+export function minutesToTime(minutes: number) {
+  return moment().set("minutes", minutes).set("hours", 0).format("HH:mm");
+}
+
+export function padLeadingZeros(num: string, size: number) {
+  var s = "0" + num;
+  return s.substring(s.length - size);
+}
+
+export function convertFloatTimeToHHMM(time: number) {
+  if (time == 0) return "0";
+  // times are float input and we need to parse them to "H:MM", e.g 2.25 -> 2:15
+  const minutes = time % 1; // extracts 0.25 from 2.25
+  const displayMinutes = (+minutes * 60).toFixed(0);
+  return `${Math.floor(time)}:${padLeadingZeros(displayMinutes, 2)}`;
+}
+
+export function minuteStringToInt(minutes: string): number {
+  if (minutes.length === 1) {
+    return parseInt(minutes, 10) * 10;
+  }
+  return parseInt(minutes);
+}
+
+export function convertTimeStringToFloat(time: string) {
+  if (time.includes(":")) {
+    let [hours, minutes] = time.split(":");
+
+    let minuteFractions = minuteStringToInt(minutes) / 60;
+
+    return Number(hours) + minuteFractions;
+  } else if (time.includes(",")) {
+    return Number(time.replace(",", "."));
+  } else {
+    return Number(time);
+  }
+}
 
 // Use this to make the date compareble, regardless of its time and timezone
 // see https://stackoverflow.com/a/38050824
@@ -58,6 +129,10 @@ export function getWeekDaysFor(date: Date) {
   return weekDates;
 }
 
+export function getDayNumberFor(date: Date) {
+  return (date.getDay() + 6) % 7;
+}
+
 /**
  * ISO-8601 week number
  */
@@ -71,24 +146,4 @@ export function getWeekNumberFor(date: Date) {
     tdt.setMonth(0, 1 + ((4 - tdt.getDay() + 7) % 7));
   }
   return 1 + Math.ceil((firstThursday - tdt.getTime()) / 604800000);
-}
-
-export function getDayNumberFor(date: Date) {
-  return (date.getDay() + 6) % 7;
-}
-
-export function minutesToTime(minutes: number) {
-  return moment()
-    .set("minutes", 0)
-    .set("hours", 0)
-    .add(minutes, "minutes")
-    .format("HH:mm");
-}
-
-export function hoursToTime(hours: number) {
-  return moment()
-    .set("minutes", 0)
-    .set("hours", 0)
-    .add(hours, "hours")
-    .format("HH:mm");
 }
