@@ -1,12 +1,15 @@
 import type { CalendarEvent } from "troi-library";
 import TroiApiService from "troi-library";
-import { addDaysToDate, formatDateToYYYYMMDD } from "~/utils/dateTimeUtils";
+import { addDaysToDate } from "~/utils/dateTimeUtils";
 import type { CalculationPosition, TimeEntries, TimeEntry } from "./troi.types";
 import { staleWhileRevalidate } from "../utils/staleWhileRevalidate";
 import type { Session } from "@remix-run/node";
+import moment from "moment";
 
 const BASE_URL = "https://digitalservice.troi.software/api/v2/rest";
 const CLIENT_NAME = "DigitalService GmbH des Bundes";
+const START_DATE = moment(addDaysToDate(new Date(), -366)).format("YYYYMMDD");
+const END_DATE = moment(addDaysToDate(new Date(), 366)).format("YYYYMMDD");
 
 async function getTroiApi(
   username?: string,
@@ -130,10 +133,7 @@ async function fetchCalendarEventsAndSaveToSession(session: Session) {
 
   console.log("[TroiAPI]", "getCalendarEvents()");
 
-  const calendarEvents = await troiApi.getCalendarEvents(
-    formatDateToYYYYMMDD(addDaysToDate(new Date(), -366)),
-    formatDateToYYYYMMDD(addDaysToDate(new Date(), 366)),
-  );
+  const calendarEvents = await troiApi.getCalendarEvents(START_DATE, END_DATE);
 
   return calendarEvents;
 }
@@ -172,8 +172,8 @@ async function fetchTimeEntriesAndSaveToSession(session: Session) {
             clientId: clientId.toString(),
             employeeId: employeeId.toString(),
             calculationPositionId: calcPos.id.toString(),
-            startDate: formatDateToYYYYMMDD(addDaysToDate(new Date(), -366)),
-            endDate: formatDateToYYYYMMDD(addDaysToDate(new Date(), 366)),
+            startDate: START_DATE,
+            endDate: END_DATE,
           },
         }) as Promise<{
           id: number;

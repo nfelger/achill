@@ -94,10 +94,6 @@ export function addDaysToDate(date: Date, days: number) {
   return new Date(date.getTime() + days * 86400000); // 24*60*60*1000
 }
 
-export function formatDateToYYYYMMDD(date: Date): string {
-  return moment(date).format("YYYYMMDD");
-}
-
 export function getDatesBetween(startDate: Date, endDate: Date) {
   var dateArray = [];
   var currentDate = startDate;
