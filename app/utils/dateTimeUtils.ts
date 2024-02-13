@@ -34,7 +34,11 @@ export function getDateTime(date: string, time: Time) {
 }
 
 export function minutesToTime(minutes: number) {
-  return moment().set("minutes", minutes).set("hours", 0).format("HH:mm");
+  return moment()
+    .set("minutes", 0)
+    .set("hours", 0)
+    .add("minutes", minutes)
+    .format("HH:mm");
 }
 
 export function padLeadingZeros(num: string, size: number) {
