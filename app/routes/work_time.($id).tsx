@@ -1,11 +1,7 @@
 /* eslint-disable no-case-declarations */
 import { ActionFunctionArgs, Session, json } from "@remix-run/node";
-import { timeToMinutes } from "~/utils/Time";
-import {
-  workTimeFormDataSchema,
-  workTimeFormDataToEndDate,
-  workTimeFormDataToStartDate,
-} from "~/utils/workTimeFormValidator";
+import { getDateTime, timeToMinutes } from "~/utils/Time";
+import { workTimeFormDataSchema } from "~/utils/workTimeFormValidator";
 import {
   deleteAttendance,
   patchAttendance,
@@ -46,16 +42,17 @@ function parseWorkTimeFormData(formData: FormData) {
 export async function action({ request, params }: ActionFunctionArgs) {
   const session = await getSessionAndThrowIfInvalid(request);
   const formData = await request.formData();
-  const workTimeFormData = parseWorkTimeFormData(formData);
+  const { date, startTime, breakTime, endTime, comment, _intent } =
+    parseWorkTimeFormData(formData);
 
-  switch (workTimeFormData._intent) {
+  switch (_intent) {
     case "POST":
       return postAttendance(
         session,
-        workTimeFormDataToStartDate(workTimeFormData),
-        workTimeFormDataToEndDate(workTimeFormData),
-        timeToMinutes(workTimeFormData.breakTime),
-        workTimeFormData.comment,
+        getDateTime(date, startTime),
+        getDateTime(date, endTime),
+        timeToMinutes(breakTime),
+        comment,
       );
     case "DELETE":
       checkIDAndPermissionOrThrow(session, params.id);
@@ -76,10 +73,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
       return patchAttendance(
         session,
         Number.parseInt(params.id, 10),
-        workTimeFormDataToStartDate(workTimeFormData),
-        workTimeFormDataToEndDate(workTimeFormData),
-        timeToMinutes(workTimeFormData.breakTime),
-        workTimeFormData.comment,
+        getDateTime(date, startTime),
+        getDateTime(date, endTime),
+        timeToMinutes(breakTime),
+        comment,
       );
     default:
       throw new Response("Method Not Allowed", { status: 405 });

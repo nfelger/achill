@@ -1,3 +1,4 @@
+import moment from "moment";
 import type { ZodSchema, ZodTypeDef } from "zod";
 import { z } from "zod";
 
@@ -23,4 +24,11 @@ export const timeSchema = z
 
 export function timeToMinutes(time: Time) {
   return time.hours * 60 + time.minutes;
+}
+
+export function getDateTime(date: string, time: Time) {
+  return moment(date)
+    .set("hours", time.hours)
+    .set("minutes", time.minutes)
+    .toDate();
 }
