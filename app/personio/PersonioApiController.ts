@@ -30,14 +30,7 @@ async function getAuthToken(): Promise<string> {
 
   console.log("[Personio API]", "POST", PERSONIO_AUTH_URL, response.status);
 
-  const { success, data } = (await response.json()) as {
-    success: true;
-    data: {
-      token: string;
-      expires_in: number;
-      scope: string;
-    };
-  };
+  const { success, data } = await response.json();
 
   if (!success) {
     console.error(
@@ -174,22 +167,7 @@ export async function postAttendance(
     }),
   });
 
-  return (await response.json()) as
-    | {
-        success: true;
-        data: {
-          id: number[];
-          message: "success";
-        };
-      }
-    | {
-        success: false;
-        error: {
-          code: number;
-          message: string;
-          detailed_message: unknown[];
-        };
-      };
+  return await response.json();
 }
 
 export async function deleteAttendance(attendanceId: number) {
@@ -199,15 +177,7 @@ export async function deleteAttendance(attendanceId: number) {
       method: "DELETE",
     },
   );
-  return (await response.json()) as
-    | { success: true; data: { message: string } }
-    | {
-        success: false;
-        error: {
-          code: number;
-          message: string;
-        };
-      };
+  return await response.json();
 }
 
 export async function patchAttendance(
@@ -234,16 +204,5 @@ export async function patchAttendance(
     },
   );
 
-  return (await response.json()) as
-    | {
-        success: true;
-        data: [];
-      }
-    | {
-        success: false;
-        error: {
-          code: number;
-          message: string;
-        };
-      };
+  return await response.json();
 }
