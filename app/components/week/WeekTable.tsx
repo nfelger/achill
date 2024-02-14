@@ -65,7 +65,7 @@ export function WeekTable({
       .subtract(momentBreakTime.minutes(), "minutes")
       .subtract(momentStartTime.hours(), "hours")
       .subtract(momentStartTime.minutes(), "minutes")
-      .format("HH:mm");
+      .format("H:mm");
   }
 
   return (

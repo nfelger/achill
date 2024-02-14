@@ -53,7 +53,7 @@ export function convertFloatTimeToHHMM(time: number) {
   const minutes = time % 1; // extracts 0.25 from 2.25
   const displayMinutes = (+minutes * 60).toFixed(0);
   const displayHours = Math.floor(time).toFixed(0);
-  return `${padLeadingZeros(displayHours)}:${padLeadingZeros(displayMinutes)}`;
+  return `${displayHours}:${padLeadingZeros(displayMinutes)}`;
 }
 
 export function minuteStringToInt(minutes: string): number {
