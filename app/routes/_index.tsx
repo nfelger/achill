@@ -66,6 +66,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
       getAttendances(session),
     ]);
 
+    await commitSession(session);
+
     return json({
       username: session.get("username")!,
       calculationPositions,
@@ -98,8 +100,6 @@ export default function Index() {
   const anyFetcherNotIdle = useFetchers().some(
     (fetcher) => fetcher.state !== "idle",
   );
-
-  const actionData = useActionData<typeof action>();
 
   return (
     <main>

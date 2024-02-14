@@ -12,6 +12,7 @@ import type { Session } from "@remix-run/node";
 import { addDaysToDate } from "~/utils/dateTimeUtils";
 import type { PersonioAttendance } from "./Personio.types";
 import moment from "moment";
+import { commitSession } from "~/sessions.server";
 
 function usernameToDigitalserviceMail(username: string) {
   return `${username}@digitalservice.bund.de`;
@@ -113,6 +114,7 @@ export async function postAttendance(
       comment,
     });
     session.set("personioAttendances", existingAttendances);
+    await commitSession(session);
   }
 
   return response;
@@ -128,6 +130,7 @@ export async function deleteAttendance(session: Session, attendanceId: number) {
         ({ id }: { id: number }) => id.toString() !== attendanceId.toString(),
       ),
     );
+    await commitSession(session);
   }
 
   return response;
@@ -169,6 +172,7 @@ export async function patchAttendance(
         }
       }),
     );
+    await commitSession(session);
   }
 
   return response;

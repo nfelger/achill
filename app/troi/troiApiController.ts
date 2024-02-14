@@ -4,6 +4,7 @@ import { addDaysToDate } from "~/utils/dateTimeUtils";
 import type { CalculationPosition, TimeEntries, TimeEntry } from "./troi.types";
 import { staleWhileRevalidate } from "../utils/staleWhileRevalidate";
 import type { Session } from "@remix-run/node";
+import { commitSession } from "~/sessions.server";
 import moment from "moment";
 
 const BASE_URL = "https://digitalservice.troi.software/api/v2/rest";
@@ -57,6 +58,7 @@ export async function getClientId(session: Session): Promise<number> {
   const clientId = await troiApi.getClientId();
 
   session.set("troiClientId", clientId);
+  await commitSession(session);
 
   return clientId;
 }
@@ -76,6 +78,7 @@ export async function getEmployeeId(session: Session): Promise<number> {
   const employeeId = await troiApi.getEmployeeId();
 
   session.set("troiEmployeeId", employeeId);
+  await commitSession(session);
 
   return employeeId;
 }
@@ -251,6 +254,7 @@ export async function addTimeEntry(
       calculationPosition: calculationPostionId,
     };
     session.set("troiTimeEntries", existingEntries);
+    await commitSession(session);
   }
 
   return result;
@@ -271,6 +275,7 @@ export async function deleteTimeEntry(session: Session, id: number) {
   if (existingEntries) {
     delete existingEntries[id];
     session.set("troiTimeEntries", existingEntries);
+    await commitSession(session);
   }
 }
 
@@ -314,5 +319,6 @@ export async function updateTimeEntry(
     existingEntries[id].hours = parseFloat(res.Quantity);
     existingEntries[id].description = res.Name;
     session.set("troiTimeEntries", existingEntries);
+    await commitSession(session);
   }
 }

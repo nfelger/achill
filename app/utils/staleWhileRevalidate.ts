@@ -1,7 +1,7 @@
 import type { Session } from "@remix-run/node";
 import { AuthenticationFailed } from "troi-library";
 import type { SessionData } from "~/sessions.server";
-import { destroySession } from "~/sessions.server";
+import { commitSession, destroySession } from "~/sessions.server";
 
 /**
  * Return data from the session cache and revalidate cached data in the background.
@@ -23,9 +23,6 @@ export async function staleWhileRevalidate<Key extends keyof SessionData>(
     const response = await fetcher(session);
     session.set(sessionKey, response);
     await commitSession(session);
-    console.debug(`Key:`, sessionKey);
-    // console.log(Object.keys(session.data));
-    // await commitSession(session);
     return response;
   };
 
