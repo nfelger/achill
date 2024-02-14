@@ -1,7 +1,7 @@
 import { useFetcher } from "@remix-run/react";
 import moment from "moment";
 import { useState } from "react";
-import type { PersonioAttendance } from "~/personio/Personio.types";
+import type { PersonioAttendance } from "~/apis/personio/Personio.types";
 import { minutesToTime } from "~/utils/dateTimeUtils";
 import { TrackyButton, buttonRed } from "./common/TrackyButton";
 import { TimeInput } from "./common/TimeInput";

@@ -2,7 +2,7 @@ import type { CalendarEvent } from "troi-library";
 import TroiApiService from "troi-library";
 import { addDaysToDate } from "~/utils/dateTimeUtils";
 import type { CalculationPosition, TimeEntries, TimeEntry } from "./troi.types";
-import { staleWhileRevalidate } from "../utils/staleWhileRevalidate";
+import { staleWhileRevalidate } from "../../utils/staleWhileRevalidate";
 import type { Session } from "@remix-run/node";
 import { commitSession } from "~/sessions.server";
 import moment from "moment";

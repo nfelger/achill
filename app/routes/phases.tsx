@@ -1,7 +1,7 @@
 import { LoaderFunctionArgs, json } from "@remix-run/node";
 import { getSessionAndThrowIfInvalid } from "~/sessions.server";
-import { loadPhases } from "~/tasks/TrackyPhase";
-import { getCalculationPositions } from "~/troi/troiApiController";
+import { loadPhases } from "~/apis/tasks/TrackyPhase";
+import { getCalculationPositions } from "~/apis/troi/troiApiController";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSessionAndThrowIfInvalid(request);

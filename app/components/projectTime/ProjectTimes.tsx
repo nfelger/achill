@@ -1,9 +1,9 @@
 import { convertFloatTimeToHHMM } from "~/utils/dateTimeUtils";
 import { TimeEntryForm } from "./ProjectTimeForm";
-import { TrackyTask } from "~/tasks/TrackyTask";
+import { TrackyTask } from "~/apis/tasks/TrackyTask";
 import { Fragment } from "react";
-import { CalculationPosition } from "~/troi/troi.types";
-import { TimeEntry } from "~/troi/troi.types";
+import { CalculationPosition } from "~/apis/troi/troi.types";
+import { TimeEntry } from "~/apis/troi/troi.types";
 
 interface Props {
   selectedDate: Date;

@@ -6,7 +6,7 @@ import {
   deleteAttendance,
   patchAttendance,
   postAttendance,
-} from "~/personio/PersonioCacheController";
+} from "~/apis/personio/PersonioCacheController";
 import { getSessionAndThrowIfInvalid } from "~/sessions.server";
 
 function checkIDAndPermissionOrThrow(

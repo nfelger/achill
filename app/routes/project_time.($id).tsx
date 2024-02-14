@@ -5,7 +5,7 @@ import {
   addTimeEntry,
   deleteTimeEntry,
   updateTimeEntry,
-} from "~/troi/troiApiController";
+} from "~/apis/troi/troiApiController";
 import { convertTimeToFloat } from "~/utils/dateTimeUtils";
 import type { TimeEntrySaveFormData } from "~/utils/timeEntryFormValidator";
 import { timeEntrySaveFormSchema } from "~/utils/timeEntryFormValidator";

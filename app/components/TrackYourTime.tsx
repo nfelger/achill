@@ -7,16 +7,23 @@ import {
   TrackyTask,
   filterPhaseTasks,
   filterRecurringTasks,
-} from "~/tasks/TrackyTask";
+} from "~/apis/tasks/TrackyTask";
 import type { CalendarEvent } from "troi-library";
 import {
   TransformedCalendarEvent,
   transformCalendarEvent,
 } from "~/utils/transformCalendarEvents";
 import moment from "moment";
-import { CalculationPosition, TimeEntries, TimeEntry } from "~/troi/troi.types";
+import {
+  CalculationPosition,
+  TimeEntries,
+  TimeEntry,
+} from "~/apis/troi/troi.types";
 import { WorkTimeForm } from "./WorkTimeForm";
-import { PersonioAttendance, WorkingHours } from "~/personio/Personio.types";
+import {
+  PersonioAttendance,
+  WorkingHours,
+} from "~/apis/personio/Personio.types";
 
 interface Props {
   calculationPositions: CalculationPosition[];

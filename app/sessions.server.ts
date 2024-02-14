@@ -7,11 +7,11 @@ import {
   createMemorySessionStorage,
   redirect,
 } from "@remix-run/node";
-import type { CalculationPosition, TimeEntries } from "./troi/troi.types";
+import type { CalculationPosition, TimeEntries } from "./apis/troi/troi.types";
 import type {
   PersonioAttendance,
   PersonioEmployee,
-} from "./personio/Personio.types";
+} from "./apis/personio/Personio.types";
 
 export type SessionData = {
   username: string;

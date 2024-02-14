@@ -11,14 +11,14 @@ import {
   getCalculationPositions,
   getCalendarEvents,
   getTimeEntries,
-} from "~/troi/troiApiController";
+} from "~/apis/troi/troiApiController";
 import { commitSession, getSessionAndThrowIfInvalid } from "~/sessions.server";
-import { loadTasks } from "~/tasks/TrackyTask";
+import { loadTasks } from "~/apis/tasks/TrackyTask";
 import { AuthenticationFailed } from "troi-library";
 import {
   getAttendances,
   getEmployeeData,
-} from "~/personio/PersonioCacheController";
+} from "~/apis/personio/PersonioCacheController";
 import { LoadingOverlay } from "~/components/common/LoadingOverlay";
 import { TrackyButton } from "~/components/common/TrackyButton";
 
