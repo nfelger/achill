@@ -13,7 +13,7 @@ import isbot from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
 
 if (process.env.MOCK_EXTERNAL_APIS && process.env.NODE_ENV !== "production") {
-  const { server } = require("./mocks/node");
+  const { server } = require("./apis/mocks/node");
   server.listen();
 }
 
