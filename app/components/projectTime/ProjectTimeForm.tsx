@@ -113,6 +113,15 @@ export function ProjectTimeForm({
     });
   }
 
+  function onRecurringTaskChange(event: React.ChangeEvent<HTMLInputElement>) {
+    console.log(event.target);
+    if (event.target.checked) {
+      addDescriptionSegment(event.target.value);
+    } else {
+      removeDescriptionSegment(event.target.value);
+    }
+  }
+
   function toggleDescriptionSegment(segment: string) {
     if (description.includes(segment)) {
       removeDescriptionSegment(segment);
@@ -191,14 +200,6 @@ export function ProjectTimeForm({
     setUpdateMode(false);
   }
 
-  function onRecurringTaskChange(event: React.ChangeEvent<HTMLInputElement>) {
-    if (event.target.checked) {
-      addDescriptionSegment(event.target.id);
-    } else {
-      removeDescriptionSegment(event.target.id);
-    }
-  }
-
   function handleChipClick(phaseAndTask: string) {
     toggleDescriptionSegment(phaseAndTask);
   }
@@ -248,22 +249,24 @@ export function ProjectTimeForm({
                         Recurring tasks
                       </label>
                       <div id="recurring" className="mt-2">
-                        {recurringTasks.map((projectTime) => (
+                        {recurringTasks.map((task) => (
                           <div
-                            key={projectTime.Id}
+                            key={task.Id}
                             className="flex items-start space-x-2 md:inline-flex"
                           >
                             <input
-                              checked={descriptionSegments.includes(
-                                projectTime.name,
-                              )}
+                              checked={descriptionSegments.includes(task.name)}
                               className="rounded-md border border-gray-300 bg-white p-2"
-                              id={projectTime.name}
+                              id={`${calculationPosition.id}-${task.name}`}
+                              value={task.name}
                               type="checkbox"
                               onChange={onRecurringTaskChange}
                             />
-                            <label className="pr-5" htmlFor={projectTime.name}>
-                              {projectTime.name}
+                            <label
+                              className="pr-5"
+                              htmlFor={`${calculationPosition.id}-${task.name}`}
+                            >
+                              {task.name}
                             </label>
                           </div>
                         ))}
