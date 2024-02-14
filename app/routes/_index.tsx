@@ -5,12 +5,7 @@ import {
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "@remix-run/node";
-import {
-  Form,
-  useActionData,
-  useFetchers,
-  useLoaderData,
-} from "@remix-run/react";
+import { Form, useFetchers, useLoaderData } from "@remix-run/react";
 import TrackYourTime from "../components/TrackYourTime";
 import {
   getCalculationPositions,
@@ -26,7 +21,6 @@ import {
 } from "~/personio/PersonioCacheController";
 import { LoadingOverlay } from "~/components/LoadingOverlay";
 import { TrackyButton } from "~/components/TrackyButton";
-import { action } from "./time_entry.($id)";
 
 export const meta: MetaFunction = () => {
   return [

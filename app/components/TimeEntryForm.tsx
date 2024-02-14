@@ -179,7 +179,7 @@ export function TimeEntryForm({
     }
     await troiFetcher.submit(formData, {
       method,
-      action: `/time_entry/${entryId ?? ""}`,
+      action: `/project_time/${entryId ?? ""}`,
     });
   }
 
