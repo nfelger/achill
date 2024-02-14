@@ -10,7 +10,7 @@ interface Props {
   }[];
   selectedDate: Date;
   onSelectDate: (newDate: Date) => unknown;
-  attendancesOfSelectedWeek: (PersonioAttendance | { date: string })[];
+  attendancesOfSelectedWeek: (PersonioAttendance | undefined)[];
 }
 
 export function WeekView({

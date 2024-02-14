@@ -97,14 +97,10 @@ export default function TrackYourTime(props: Props) {
     selectedDate,
   );
 
-  const attendancesOfSelectedWeek: (PersonioAttendance | { date: string })[] =
+  const attendancesOfSelectedWeek: (PersonioAttendance | undefined)[] =
     selectedWeek.map((element) => {
       const date = moment(element).format("YYYY-MM-DD");
-      return (
-        props.attendances.find((attendance) => attendance.date === date) ?? {
-          date,
-        }
-      );
+      return props.attendances.find((attendance) => attendance.date === date);
     });
 
   return (
