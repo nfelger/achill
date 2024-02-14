@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { InfoBanner } from "./InfoBanner";
+import { InfoBanner } from "./week/InfoBanner";
 import { addDaysToDate, getWeekDaysFor } from "~/utils/dateTimeUtils";
-import { WeekView } from "./WeekView";
-import { TroiTimeEntries } from "./TroiTimeEntries";
+import { WeekView } from "./week/WeekView";
+import { TroiTimeEntries } from "./projectTime/ProjectTimes";
 import {
   TrackyTask,
   filterPhaseTasks,

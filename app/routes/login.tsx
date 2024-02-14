@@ -6,8 +6,8 @@ import {
 } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 import TroiApiService, { AuthenticationFailed } from "troi-library";
-import Spinner from "~/components/Spinner";
-import { TrackyButton } from "~/components/TrackyButton";
+import Spinner from "~/components/common/Spinner";
+import { TrackyButton } from "~/components/common/TrackyButton";
 import { commitSession, getSession } from "~/sessions.server";
 
 export const meta: MetaFunction = () => {

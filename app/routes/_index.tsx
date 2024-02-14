@@ -19,8 +19,8 @@ import {
   getAttendances,
   getEmployeeData,
 } from "~/personio/PersonioCacheController";
-import { LoadingOverlay } from "~/components/LoadingOverlay";
-import { TrackyButton } from "~/components/TrackyButton";
+import { LoadingOverlay } from "~/components/common/LoadingOverlay";
+import { TrackyButton } from "~/components/common/TrackyButton";
 
 export const meta: MetaFunction = () => {
   return [

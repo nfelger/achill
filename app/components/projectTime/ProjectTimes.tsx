@@ -1,5 +1,5 @@
 import { convertFloatTimeToHHMM } from "~/utils/dateTimeUtils";
-import { TimeEntryForm } from "./TimeEntryForm";
+import { TimeEntryForm } from "./ProjectTimeForm";
 import { TrackyTask } from "~/tasks/TrackyTask";
 import { Fragment } from "react";
 import { CalculationPosition } from "~/troi/troi.types";

@@ -3,8 +3,8 @@ import moment from "moment";
 import { useState } from "react";
 import type { PersonioAttendance } from "~/personio/Personio.types";
 import { minutesToTime } from "~/utils/dateTimeUtils";
-import { TrackyButton, buttonRed } from "./TrackyButton";
-import { TimeInput } from "./TimeInput";
+import { TrackyButton, buttonRed } from "./common/TrackyButton";
+import { TimeInput } from "./common/TimeInput";
 
 interface Props {
   selectedDate: Date;

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { TrackyButton, buttonRed } from "./TrackyButton";
+import { TrackyButton, buttonRed } from "../common/TrackyButton";
 import { TrackyTask } from "~/tasks/TrackyTask";
 import { TrackyPhase } from "~/tasks/TrackyPhase";
 import { CalculationPosition } from "~/troi/troi.types";
 import { useFetcher } from "@remix-run/react";
-import { TimeInput } from "./TimeInput";
+import { TimeInput } from "../common/TimeInput";
 import moment from "moment";
 import { timeEntrySaveFormSchema } from "~/utils/timeEntryFormValidator";
 
