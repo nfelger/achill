@@ -1,12 +1,13 @@
+import { useFetcher } from "@remix-run/react";
 import moment from "moment";
 import { PersonioAttendance } from "~/apis/personio/Personio.types";
 import { getItemForEventType } from "~/utils/calendarEventUtils";
 import {
+  convertFloatTimeToHHMM,
   datesEqual,
   getWeekDaysFor,
   minutesToTime,
 } from "~/utils/dateTimeUtils";
-import { convertFloatTimeToHHMM } from "~/utils/dateTimeUtils";
 import { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
 
 interface Props {
@@ -16,7 +17,7 @@ interface Props {
   }[];
   selectedDate: Date;
   onSelectDate: (newDate: Date) => unknown;
-  attendancesOfSelectedWeek: (PersonioAttendance | undefined)[];
+  attendancesOfSelectedWeek: (PersonioAttendance | { date: string })[];
 }
 
 export function WeekTable({
@@ -53,14 +54,38 @@ export function WeekTable({
     return getItemForEventType(event.type);
   }
 
-  function calculateWorkTime(attendance: PersonioAttendance): string {
-    const momentBreakTime = moment(
-      minutesToTime(attendance.breakTime),
-      "HH:mm",
-    );
-    const momentStartTime = moment(attendance.start_time, "HH:mm");
+  const personioFetcherFormData = useFetcher({ key: "Personio" }).formData;
+  const troiFetcherFormData = useFetcher({ key: "Troi" }).formData;
+  // console.log("troiFetcherFormData", useFetcher({ key: "Troi" }));
+  console.log(attendancesOfSelectedWeek);
 
-    return moment(attendance.end_time, "HH:mm")
+  function getWorkTimeFromAttendance(
+    attendance: PersonioAttendance | { date: string },
+  ): string {
+    const hasAttendance = "id" in attendance;
+    let startTime: string, breakTime: string, endTime: string;
+
+    if (personioFetcherFormData?.get("date") === attendance.date) {
+      // apply changes for Optimistic UI
+      const submittedData = Object.fromEntries(personioFetcherFormData);
+      if (submittedData._intent === "DELETE") {
+        return "0";
+      }
+      startTime = submittedData.startTime.toString();
+      breakTime = submittedData.breakTime.toString();
+      endTime = submittedData.endTime.toString();
+    } else if (hasAttendance) {
+      startTime = attendance.start_time;
+      breakTime = minutesToTime(attendance.breakTime);
+      endTime = attendance.end_time;
+    } else {
+      return "0";
+    }
+
+    const momentStartTime = moment(startTime, "HH:mm");
+    const momentBreakTime = moment(breakTime, "HH:mm");
+
+    return moment(endTime, "HH:mm")
       .subtract(momentBreakTime.hours(), "hours")
       .subtract(momentBreakTime.minutes(), "minutes")
       .subtract(momentStartTime.hours(), "hours")
@@ -127,8 +152,7 @@ export function WeekTable({
                       attendance ? "text-black" : "text-gray-500"
                     }`}
                   >
-                    {attendance && calculateWorkTime(attendance)}
-                    {!attendance && 0}
+                    {getWorkTimeFromAttendance(attendance)}
                   </p>
                 </div>
               </td>
