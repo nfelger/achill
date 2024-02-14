@@ -2,25 +2,25 @@ import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { AuthenticationFailed } from "troi-library";
 import { getSessionAndThrowIfInvalid } from "~/sessions.server";
 import {
-  addTimeEntry,
-  deleteTimeEntry,
-  updateTimeEntry,
+  addProjectTime,
+  deleteProjectTime,
+  updateProjectTime,
 } from "~/apis/troi/troiApiController";
 import { convertTimeToFloat } from "~/utils/dateTimeUtils";
-import type { TimeEntrySaveFormData } from "~/utils/timeEntryFormValidator";
-import { timeEntrySaveFormSchema } from "~/utils/timeEntryFormValidator";
+import type { ProjectTimeSaveFormData } from "~/utils/projectTimeFormValidator";
+import { projectTimeSaveFormSchema } from "~/utils/projectTimeFormValidator";
 
 function checkIDOrThrow(
   ID: string | undefined,
 ): asserts ID is NonNullable<string> {
   if (ID === undefined) {
-    throw new Response("Entry ID is required.", { status: 400 });
+    throw new Response("ProjectTime ID is required.", { status: 400 });
   }
 }
 
-function parseTimeEntryFormData(formData: FormData): TimeEntrySaveFormData {
+function parseProjectTimeFormData(formData: FormData): ProjectTimeSaveFormData {
   try {
-    return timeEntrySaveFormSchema.parse(
+    return projectTimeSaveFormSchema.parse(
       Object.fromEntries(formData.entries()),
     );
   } catch (error) {
@@ -32,13 +32,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const session = await getSessionAndThrowIfInvalid(request);
   const formData = await request.formData();
   const { calculationPositionId, date, hours, description } =
-    parseTimeEntryFormData(formData);
+    parseProjectTimeFormData(formData);
   const hoursFloat = convertTimeToFloat(hours);
 
   try {
     switch (request.method) {
       case "POST":
-        await addTimeEntry(
+        await addProjectTime(
           session,
           parseInt(calculationPositionId),
           date,
@@ -50,7 +50,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       case "PUT":
         checkIDOrThrow(params.id);
 
-        await updateTimeEntry(
+        await updateProjectTime(
           session,
           parseInt(params.id),
           hoursFloat,
@@ -61,7 +61,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       case "DELETE":
         checkIDOrThrow(params.id);
 
-        await deleteTimeEntry(session, parseInt(params.id));
+        await deleteProjectTime(session, parseInt(params.id));
 
         return new Response(null, { status: 204 });
       default:

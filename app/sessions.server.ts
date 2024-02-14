@@ -7,7 +7,10 @@ import {
   createMemorySessionStorage,
   redirect,
 } from "@remix-run/node";
-import type { CalculationPosition, TimeEntries } from "./apis/troi/troi.types";
+import type {
+  CalculationPosition,
+  TroiProjectTimesById,
+} from "./apis/troi/troi.types";
 import type {
   PersonioAttendance,
   PersonioEmployee,
@@ -19,7 +22,7 @@ export type SessionData = {
   troiClientId: number;
   troiEmployeeId: number;
   troiCalculationPositions: CalculationPosition[];
-  troiTimeEntries: TimeEntries;
+  troiProjectTimes: TroiProjectTimesById;
   troiCalendarEvents: CalendarEvent[];
   personioEmployee: PersonioEmployee;
   personioAttendances: PersonioAttendance[];

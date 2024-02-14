@@ -1,5 +1,5 @@
 import moment from "moment";
-import { PersonioAttendance } from "~/personio/Personio.types";
+import { PersonioAttendance } from "~/apis/personio/Personio.types";
 import { getItemForEventType } from "~/utils/calendarEventUtils";
 import {
   datesEqual,

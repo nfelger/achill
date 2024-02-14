@@ -1,25 +1,24 @@
 import { convertFloatTimeToHHMM } from "~/utils/dateTimeUtils";
-import { TimeEntryForm } from "./ProjectTimeForm";
+import { ProjectTimeForm } from "./ProjectTimeForm";
 import { TrackyTask } from "~/apis/tasks/TrackyTask";
-import { Fragment } from "react";
 import { CalculationPosition } from "~/apis/troi/troi.types";
-import { TimeEntry } from "~/apis/troi/troi.types";
+import { TroiProjectTime } from "~/apis/troi/troi.types";
 
 interface Props {
   selectedDate: Date;
   calculationPositions: CalculationPosition[];
   recurringTasks: TrackyTask[];
   phaseTasks: TrackyTask[];
-  entries: TimeEntry[];
+  projectTimes: TroiProjectTime[];
   disabled: boolean;
 }
 
-export function TroiTimeEntries({
+export function ProjectTimes({
   selectedDate,
   calculationPositions,
   recurringTasks,
   phaseTasks,
-  entries,
+  projectTimes,
   disabled = false,
 }: Props) {
   return calculationPositions.map((position) => (
@@ -29,10 +28,10 @@ export function TroiTimeEntries({
       data-testid={`project-section-${position.id}`}
     >
       <div className="container mx-auto pb-2">
-        {!entries.some(
+        {!projectTimes.some(
           ({ calculationPosition }) => calculationPosition === position.id,
         ) ? (
-          <TimeEntryForm
+          <ProjectTimeForm
             date={selectedDate}
             calculationPosition={position}
             recurringTasks={recurringTasks}
@@ -40,23 +39,26 @@ export function TroiTimeEntries({
             disabled={disabled}
           />
         ) : (
-          entries
+          projectTimes
             .filter(
               ({ calculationPosition }) => calculationPosition === position.id,
             )
-            .map((entry) => (
-              <div key={entry.id} data-testid={`entryCard-${position.id}`}>
+            .map((projectTime) => (
+              <div
+                key={projectTime.id}
+                data-testid={`projectTimeCard-${position.id}`}
+              >
                 <div
-                  data-test="entry-form"
+                  data-test="projectTime-form"
                   className="my-2 flex justify-center"
                 >
                   <div className="block w-full">
-                    <TimeEntryForm
+                    <ProjectTimeForm
                       date={selectedDate}
-                      entryId={entry.id}
+                      projectTimeId={projectTime.id}
                       values={{
-                        hours: convertFloatTimeToHHMM(entry.hours),
-                        description: entry.description,
+                        hours: convertFloatTimeToHHMM(projectTime.hours),
+                        description: projectTime.description,
                       }}
                       recurringTasks={recurringTasks}
                       phaseTasks={phaseTasks}

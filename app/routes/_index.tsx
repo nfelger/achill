@@ -10,7 +10,7 @@ import TrackYourTime from "../components/TrackYourTime";
 import {
   getCalculationPositions,
   getCalendarEvents,
-  getTimeEntries,
+  getProjectTimes,
 } from "~/apis/troi/troiApiController";
 import { commitSession, getSessionAndThrowIfInvalid } from "~/sessions.server";
 import { loadTasks } from "~/apis/tasks/TrackyTask";
@@ -44,7 +44,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const [
       calculationPositions,
       calendarEvents,
-      timeEntries,
+      projectTimesById,
       tasks,
       { workingHours },
       attendances,
@@ -52,7 +52,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       // TROI API calls
       getCalculationPositions(session),
       getCalendarEvents(session),
-      getTimeEntries(session),
+      getProjectTimes(session),
       // NOCODB API call
       loadTasks(),
       // PERSONIO API calls
@@ -66,7 +66,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       username: session.get("username")!,
       calculationPositions,
       calendarEvents,
-      timeEntries,
+      projectTimesById,
       tasks,
       workingHours,
       attendances,
@@ -85,7 +85,7 @@ export default function Index() {
     username,
     calculationPositions,
     calendarEvents,
-    timeEntries,
+    projectTimesById,
     tasks,
     workingHours,
     attendances,
@@ -123,7 +123,7 @@ export default function Index() {
         </nav>
         <TrackYourTime
           calendarEvents={calendarEvents}
-          timeEntries={timeEntries}
+          projectTimesById={projectTimesById}
           calculationPositions={calculationPositions}
           tasks={tasks}
           workingHours={workingHours}

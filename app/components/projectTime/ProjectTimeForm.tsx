@@ -6,15 +6,15 @@ import { CalculationPosition } from "~/apis/troi/troi.types";
 import { useFetcher } from "@remix-run/react";
 import { TimeInput } from "../common/TimeInput";
 import moment from "moment";
-import { timeEntrySaveFormSchema } from "~/utils/timeEntryFormValidator";
+import { projectTimeSaveFormSchema } from "~/utils/projectTimeFormValidator";
 
-export interface TimeEntryFormErrors {
+export interface ProjectTimeFormErrors {
   hours?: string;
   description?: string;
 }
 interface Props {
   date: Date;
-  entryId?: number;
+  projectTimeId?: number;
   values?: {
     hours: string;
     description: string;
@@ -40,9 +40,9 @@ function segmentsToDescription(segments: string[]): string {
   return segments.join(", ");
 }
 
-export function TimeEntryForm({
+export function ProjectTimeForm({
   date,
-  entryId,
+  projectTimeId,
   values = {
     hours: "04:00",
     description: "",
@@ -72,8 +72,8 @@ export function TimeEntryForm({
   const [description, setDescription] = useState(() => values.description);
   const descriptionSegments = descriptionToSegments(description);
   const [hours, setHours] = useState(values.hours);
-  const [updateMode, setUpdateMode] = useState(entryId ? false : true);
-  const [errors, setErrors] = useState<TimeEntryFormErrors>({});
+  const [updateMode, setUpdateMode] = useState(projectTimeId ? false : true);
+  const [errors, setErrors] = useState<ProjectTimeFormErrors>({});
 
   const troiFetcher = useFetcher({ key: "Troi" });
   const phaseFetcher = useFetcher<TrackyPhase[]>({
@@ -108,7 +108,7 @@ export function TimeEntryForm({
     setDescription((description) => {
       const segments = descriptionToSegments(description);
       return segmentsToDescription(
-        segments.filter((entry) => entry !== segment),
+        segments.filter((projectTime) => projectTime !== segment),
       );
     });
   }
@@ -125,7 +125,8 @@ export function TimeEntryForm({
     const segments = descriptionToSegments(description);
     return segmentsToDescription(
       segments.filter(
-        (entry, index) => entry !== "" || index === segments.length - 1,
+        (projectTime, index) =>
+          projectTime !== "" || index === segments.length - 1,
       ),
     );
   }
@@ -157,7 +158,7 @@ export function TimeEntryForm({
 
   async function onKeyDown(e: React.KeyboardEvent) {
     if (e.key === "Enter") {
-      submit(entryId ? "PUT" : "POST");
+      submit(projectTimeId ? "PUT" : "POST");
     }
   }
 
@@ -169,7 +170,7 @@ export function TimeEntryForm({
       hours,
       description,
     };
-    const parseResult = timeEntrySaveFormSchema.safeParse(formData);
+    const parseResult = projectTimeSaveFormSchema.safeParse(formData);
     if (!parseResult.success) {
       for (const issue of parseResult.error.issues) {
         const field = issue.path[0];
@@ -179,7 +180,7 @@ export function TimeEntryForm({
     }
     await troiFetcher.submit(formData, {
       method,
-      action: `/project_time/${entryId ?? ""}`,
+      action: `/project_time/${projectTimeId ?? ""}`,
     });
   }
 
@@ -206,7 +207,7 @@ export function TimeEntryForm({
   }
 
   return (
-    <div data-test="entry-form" className="flex justify-center">
+    <div data-test="projectTime-form" className="flex justify-center">
       <div className="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
         <div className="flex flex-col">
           <div className="basis-3/4 p-1">
@@ -218,7 +219,7 @@ export function TimeEntryForm({
               {calculationPosition.name}
             </h2>
             {updateMode ? (
-              <div id="timeEntryForm">
+              <div id="projectTimeForm">
                 <div className="relative flex w-full items-center">
                   <TimeInput
                     name="hours"
@@ -246,20 +247,22 @@ export function TimeEntryForm({
                         Recurring tasks
                       </label>
                       <div id="recurring" className="mt-2">
-                        {recurringTasks.map((entry) => (
+                        {recurringTasks.map((projectTime) => (
                           <div
-                            key={entry.Id}
+                            key={projectTime.Id}
                             className="flex items-start space-x-2 md:inline-flex"
                           >
                             <input
-                              checked={descriptionSegments.includes(entry.name)}
+                              checked={descriptionSegments.includes(
+                                projectTime.name,
+                              )}
                               className="rounded-md border border-gray-300 bg-white p-2"
-                              id={entry.name}
+                              id={projectTime.name}
                               type="checkbox"
                               onChange={onRecurringTaskChange}
                             />
-                            <label className="pr-5" htmlFor={entry.name}>
-                              {entry.name}
+                            <label className="pr-5" htmlFor={projectTime.name}>
+                              {projectTime.name}
                             </label>
                           </div>
                         ))}
@@ -361,7 +364,7 @@ export function TimeEntryForm({
                   <div className="flex flex-row space-x-2 md:flex-col md:space-x-0 md:space-y-2">
                     {!disabled && updateMode && (
                       <>
-                        {entryId ? (
+                        {projectTimeId ? (
                           <TrackyButton
                             onClick={() => submit("PUT")}
                             testId={`update-${calculationPosition.id}`}
@@ -392,7 +395,7 @@ export function TimeEntryForm({
                 </div>
               </div>
             ) : (
-              <div data-testid="entry-card-content">
+              <div data-testid="projectTime-card-content">
                 <b>{values.hours} Hour(s)</b>
                 <br />
                 <p>{values.description}</p>

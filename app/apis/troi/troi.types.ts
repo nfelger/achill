@@ -4,7 +4,7 @@ export type CalculationPosition = {
   subprojectId: number;
 };
 
-export type TimeEntry = {
+export type TroiProjectTime = {
   id: number;
   date: string;
   hours: number;
@@ -12,4 +12,4 @@ export type TimeEntry = {
   calculationPosition: number;
 };
 
-export type TimeEntries = { [key: number]: TimeEntry };
+export type TroiProjectTimesById = { [key: number]: TroiProjectTime };

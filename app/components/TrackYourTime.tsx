@@ -2,7 +2,7 @@ import { useState } from "react";
 import { InfoBanner } from "./week/InfoBanner";
 import { addDaysToDate, getWeekDaysFor } from "~/utils/dateTimeUtils";
 import { WeekView } from "./week/WeekView";
-import { TroiTimeEntries } from "./projectTime/ProjectTimes";
+import { ProjectTimes } from "./projectTime/ProjectTimes";
 import {
   TrackyTask,
   filterPhaseTasks,
@@ -14,10 +14,9 @@ import {
   transformCalendarEvent,
 } from "~/utils/transformCalendarEvents";
 import moment from "moment";
-import {
+import type {
   CalculationPosition,
-  TimeEntries,
-  TimeEntry,
+  TroiProjectTimesById,
 } from "~/apis/troi/troi.types";
 import { WorkTimeForm } from "./WorkTimeForm";
 import {
@@ -28,7 +27,7 @@ import {
 interface Props {
   calculationPositions: CalculationPosition[];
   calendarEvents: CalendarEvent[];
-  timeEntries: TimeEntries;
+  projectTimesById: TroiProjectTimesById;
   tasks: TrackyTask[];
   workingHours: WorkingHours;
   attendances: PersonioAttendance[];
@@ -43,15 +42,18 @@ function findEventsOfDate(
   );
 }
 
-function findTimeEntriesOfDate(timeEntries: TimeEntries, date: Date) {
-  return Object.values(timeEntries).filter((entry) =>
-    moment(entry.date).isSame(date, "day"),
+function findProjectTimesOfDate(
+  projectTimesById: TroiProjectTimesById,
+  date: Date,
+) {
+  return Object.values(projectTimesById).filter((projectTime) =>
+    moment(projectTime.date).isSame(date, "day"),
   );
 }
 
-function calcHoursOfDate(timeEntries: TimeEntries, date: Date) {
-  return findTimeEntriesOfDate(timeEntries, date).reduce(
-    (acc, entry) => acc + entry.hours,
+function calcHoursOfDate(projectTimesById: TroiProjectTimesById, date: Date) {
+  return findProjectTimesOfDate(projectTimesById, date).reduce(
+    (acc, projectTime) => acc + projectTime.hours,
     0,
   );
 }
@@ -82,7 +84,7 @@ export default function TrackYourTime(props: Props) {
     .flat();
   const selectedDayEvents = findEventsOfDate(calendarEvents, selectedDate);
   const timesAndEventsOfSelectedWeek = selectedWeek.map((weekday) => ({
-    hours: calcHoursOfDate(props.timeEntries, weekday),
+    hours: calcHoursOfDate(props.projectTimesById, weekday),
     events: findEventsOfDate(calendarEvents, weekday),
   }));
   const workingHoursOfSelectedDate =
@@ -94,8 +96,8 @@ export default function TrackYourTime(props: Props) {
 
   const positions = props.calculationPositions;
 
-  const entriesForSelectedDate = findTimeEntriesOfDate(
-    props.timeEntries,
+  const projectTimesForSelectedDate = findProjectTimesOfDate(
+    props.projectTimesById,
     selectedDate,
   );
 
@@ -152,12 +154,12 @@ export default function TrackYourTime(props: Props) {
         Project hours
       </h2>
       {!selectedDayEvents?.some((event) => event.type == "Holiday") && (
-        <TroiTimeEntries
+        <ProjectTimes
           selectedDate={selectedDate}
           calculationPositions={positions ?? []}
           recurringTasks={recurringTasks}
           phaseTasks={phaseTasks}
-          entries={entriesForSelectedDate}
+          projectTimes={projectTimesForSelectedDate}
           disabled={false}
         />
       )}

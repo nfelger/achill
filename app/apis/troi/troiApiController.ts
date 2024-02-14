@@ -1,7 +1,11 @@
 import type { CalendarEvent } from "troi-library";
 import TroiApiService from "troi-library";
 import { addDaysToDate } from "~/utils/dateTimeUtils";
-import type { CalculationPosition, TimeEntries, TimeEntry } from "./troi.types";
+import type {
+  CalculationPosition,
+  TroiProjectTimesById,
+  TroiProjectTime,
+} from "./troi.types";
 import { staleWhileRevalidate } from "../../utils/staleWhileRevalidate";
 import type { Session } from "@remix-run/node";
 import { commitSession } from "~/sessions.server";
@@ -151,7 +155,7 @@ export async function getCalendarEvents(
   );
 }
 
-async function fetchTimeEntriesAndSaveToSession(session: Session) {
+async function fetchProjectTimesAndSaveToSession(session: Session) {
   const clientId = await getClientId(session);
   const employeeId = await getEmployeeId(session);
 
@@ -161,7 +165,7 @@ async function fetchTimeEntriesAndSaveToSession(session: Session) {
   );
 
   const calculationPositions = await getCalculationPositions(session);
-  const entries: TimeEntry[] = (
+  const projectTimes: TroiProjectTime[] = (
     await Promise.all(
       calculationPositions.map((calcPos) => {
         console.log(
@@ -191,33 +195,35 @@ async function fetchTimeEntriesAndSaveToSession(session: Session) {
     )
   )
     .flat()
-    .map((entry) => {
+    .map((projectTime) => {
       return {
-        id: entry.id,
-        date: entry.Date,
-        hours: parseFloat(entry.Quantity),
-        description: entry.Remark,
-        calculationPosition: entry.CalculationPosition.id,
+        id: projectTime.id,
+        date: projectTime.Date,
+        hours: parseFloat(projectTime.Quantity),
+        description: projectTime.Remark,
+        calculationPosition: projectTime.CalculationPosition.id,
       };
     });
 
-  const entriesById: TimeEntries = {};
-  for (const entry of entries) {
-    entriesById[entry.id] = entry;
+  const projectTimesById: TroiProjectTimesById = {};
+  for (const projectTime of projectTimes) {
+    projectTimesById[projectTime.id] = projectTime;
   }
 
-  return entriesById;
+  return projectTimesById;
 }
 
-export async function getTimeEntries(session: Session): Promise<TimeEntries> {
+export async function getProjectTimes(
+  session: Session,
+): Promise<TroiProjectTimesById> {
   return staleWhileRevalidate(
     session,
-    fetchTimeEntriesAndSaveToSession,
-    "troiTimeEntries",
+    fetchProjectTimesAndSaveToSession,
+    "troiProjectTimes",
   );
 }
 
-export async function addTimeEntry(
+export async function addProjectTime(
   session: Session,
   calculationPostionId: number,
   date: string,
@@ -244,23 +250,23 @@ export async function addTimeEntry(
     Quantity: string;
   };
 
-  const existingEntries = session.get("troiTimeEntries");
-  if (existingEntries !== undefined) {
-    existingEntries[result.id] = {
+  const existingProjectTimes = session.get("troiProjectTimes");
+  if (existingProjectTimes !== undefined) {
+    existingProjectTimes[result.id] = {
       id: result.id,
       date: date,
       hours: parseFloat(result.Quantity),
       description: result.Name,
       calculationPosition: calculationPostionId,
     };
-    session.set("troiTimeEntries", existingEntries);
+    session.set("troiProjectTimes", existingProjectTimes);
     await commitSession(session);
   }
 
   return result;
 }
 
-export async function deleteTimeEntry(session: Session, id: number) {
+export async function deleteProjectTime(session: Session, id: number) {
   const troiApi = await getTroiApi(
     session.get("username"),
     session.get("troiPassword"),
@@ -270,16 +276,16 @@ export async function deleteTimeEntry(session: Session, id: number) {
 
   await troiApi.deleteTimeEntry(id);
 
-  const existingEntries = session.get("troiTimeEntries");
+  const existingProjectTimes = session.get("troiProjectTimes");
 
-  if (existingEntries) {
-    delete existingEntries[id];
-    session.set("troiTimeEntries", existingEntries);
+  if (existingProjectTimes) {
+    delete existingProjectTimes[id];
+    session.set("troiProjectTimes", existingProjectTimes);
     await commitSession(session);
   }
 }
 
-export async function updateTimeEntry(
+export async function updateProjectTime(
   session: Session,
   id: number,
   hours: number,
@@ -313,12 +319,12 @@ export async function updateTimeEntry(
     Quantity: string;
   };
 
-  const existingEntries = session.get("troiTimeEntries");
+  const existingProjectTimes = session.get("troiProjectTimes");
 
-  if (existingEntries) {
-    existingEntries[id].hours = parseFloat(res.Quantity);
-    existingEntries[id].description = res.Name;
-    session.set("troiTimeEntries", existingEntries);
+  if (existingProjectTimes) {
+    existingProjectTimes[id].hours = parseFloat(res.Quantity);
+    existingProjectTimes[id].description = res.Name;
+    session.set("troiProjectTimes", existingProjectTimes);
     await commitSession(session);
   }
 }
