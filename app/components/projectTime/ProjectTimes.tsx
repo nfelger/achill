@@ -27,7 +27,7 @@ export function ProjectTimes({
       className="bg-white"
       data-testid={`project-section-${position.id}`}
     >
-      <div className="container mx-auto pb-2">
+      <div className="mb-4 container mx-auto">
         {!projectTimes.some(
           ({ calculationPosition }) => calculationPosition === position.id,
         ) ? (
@@ -50,7 +50,7 @@ export function ProjectTimes({
               >
                 <div
                   data-test="projectTime-form"
-                  className="my-2 flex justify-center"
+                  className="flex justify-center"
                 >
                   <div className="block w-full">
                     <ProjectTimeForm
