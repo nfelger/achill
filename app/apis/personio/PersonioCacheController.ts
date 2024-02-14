@@ -1,18 +1,18 @@
-import { staleWhileRevalidate } from "~/utils/staleWhileRevalidate";
-import {
-  getEmployeeDataByMailAddress,
-  getEmployeeData as getEmployeeDataById,
-  getAttendances as _getAttendances,
-  postAttendance as _postAttendance,
-  deleteAttendance as _deleteAttendance,
-  patchAttendance as _patchAttendance,
-} from "./PersonioApiController";
-import { redirect } from "@remix-run/node";
 import type { Session } from "@remix-run/node";
-import { addDaysToDate } from "~/utils/dateTimeUtils";
-import type { PersonioAttendance } from "./Personio.types";
+import { redirect } from "@remix-run/node";
 import moment from "moment";
 import { commitSession } from "~/sessions.server";
+import { END_DATE, START_DATE } from "~/utils/dateTimeUtils";
+import { staleWhileRevalidate } from "~/utils/staleWhileRevalidate";
+import type { PersonioAttendance } from "./Personio.types";
+import {
+  deleteAttendance as _deleteAttendance,
+  getAttendances as _getAttendances,
+  patchAttendance as _patchAttendance,
+  postAttendance as _postAttendance,
+  getEmployeeData as getEmployeeDataById,
+  getEmployeeDataByMailAddress,
+} from "./PersonioApiController";
 
 function usernameToDigitalserviceMail(username: string) {
   return `${username}@digitalservice.bund.de`;
@@ -38,12 +38,10 @@ export async function getAttendances(session: Session) {
     session.get("personioEmployee")?.id ?? (await getEmployeeData(session)).id;
 
   const fetcher = async () => {
-    const startDate = addDaysToDate(new Date(), -366);
-    const endDate = addDaysToDate(new Date(), 366);
     const result = await _getAttendances(
       employeeId,
-      startDate,
-      endDate,
+      START_DATE,
+      END_DATE,
       200,
       0,
     );
@@ -52,8 +50,8 @@ export async function getAttendances(session: Session) {
     if (result.metadata.total_pages > 1) {
       const result2 = await _getAttendances(
         employeeId,
-        startDate,
-        endDate,
+        START_DATE,
+        END_DATE,
         200,
         200,
       );

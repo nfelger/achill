@@ -1,28 +1,28 @@
+import moment from "moment";
 import { useState } from "react";
-import { InfoBanner } from "./week/InfoBanner";
-import { addDaysToDate, getWeekDaysFor } from "~/utils/dateTimeUtils";
-import { WeekView } from "./week/WeekView";
-import { ProjectTimes } from "./projectTime/ProjectTimes";
+import type { CalendarEvent } from "troi-library";
+import {
+  PersonioAttendance,
+  WorkingHours,
+} from "~/apis/personio/Personio.types";
 import {
   TrackyTask,
   filterPhaseTasks,
   filterRecurringTasks,
 } from "~/apis/tasks/TrackyTask";
-import type { CalendarEvent } from "troi-library";
-import {
-  TransformedCalendarEvent,
-  transformCalendarEvent,
-} from "~/utils/transformCalendarEvents";
-import moment from "moment";
 import type {
   CalculationPosition,
   TroiProjectTimesById,
 } from "~/apis/troi/troi.types";
-import { WorkTimeForm } from "./WorkTimeForm";
+import { END_DATE, START_DATE, getWeekDaysFor } from "~/utils/dateTimeUtils";
 import {
-  PersonioAttendance,
-  WorkingHours,
-} from "~/apis/personio/Personio.types";
+  TransformedCalendarEvent,
+  transformCalendarEvent,
+} from "~/utils/transformCalendarEvents";
+import { WorkTimeForm } from "./WorkTimeForm";
+import { ProjectTimes } from "./projectTime/ProjectTimes";
+import { InfoBanner } from "./week/InfoBanner";
+import { WeekView } from "./week/WeekView";
 
 interface Props {
   calculationPositions: CalculationPosition[];
@@ -75,11 +75,7 @@ export default function TrackYourTime(props: Props) {
 
   const calendarEvents = props.calendarEvents
     .map((calendarEvent) =>
-      transformCalendarEvent(
-        calendarEvent,
-        addDaysToDate(new Date(), -366),
-        addDaysToDate(new Date(), 366),
-      ),
+      transformCalendarEvent(calendarEvent, START_DATE, END_DATE),
     )
     .flat();
   const selectedDayEvents = findEventsOfDate(calendarEvents, selectedDate);

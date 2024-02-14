@@ -1,20 +1,20 @@
+import type { Session } from "@remix-run/node";
+import moment from "moment";
 import type { CalendarEvent } from "troi-library";
 import TroiApiService from "troi-library";
-import { addDaysToDate } from "~/utils/dateTimeUtils";
+import { commitSession } from "~/sessions.server";
+import { END_DATE, START_DATE } from "~/utils/dateTimeUtils";
+import { staleWhileRevalidate } from "../../utils/staleWhileRevalidate";
 import type {
   CalculationPosition,
-  TroiProjectTimesById,
   TroiProjectTime,
+  TroiProjectTimesById,
 } from "./troi.types";
-import { staleWhileRevalidate } from "../../utils/staleWhileRevalidate";
-import type { Session } from "@remix-run/node";
-import { commitSession } from "~/sessions.server";
-import moment from "moment";
 
 const BASE_URL = "https://digitalservice.troi.software/api/v2/rest";
 const CLIENT_NAME = "DigitalService GmbH des Bundes";
-const START_DATE = moment(addDaysToDate(new Date(), -366)).format("YYYYMMDD");
-const END_DATE = moment(addDaysToDate(new Date(), 366)).format("YYYYMMDD");
+const START_DATE_YYYYMMDD = moment(START_DATE).format("YYYYMMDD");
+const END_DATE_YYYYMMDD = moment(END_DATE).format("YYYYMMDD");
 
 async function getTroiApi(
   username?: string,
@@ -140,7 +140,10 @@ async function fetchCalendarEventsAndSaveToSession(session: Session) {
 
   console.log("[TroiAPI]", "getCalendarEvents()");
 
-  const calendarEvents = await troiApi.getCalendarEvents(START_DATE, END_DATE);
+  const calendarEvents = await troiApi.getCalendarEvents(
+    START_DATE_YYYYMMDD,
+    END_DATE_YYYYMMDD,
+  );
 
   return calendarEvents;
 }
@@ -179,8 +182,8 @@ async function fetchProjectTimesAndSaveToSession(session: Session) {
             clientId: clientId.toString(),
             employeeId: employeeId.toString(),
             calculationPositionId: calcPos.id.toString(),
-            startDate: START_DATE,
-            endDate: END_DATE,
+            startDate: START_DATE_YYYYMMDD,
+            endDate: END_DATE_YYYYMMDD,
           },
         }) as Promise<{
           id: number;
