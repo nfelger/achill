@@ -182,6 +182,7 @@ export function ProjectTimeForm({
       method,
       action: `/project_time/${projectTimeId ?? ""}`,
     });
+    setUpdateMode(false);
   }
 
   function handleCancel() {
