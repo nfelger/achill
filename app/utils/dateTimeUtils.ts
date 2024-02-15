@@ -40,7 +40,7 @@ export function minutesToTime(minutes: number) {
   return moment()
     .set("minutes", 0)
     .set("hours", 0)
-    .add("minutes", minutes)
+    .add(minutes, "minutes")
     .format("HH:mm");
 }
 
