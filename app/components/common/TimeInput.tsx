@@ -35,11 +35,12 @@ export function TimeInput({
         </span>
       )}
       <input
-        className="mx-4"
+        className="mx-4 read-only:bg-gray-200 read-only:cursor-not-allowed read-only:border-gray-200 read-only:ml-10"
         id={name}
         name={name}
         type="time"
         value={time}
+        step={900}
         readOnly={display}
         onChange={(e) => {
           console.log(e.target.value);
