@@ -214,14 +214,14 @@ export function ProjectTimeForm({
     <div data-test="projectTime-form" className="flex justify-center">
       <div className="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
         <div className="flex flex-col">
-          <div className="basis-3/4 p-1">
-            <h2
-              className="mb-4 text-lg font-semibold text-gray-900"
+          <div className="basis-3/4">
+            <h3
+              className="mb-4 text-gray-900"
               title="Position ID: {position.id}"
               data-testid="project-heading-{position.id}"
             >
               {calculationPosition.name}
-            </h2>
+            </h3>
             {updateMode ? (
               <div id="projectTimeForm">
                 <div className="relative flex w-full items-center">
@@ -342,7 +342,7 @@ export function ProjectTimeForm({
                     </details>
                   ))}
                 </div>
-                <div className="relative mb-4 flex w-full flex-col items-center justify-between md:flex-row">
+                <div className="relative flex w-full flex-col items-center justify-between md:flex-row">
                   <div className="mb-2 w-full md:mb-0 md:w-4/6">
                     <pre
                       aria-hidden="true"

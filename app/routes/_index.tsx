@@ -111,7 +111,7 @@ export default function Index() {
               </div>
               <div className="flex w-full items-center justify-between">
                 <div className="text-black">
-                  <div className="font-bold">Track-Your-Time</div>
+                  <h1 className="font-bold">Track-Your-Time</h1>
                   <div className="text-sm">Logged in as {username}.</div>
                 </div>
                 <Form method="post" action="/logout">
