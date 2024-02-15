@@ -16,7 +16,7 @@ export type Time = {
 
 export const timeSchema = z
   .string()
-  .regex(HH_MM_FORMAT_WITH_LEADING_0)
+  .regex(HH_MM_FORMAT_WITH_LEADING_0, "Time must be in format HH:MM.")
   .transform((time): Time => {
     const [hours, minutes] = time.split(":");
     return {

@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { TrackyButton, buttonRed } from "../common/TrackyButton";
-import { TrackyTask } from "~/apis/tasks/TrackyTask";
-import { TrackyPhase } from "~/apis/tasks/TrackyPhase";
-import { CalculationPosition } from "~/apis/troi/troi.types";
 import { useFetcher } from "@remix-run/react";
-import { TimeInput } from "../common/TimeInput";
 import moment from "moment";
+import { useEffect, useState } from "react";
+import { TrackyPhase } from "~/apis/tasks/TrackyPhase";
+import { TrackyTask } from "~/apis/tasks/TrackyTask";
+import { CalculationPosition } from "~/apis/troi/troi.types";
 import { projectTimeSaveFormSchema } from "~/utils/projectTimeFormValidator";
+import { TimeInput } from "../common/TimeInput";
+import { TrackyButton, buttonRed } from "../common/TrackyButton";
 
 export interface ProjectTimeFormErrors {
   hours?: string;
@@ -71,7 +71,9 @@ export function ProjectTimeForm({
 
   const [description, setDescription] = useState(() => values.description);
   const descriptionSegments = descriptionToSegments(description);
-  const [hours, setHours] = useState(values.hours);
+  const [hours, setHours] = useState(
+    moment(values.hours, "HH:mm").format("HH:mm"),
+  );
   const [updateMode, setUpdateMode] = useState(projectTimeId ? false : true);
   const [errors, setErrors] = useState<ProjectTimeFormErrors>({});
 
