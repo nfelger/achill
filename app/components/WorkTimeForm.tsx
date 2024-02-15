@@ -3,8 +3,8 @@ import moment from "moment";
 import { useState } from "react";
 import type { PersonioAttendance } from "~/apis/personio/Personio.types";
 import { minutesToTime } from "~/utils/dateTimeUtils";
-import { TrackyButton, buttonRed } from "./common/TrackyButton";
 import { TimeInput } from "./common/TimeInput";
+import { TrackyButton, buttonRed } from "./common/TrackyButton";
 
 interface Props {
   selectedDate: Date;
@@ -49,19 +49,19 @@ export function WorkTimeForm({ selectedDate, workTime, attendance }: Props) {
         <div className="flex flex-col gap-3">
           <TimeInput
             name="startTime"
-            value={startTime}
+            time={startTime}
             onChangeTime={setStartTime}
             label="Start time"
           />
           <TimeInput
             name="breakTime"
-            value={breakTime}
+            time={breakTime}
             onChangeTime={setBreakTime}
             label="Break"
           />
           <TimeInput
             name="endTime"
-            value={endTime}
+            time={endTime}
             onChangeTime={setEndTime}
             label="End time"
           />

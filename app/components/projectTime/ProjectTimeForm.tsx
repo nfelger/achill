@@ -225,7 +225,7 @@ export function ProjectTimeForm({
                 <div className="relative flex w-full items-center">
                   <TimeInput
                     name="hours"
-                    value={hours}
+                    time={hours}
                     onChangeTime={setHours}
                     label="Hours"
                     // data-testid={hoursTestId}

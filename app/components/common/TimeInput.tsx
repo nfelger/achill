@@ -2,14 +2,14 @@ import moment from "moment";
 
 type WorkingTimeInputProps = {
   name: string;
-  value: string;
+  time: string;
   onChangeTime: (time: string) => void;
   label: string;
 };
 
 export function TimeInput({
   name,
-  value,
+  time,
   onChangeTime,
   label,
 }: WorkingTimeInputProps) {
@@ -25,7 +25,7 @@ export function TimeInput({
       <span
         className="material-symbols-outlined cursor-pointer select-none"
         onClick={() => {
-          onChangeTime(addMinutesToTime(-15, value));
+          onChangeTime(addMinutesToTime(-15, time));
         }}
       >
         Remove
@@ -35,15 +35,16 @@ export function TimeInput({
         id={name}
         name={name}
         type="time"
-        value={value}
+        value={time}
         onChange={(e) => {
+          console.log(e.target.value);
           onChangeTime(e.target.value);
         }}
       />
       <span
         className="material-symbols-outlined cursor-pointer select-none"
         onClick={() => {
-          onChangeTime(addMinutesToTime(15, value));
+          onChangeTime(addMinutesToTime(15, time));
         }}
       >
         Add
