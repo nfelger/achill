@@ -50,7 +50,9 @@ export function WorkTimeForm({ selectedDate, workTime, attendance }: Props) {
 
   useEffect(() => {
     if (personioFetcher.state === "loading") {
-      setUpdateMode(false);
+      const shouldFormBeOpen =
+        personioFetcher.formData?.get("_intent") === "DELETE";
+      setUpdateMode(shouldFormBeOpen);
     }
   }, [personioFetcher.state]);
 
