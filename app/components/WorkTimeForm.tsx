@@ -1,6 +1,6 @@
 import { useFetcher } from "@remix-run/react";
 import moment from "moment";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { PersonioAttendance } from "~/apis/personio/Personio.types";
 import { minutesToTime } from "~/utils/dateTimeUtils";
 import { TimeInput } from "./common/TimeInput";
@@ -37,12 +37,27 @@ export function WorkTimeForm({ selectedDate, workTime, attendance }: Props) {
   const [endTime, setEndTime] = useState(
     attendance ? attendance.end_time : newEndTime,
   );
+  const [updateMode, setUpdateMode] = useState(!attendance);
 
   const personioFetcher = useFetcher({ key: "Personio" });
+
+  let formRef = useRef(null);
+
+  function setUpdateModeWithoutSubmitting(event: any, value: boolean) {
+    event.preventDefault();
+    setUpdateMode(value);
+  }
+
+  useEffect(() => {
+    if (personioFetcher.state === "loading") {
+      setUpdateMode(false);
+    }
+  }, [personioFetcher.state]);
 
   return (
     <section className="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
       <personioFetcher.Form
+        ref={formRef}
         method="POST"
         action={`/work_time/${attendance?.id ?? ""}`}
       >
@@ -52,18 +67,21 @@ export function WorkTimeForm({ selectedDate, workTime, attendance }: Props) {
             time={startTime}
             onChangeTime={setStartTime}
             label="Start time"
+            display={!updateMode}
           />
           <TimeInput
             name="breakTime"
             time={breakTime}
             onChangeTime={setBreakTime}
             label="Break"
+            display={!updateMode}
           />
           <TimeInput
             name="endTime"
             time={endTime}
             onChangeTime={setEndTime}
             label="End time"
+            display={!updateMode}
           />
           <input
             name="comment"
@@ -81,21 +99,43 @@ export function WorkTimeForm({ selectedDate, workTime, attendance }: Props) {
           <div>
             {attendance ? (
               <div className="flex gap-2">
-                <TrackyButton
-                  name="_intent"
-                  value="DELETE"
-                  color={buttonRed}
-                  testId="delete-button"
-                >
-                  Delete
-                </TrackyButton>
-                <TrackyButton
-                  name="_intent"
-                  value="PATCH"
-                  testId="update-button"
-                >
-                  Update
-                </TrackyButton>
+                {updateMode ? (
+                  <>
+                    <TrackyButton
+                      type="reset"
+                      color={buttonRed}
+                      onClick={(e) => setUpdateModeWithoutSubmitting(e, false)}
+                      testId="cancel-button"
+                    >
+                      Cancel
+                    </TrackyButton>
+                    <TrackyButton
+                      name="_intent"
+                      value="PATCH"
+                      testId="update-button"
+                    >
+                      Update
+                    </TrackyButton>
+                  </>
+                ) : (
+                  <>
+                    <TrackyButton
+                      name="_intent"
+                      value="DELETE"
+                      color={buttonRed}
+                      testId="delete-button"
+                    >
+                      Delete
+                    </TrackyButton>
+                    <TrackyButton
+                      type="button"
+                      onClick={(e) => setUpdateModeWithoutSubmitting(e, true)}
+                      testId="edit-button"
+                    >
+                      Edit
+                    </TrackyButton>
+                  </>
+                )}
               </div>
             ) : (
               <TrackyButton name="_intent" value="POST" testId="add-button">

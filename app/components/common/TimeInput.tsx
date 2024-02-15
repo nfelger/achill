@@ -5,6 +5,7 @@ type WorkingTimeInputProps = {
   time: string;
   onChangeTime: (time: string) => void;
   label: string;
+  display?: boolean;
 };
 
 export function TimeInput({
@@ -12,6 +13,7 @@ export function TimeInput({
   time,
   onChangeTime,
   label,
+  display = false,
 }: WorkingTimeInputProps) {
   function addMinutesToTime(minutes: number, time: string) {
     return moment(time, "HH:mm").add(minutes, "minutes").format("HH:mm");
@@ -22,33 +24,38 @@ export function TimeInput({
       <label className="inline-block w-24" htmlFor={name}>
         {label}
       </label>
-      <span
-        className="material-symbols-outlined cursor-pointer select-none"
-        onClick={() => {
-          onChangeTime(addMinutesToTime(-15, time));
-        }}
-      >
-        Remove
-      </span>
+      {!display && (
+        <span
+          className="material-symbols-outlined cursor-pointer select-none"
+          onClick={() => {
+            onChangeTime(addMinutesToTime(-15, time));
+          }}
+        >
+          Remove
+        </span>
+      )}
       <input
         className="mx-4"
         id={name}
         name={name}
         type="time"
         value={time}
+        readOnly={display}
         onChange={(e) => {
           console.log(e.target.value);
           onChangeTime(e.target.value);
         }}
       />
-      <span
-        className="material-symbols-outlined cursor-pointer select-none"
-        onClick={() => {
-          onChangeTime(addMinutesToTime(15, time));
-        }}
-      >
-        Add
-      </span>
+      {!display && (
+        <span
+          className="material-symbols-outlined cursor-pointer select-none"
+          onClick={() => {
+            onChangeTime(addMinutesToTime(15, time));
+          }}
+        >
+          Add
+        </span>
+      )}
     </div>
   );
 }

@@ -26,7 +26,7 @@ interface Props {
   type?: "button" | "submit" | "reset";
   name?: string;
   value?: string;
-  onClick?: () => void;
+  onClick?: (e: any) => void;
   color?: ButtonColor;
   children?: React.ReactNode;
   additionalClasses?: string;
