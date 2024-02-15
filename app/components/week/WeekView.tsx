@@ -32,7 +32,7 @@ export function WeekView({
               <div
                 data-testid="date"
                 tabIndex={0}
-                className="text-base font-bold text-gray-800 focus:outline-none"
+                className="text-base text-gray-800 focus:outline-none"
               >
                 {selectedDate.toLocaleDateString("en-gb", {
                   weekday: "long",
