@@ -77,17 +77,11 @@ export default function TrackYourTime(props: Props) {
     setAttendances(props.attendances);
   }
 
-  const recurringTasks = filterRecurringTasks(props.tasks);
-  const phaseTasks = filterPhaseTasks(props.tasks);
-
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const selectedWeek = getWeekDaysFor(selectedDate);
-
-  const calendarEvents = props.calendarEvents
-    .map((calendarEvent) =>
-      transformCalendarEvent(calendarEvent, START_DATE, END_DATE),
-    )
-    .flat();
+  const calendarEvents = props.calendarEvents.flatMap((calendarEvent) =>
+    transformCalendarEvent(calendarEvent, START_DATE, END_DATE),
+  );
   const selectedDayEvents = findEventsOfDate(calendarEvents, selectedDate);
   const timesAndEventsOfSelectedWeek = selectedWeek.map((weekday) => ({
     hours: calcHoursOfDate(props.projectTimesById, weekday),
@@ -96,18 +90,20 @@ export default function TrackYourTime(props: Props) {
   const workingHoursOfSelectedDate =
     props.workingHours[DAYS_OF_WEEK[moment(selectedDate).weekday() - 1]];
 
-  const positions = props.calculationPositions;
-
-  const projectTimesForSelectedDate = findProjectTimesOfDate(
-    props.projectTimesById,
-    selectedDate,
-  );
-
   const attendancesOfSelectedWeek: (PersonioAttendance | undefined)[] =
     selectedWeek.map((element) => {
       const date = moment(element).format("YYYY-MM-DD");
       return attendances.find((attendance) => attendance.date === date);
     });
+
+  const recurringTasks = filterRecurringTasks(props.tasks);
+  const phaseTasks = filterPhaseTasks(props.tasks);
+
+  const positions = props.calculationPositions;
+  const projectTimesForSelectedDate = findProjectTimesOfDate(
+    props.projectTimesById,
+    selectedDate,
+  );
 
   return (
     <div>
