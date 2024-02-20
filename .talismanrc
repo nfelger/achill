@@ -32,7 +32,7 @@ fileignoreconfig:
   - filename: app/sessions.server.ts
     allowed_patterns: [sessionCookieSecret, SESSION_COOKIE_SECRET]
   - filename: app/personio/PersonioApiController.ts
-    allowed_patterns: [PERSONIO_CLIENT_SECRET, client_secret]
+    allowed_patterns: [PERSONIO_CLIENT_SECRET, client_secret, process.env.PERSONIO_CLIENT_ID]
 version: ""
 scopeconfig:
   - scope: node
