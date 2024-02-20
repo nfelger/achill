@@ -16,19 +16,11 @@ const CLIENT_NAME = "DigitalService GmbH des Bundes";
 const START_DATE_YYYYMMDD = moment(START_DATE).format("YYYYMMDD");
 const END_DATE_YYYYMMDD = moment(END_DATE).format("YYYYMMDD");
 
-async function getTroiApi(
-  username?: string,
-  password?: string,
-  clientId?: number,
-  employeeId?: number,
-): Promise<TroiApiService> {
-  if (!username) {
-    throw new Error("Missing username");
-  }
-
-  if (!password) {
-    throw new Error("Missing troi access token");
-  }
+async function getTroiApi(session: Session): Promise<TroiApiService> {
+  const username = session.get("username");
+  const password = session.get("troiPassword");
+  const clientId = session.get("troiClientId");
+  const employeeId = session.get("troiEmployeeId");
 
   const troiApi = new TroiApiService({
     baseUrl: BASE_URL,
@@ -50,14 +42,11 @@ async function getTroiApi(
 
 export async function getClientId(session: Session): Promise<number> {
   const cacheClientId = session.get("troiClientId");
-  if (cacheClientId !== undefined) {
+  if (cacheClientId) {
     return cacheClientId;
   }
 
-  const troiApi = await getTroiApi(
-    session.get("username"),
-    session.get("troiPassword"),
-  );
+  const troiApi = await getTroiApi(session);
   console.log("[TroiAPI]", "getClientId()");
   const clientId = await troiApi.getClientId();
 
@@ -73,11 +62,7 @@ export async function getEmployeeId(session: Session): Promise<number> {
     return cacheEmployeeId;
   }
 
-  const troiApi = await getTroiApi(
-    session.get("username"),
-    session.get("troiPassword"),
-    await getClientId(session),
-  );
+  const troiApi = await getTroiApi(session);
   console.log("[TroiAPI]", "getEmployeeId()");
   const employeeId = await troiApi.getEmployeeId();
 
@@ -88,12 +73,8 @@ export async function getEmployeeId(session: Session): Promise<number> {
 }
 
 async function fetchCalculationPositionsAndSaveToSession(session: Session) {
+  const troiApi = await getTroiApi(session);
   const clientId = await getClientId(session);
-
-  const troiApi = await getTroiApi(
-    session.get("username"),
-    session.get("troiPassword"),
-  );
 
   console.log("[TroiAPI]", "GET /calculationPositions");
 
@@ -133,10 +114,7 @@ export async function getCalculationPositions(
 }
 
 async function fetchCalendarEventsAndSaveToSession(session: Session) {
-  const troiApi = await getTroiApi(
-    session.get("username"),
-    session.get("troiPassword"),
-  );
+  const troiApi = await getTroiApi(session);
 
   console.log("[TroiAPI]", "getCalendarEvents()");
 
@@ -159,13 +137,9 @@ export async function getCalendarEvents(
 }
 
 async function fetchProjectTimesAndSaveToSession(session: Session) {
+  const troiApi = await getTroiApi(session);
   const clientId = await getClientId(session);
   const employeeId = await getEmployeeId(session);
-
-  const troiApi = await getTroiApi(
-    session.get("username"),
-    session.get("troiPassword"),
-  );
 
   const calculationPositions = await getCalculationPositions(session);
   const projectTimes: TroiProjectTime[] = (
@@ -233,12 +207,7 @@ export async function addProjectTime(
   hours: number,
   description: string,
 ) {
-  const troiApi = await getTroiApi(
-    session.get("username"),
-    session.get("troiPassword"),
-    await getClientId(session),
-    await getEmployeeId(session),
-  );
+  const troiApi = await getTroiApi(session);
 
   console.log("[TroiAPI]", "postTimeEntry()");
 
@@ -270,10 +239,7 @@ export async function addProjectTime(
 }
 
 export async function deleteProjectTime(session: Session, id: number) {
-  const troiApi = await getTroiApi(
-    session.get("username"),
-    session.get("troiPassword"),
-  );
+  const troiApi = await getTroiApi(session);
 
   console.log("[TroiAPI]", "deleteTimeEntry()");
 
@@ -294,10 +260,7 @@ export async function updateProjectTime(
   hours: number,
   description: string,
 ) {
-  const troiApi = await getTroiApi(
-    session.get("username"),
-    session.get("troiPassword"),
-  );
+  const troiApi = await getTroiApi(session);
 
   const payload = {
     Client: {
