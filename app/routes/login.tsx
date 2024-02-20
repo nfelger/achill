@@ -1,11 +1,13 @@
 import {
   ActionFunctionArgs,
+  LoaderFunctionArgs,
   json,
   redirect,
   type MetaFunction,
 } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 import TroiApiService, { AuthenticationFailed } from "troi-library";
+import { getEmployeeDataByMail as getPersonioDataByMail } from "~/apis/personio/PersonioApiController";
 import Spinner from "~/components/common/Spinner";
 import { TrackyButton } from "~/components/common/TrackyButton";
 import { commitSession, getSession } from "~/sessions.server";
@@ -19,18 +21,26 @@ export const meta: MetaFunction = () => {
 
 const troiBaseUrl = "https://digitalservice.troi.software/api/v2/rest";
 
+export async function loader({ request }: LoaderFunctionArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+
+  if (session.has("username")) {
+    return redirect("/");
+  }
+}
+
+function getParamFromBody(params: FormData, key: string) {
+  const value = params.get(key);
+  if (!value || typeof value !== "string") {
+    throw new Response(`Missing ${key}`, { status: 400 });
+  }
+  return value;
+}
+
 export async function action({ request }: ActionFunctionArgs) {
   const bodyParams = await request.formData();
-
-  const username = bodyParams.get("username");
-  if (typeof username !== "string") {
-    throw new Response("Missing username", { status: 400 });
-  }
-
-  const password = bodyParams.get("password");
-  if (typeof password !== "string") {
-    throw new Response("Missing password", { status: 400 });
-  }
+  const username = getParamFromBody(bodyParams, "username");
+  const password = getParamFromBody(bodyParams, "password");
 
   try {
     const troiApi = new TroiApiService({
@@ -54,6 +64,9 @@ export async function action({ request }: ActionFunctionArgs) {
   const session = await getSession(cookieHeader);
   session.set("username", username);
   session.set("troiPassword", password);
+
+  const { personioId, workingHours } = await getPersonioDataByMail(username);
+  session.set("personioEmployee", { personioId, workingHours });
 
   const headers = new Headers();
   headers.append("Set-Cookie", await commitSession(session));

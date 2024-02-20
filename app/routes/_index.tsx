@@ -18,12 +18,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   try {
     // await all the promises in parallel
+    const { personioId, workingHours } = session.get("personioEmployee");
+
     const [
       calculationPositions,
       calendarEvents,
       projectTimesById,
       tasks,
-      { workingHours },
       attendances,
     ] = await Promise.all([
       // TROI API calls
@@ -32,12 +33,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
       getProjectTimes(session),
       // NOCODB API call
       loadTasks(),
-      // PERSONIO API calls
-      getEmployeeData(session),
-      getAttendances(session),
+      // PERSONIO API call
+      getAttendances(personioId),
     ]);
-
-    await commitSession(session);
 
     return json({
       username: session.get("username")!,
@@ -50,6 +48,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     });
   } catch (e) {
     if (e instanceof AuthenticationFailed) {
+      console.error("Authentication failed", e);
       throw redirect("/login");
     }
 
@@ -100,6 +99,7 @@ export default function Index() {
             </div>
           </nav>
           <TrackYourTime
+            timestamp={timestamp}
             calendarEvents={calendarEvents}
             projectTimesById={projectTimesById}
             calculationPositions={calculationPositions}
