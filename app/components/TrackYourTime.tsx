@@ -143,22 +143,21 @@ export default function TrackYourTime(props: Props) {
         />
       </section>
 
-      <h2
-        className="mt-8 mb-4 text-lg font-semibold text-gray-900"
-        title="Working hours"
-      >
-        Project hours
-      </h2>
-      {!selectedDayEvents?.some((event) => event.type == "Holiday") && (
-        <ProjectTimes
-          selectedDate={selectedDate}
-          calculationPositions={positions ?? []}
-          recurringTasks={recurringTasks}
-          phaseTasks={phaseTasks}
-          projectTimes={projectTimesForSelectedDate}
-          disabled={false}
-        />
-      )}
+      <section>
+        <h2 className="mt-8 mb-4 text-lg font-semibold text-gray-900">
+          Project hours
+        </h2>
+        {!selectedDayEvents?.some((event) => event.type == "Holiday") && (
+          <ProjectTimes
+            selectedDate={selectedDate}
+            calculationPositions={positions ?? []}
+            recurringTasks={recurringTasks}
+            phaseTasks={phaseTasks}
+            projectTimes={projectTimesForSelectedDate}
+            disabled={false}
+          />
+        )}
+      </section>
 
       <section className="mt-8 text-xs text-gray-600">
         <p>
