@@ -65,6 +65,7 @@ export async function getSessionAndThrowIfInvalid(
   const cookieHeader = request.headers.get("Cookie");
   const session = await getSession(cookieHeader);
   if (!(await isSessionValid(session))) {
+    console.error("Invalid session");
     throw redirect("/login");
   }
   return session;
