@@ -174,7 +174,7 @@ export default function TrackYourTime(props: Props) {
           Project not showing up?{" "}
           <a
             className="angie-link"
-            href="https:// digitalservicebund.atlassian.net/wiki/x/T4BfJg"
+            href="https://digitalservicebund.atlassian.net/wiki/x/T4BfJg"
             target="_blank"
           >
             Make sure it&apos;s available in Troi and marked as a
