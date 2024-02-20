@@ -4,7 +4,6 @@ import type { CalendarEvent } from "troi-library";
 import TroiApiService from "troi-library";
 import { commitSession } from "~/sessions.server";
 import { END_DATE, START_DATE } from "~/utils/dateTimeUtils";
-import { staleWhileRevalidate } from "../../utils/staleWhileRevalidate";
 import type {
   CalculationPosition,
   TroiProjectTime,
@@ -105,12 +104,7 @@ export async function getCalculationPositions(
   session: Session,
   shouldRevalidate = true,
 ): Promise<CalculationPosition[]> {
-  return staleWhileRevalidate(
-    session,
-    fetchCalculationPositionsAndSaveToSession,
-    "troiCalculationPositions",
-    shouldRevalidate,
-  );
+  return await fetchCalculationPositionsAndSaveToSession(session);
 }
 
 async function fetchCalendarEventsAndSaveToSession(session: Session) {
@@ -129,11 +123,7 @@ async function fetchCalendarEventsAndSaveToSession(session: Session) {
 export async function getCalendarEvents(
   session: Session,
 ): Promise<CalendarEvent[]> {
-  return staleWhileRevalidate(
-    session,
-    fetchCalendarEventsAndSaveToSession,
-    "troiCalendarEvents",
-  );
+  return await fetchCalendarEventsAndSaveToSession(session);
 }
 
 async function fetchProjectTimesAndSaveToSession(session: Session) {
@@ -193,11 +183,7 @@ async function fetchProjectTimesAndSaveToSession(session: Session) {
 export async function getProjectTimes(
   session: Session,
 ): Promise<TroiProjectTimesById> {
-  return staleWhileRevalidate(
-    session,
-    fetchProjectTimesAndSaveToSession,
-    "troiProjectTimes",
-  );
+  return await fetchProjectTimesAndSaveToSession(session);
 }
 
 export async function addProjectTime(
