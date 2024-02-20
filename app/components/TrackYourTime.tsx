@@ -20,7 +20,7 @@ import {
   transformCalendarEvent,
 } from "~/utils/transformCalendarEvents";
 import { WorkTimeForm } from "../routes/work_time.($id)";
-import { ProjectTimes } from "./projectTime/ProjectTimes";
+import { ProjectTimes } from "./ProjectTimes";
 import { InfoBanner } from "./week/InfoBanner";
 import { WeekView } from "./week/WeekView";
 
