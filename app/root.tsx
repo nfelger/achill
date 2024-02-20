@@ -1,5 +1,7 @@
+import fontsStylesheet from "@digitalservice4germany/angie/fonts.css";
 import { cssBundleHref } from "@remix-run/css-bundle";
 import type { LinksFunction } from "@remix-run/node";
+import { type MetaFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -8,11 +10,16 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-
-import stylesheet from "~/styles.css";
-import fontsStylesheet from "@digitalservice4germany/angie/fonts.css";
-import fontRegular from "~/../public/fonts/BundesSansWeb-Regular.woff2";
 import fontBold from "~/../public/fonts/BundesSansWeb-Bold.woff2";
+import fontRegular from "~/../public/fonts/BundesSansWeb-Regular.woff2";
+import stylesheet from "~/styles.css";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Track your time" },
+    { name: "description", content: "Hello DigitalService!" },
+  ];
+};
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
@@ -34,6 +41,10 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
   { rel: "stylesheet", href: "https://rsms.me/inter/inter.css" },
   { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+  {
+    rel: "stylesheet",
+    href: "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200",
+  },
 ];
 
 export default function App() {
@@ -46,9 +57,7 @@ export default function App() {
         <Links />
       </head>
       <body className="bg-blue-500">
-        <div className="container mx-auto mt-8 w-full max-w-screen-lg text-sm text-gray-800 sm:px-2">
-          <Outlet />
-        </div>
+        <Outlet />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

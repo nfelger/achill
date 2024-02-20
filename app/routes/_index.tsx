@@ -1,40 +1,17 @@
-import {
-  json,
-  LinksFunction,
-  redirect,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from "@remix-run/node";
+import { json, redirect, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useFetchers, useLoaderData } from "@remix-run/react";
-import TrackYourTime from "../components/TrackYourTime";
+import { AuthenticationFailed } from "troi-library";
+import { loadTasks } from "~/apis/tasks/TrackyTask";
 import {
   getCalculationPositions,
   getCalendarEvents,
   getProjectTimes,
 } from "~/apis/troi/troiApiController";
-import { commitSession, getSessionAndThrowIfInvalid } from "~/sessions.server";
-import { loadTasks } from "~/apis/tasks/TrackyTask";
-import { AuthenticationFailed } from "troi-library";
-import {
-  getAttendances,
-  getEmployeeData,
-} from "~/apis/personio/PersonioCacheController";
 import { LoadingOverlay } from "~/components/common/LoadingOverlay";
 import { TrackyButton } from "~/components/common/TrackyButton";
-
-export const meta: MetaFunction = () => {
-  return [
-    { title: "Track your time" },
-    { name: "description", content: "Hello DigitalService!" },
-  ];
-};
-
-export const links: LinksFunction = () => [
-  {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200",
-  },
-];
+import { getSessionAndThrowIfInvalid } from "~/sessions.server";
+import { getAttendances } from "../apis/personio/PersonioApiController";
+import TrackYourTime from "../components/TrackYourTime";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSessionAndThrowIfInvalid(request);
@@ -91,45 +68,47 @@ export default function Index() {
     attendances,
   } = useLoaderData<typeof loader>();
 
-  const anyFetcherNotIdle = useFetchers().some(
-    (fetcher) => fetcher.state !== "idle",
+  const anyFetcherSubmitting = useFetchers().some(
+    (fetcher) => fetcher.state === "submitting",
   );
 
   return (
-    <main>
-      {anyFetcherNotIdle && <LoadingOverlay message="Loading data..." />}
-      <div className="rounded-sm bg-white px-2 py-2 shadow-md sm:w-full md:px-8 md:py-6">
-        <nav className="border-1 w-full border-b pb-1 text-center md:text-left">
-          <div className=" ">
-            <div className="flex h-16 justify-between">
-              <div className="flex items-center">
-                <img
-                  src="timetracking_blue.svg"
-                  alt="Track-Your-Time logo"
-                  className="p-4"
-                />
-              </div>
-              <div className="flex w-full items-center justify-between">
-                <div className="text-black">
-                  <h1 className="font-bold">Track-Your-Time</h1>
-                  <div className="text-sm">Logged in as {username}.</div>
+    <div className="container mx-auto mt-8 w-full max-w-screen-lg text-sm text-gray-800 sm:px-2">
+      <main>
+        {anyFetcherSubmitting && <LoadingOverlay message="Loading data..." />}
+        <div className="rounded-sm bg-white px-2 py-2 shadow-md sm:w-full md:px-8 md:py-6">
+          <nav className="border-1 w-full border-b pb-1 text-center md:text-left">
+            <div className=" ">
+              <div className="flex h-16 justify-between">
+                <div className="flex items-center">
+                  <img
+                    src="timetracking_blue.svg"
+                    alt="Track-Your-Time logo"
+                    className="p-4"
+                  />
                 </div>
-                <Form method="post" action="/logout">
-                  <TrackyButton testId="logout-button">Logout</TrackyButton>
-                </Form>
+                <div className="flex w-full items-center justify-between">
+                  <div className="text-black">
+                    <h1 className="font-bold">Track-Your-Time</h1>
+                    <div className="text-sm">Logged in as {username}.</div>
+                  </div>
+                  <Form method="post" action="/logout">
+                    <TrackyButton testId="logout-button">Logout</TrackyButton>
+                  </Form>
+                </div>
               </div>
             </div>
-          </div>
-        </nav>
-        <TrackYourTime
-          calendarEvents={calendarEvents}
-          projectTimesById={projectTimesById}
-          calculationPositions={calculationPositions}
-          tasks={tasks}
-          workingHours={workingHours}
-          attendances={attendances}
-        />
-      </div>
-    </main>
+          </nav>
+          <TrackYourTime
+            calendarEvents={calendarEvents}
+            projectTimesById={projectTimesById}
+            calculationPositions={calculationPositions}
+            tasks={tasks}
+            workingHours={workingHours}
+            attendances={attendances}
+          />
+        </div>
+      </main>
+    </div>
   );
 }
