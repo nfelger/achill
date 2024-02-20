@@ -85,7 +85,7 @@ export default function Index() {
                   <img
                     src="timetracking_blue.svg"
                     alt="Track-Your-Time logo"
-                    className="p-4"
+                    className="pr-4"
                   />
                 </div>
                 <div className="flex w-full items-center justify-between">

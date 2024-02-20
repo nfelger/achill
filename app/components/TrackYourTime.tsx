@@ -111,7 +111,7 @@ export default function TrackYourTime(props: Props) {
 
   return (
     <div>
-      <section className="p-4">
+      <section className="py-4">
         <a
           className="angie-link"
           href="https://digitalservicebund.atlassian.net/wiki/x/iIFqFQ"
@@ -126,15 +126,9 @@ export default function TrackYourTime(props: Props) {
           selectedDate={selectedDate}
           onSelectDate={setSelectedDate}
           attendancesOfSelectedWeek={attendancesOfSelectedWeek}
+          selectedDayEvents={selectedDayEvents}
         />
       </section>
-
-      {selectedDayEvents?.map((event) => (
-        <InfoBanner
-          key={`${event.date.getTime()}-${event.type ?? ""}`}
-          event={event}
-        />
-      ))}
 
       <section>
         <h2 className="mt-8 mb-4 text-lg font-semibold text-gray-900">
