@@ -69,6 +69,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
   } catch (e) {
     if (e instanceof AuthenticationFailed) {
+      console.error("Troi auth failed", e);
       throw redirect("/login");
     }
     throw e;
