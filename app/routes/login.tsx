@@ -27,6 +27,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (session.has("username")) {
     return redirect("/");
   }
+
+  return json(null);
 }
 
 function getParamFromBody(params: FormData, key: string) {
