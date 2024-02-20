@@ -136,13 +136,10 @@ export default function TrackYourTime(props: Props) {
         />
       ))}
 
-      <h2
-        className="mb-4 text-lg font-semibold text-gray-900"
-        title="Working hours"
-      >
-        Working hours
-      </h2>
-      <section className="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
+      <section>
+        <h2 className="mt-8 mb-4 text-lg font-semibold text-gray-900">
+          Working hours
+        </h2>
         <WorkTimeForm
           key={selectedDate.getDate()}
           selectedDate={selectedDate}

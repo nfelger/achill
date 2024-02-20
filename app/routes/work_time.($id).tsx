@@ -147,7 +147,7 @@ export function WorkTimeForm({
     <fetcher.Form
       method="POST"
       action={`/work_time/${attendanceOfSelectedDate?.id ?? ""}`}
-      className="flex flex-col gap-3"
+      className="flex flex-col gap-3 block rounded-lg bg-gray-100 p-4 shadow-lg"
     >
       <TimeInput
         name="startTime"
