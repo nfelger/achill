@@ -39,7 +39,7 @@ export type WorkingHours = {
 };
 
 export type PersonioEmployee = {
-  id: number;
+  personioId: number;
   workingHours: WorkingHours;
 };
 
@@ -78,8 +78,7 @@ export interface PersonioApiAttendance {
 export interface PersonioAttendance {
   id: number;
   date: string;
-  start_time: string;
-  end_time: string;
+  startTime: string;
+  endTime: string;
   breakTime: number;
-  comment: string;
 }

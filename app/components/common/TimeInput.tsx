@@ -3,17 +3,17 @@ import moment from "moment";
 type WorkingTimeInputProps = {
   name: string;
   time: string;
-  onChangeTime: (time: string) => void;
+  onChange: (time: string) => void;
   label: string;
-  display?: boolean;
+  readOnly?: boolean;
 };
 
 export function TimeInput({
   name,
   time,
-  onChangeTime,
+  onChange,
   label,
-  display = false,
+  readOnly = false,
 }: WorkingTimeInputProps) {
   function addMinutesToTime(minutes: number, time: string) {
     return moment(time, "HH:mm").add(minutes, "minutes").format("HH:mm");
@@ -24,11 +24,11 @@ export function TimeInput({
       <label className="inline-block w-24" htmlFor={name}>
         {label}
       </label>
-      {!display && (
+      {!readOnly && (
         <span
           className="material-symbols-outlined cursor-pointer select-none"
           onClick={() => {
-            onChangeTime(addMinutesToTime(-15, time));
+            onChange(addMinutesToTime(-15, time));
           }}
         >
           Remove
@@ -41,17 +41,17 @@ export function TimeInput({
         type="time"
         value={time}
         step={900}
-        readOnly={display}
+        readOnly={readOnly}
         onChange={(e) => {
           console.log(e.target.value);
-          onChangeTime(e.target.value);
+          onChange(e.target.value);
         }}
       />
-      {!display && (
+      {!readOnly && (
         <span
           className="material-symbols-outlined cursor-pointer select-none"
           onClick={() => {
-            onChangeTime(addMinutesToTime(15, time));
+            onChange(addMinutesToTime(15, time));
           }}
         >
           Add

@@ -2,38 +2,34 @@ import moment from "moment";
 import type { ZodSchema, ZodTypeDef } from "zod";
 import { z } from "zod";
 
-const HH_MM_FORMAT_WITH_LEADING_0 = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/;
+const HH_MM_FORMAT_WITH_LEADING_0 = /^(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/;
 export const YYYY_MM_DD_FORMAT =
   /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/;
 
 export const START_DATE = addDaysToDate(new Date(), -366);
 export const END_DATE = addDaysToDate(new Date(), 366);
 
-export type Time = {
-  hours: number;
-  minutes: number;
-};
+type Hours =
+  | ("00" | "01" | "02" | "03" | "04" | "05")
+  | ("06" | "07" | "08" | "09" | "10" | "11")
+  | ("12" | "13" | "14" | "15" | "16" | "17")
+  | ("18" | "19" | "20" | "21" | "22" | "23");
+type FirstDigit = "1" | "2" | "3" | "4" | "5";
+type SecondDigit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+type Minutes = `${FirstDigit}${SecondDigit}`;
+export type Time = `${Hours}:${Minutes}`;
 
 export const timeSchema = z
   .string()
   .regex(HH_MM_FORMAT_WITH_LEADING_0, "Time must be in format HH:MM.")
-  .transform((time): Time => {
-    const [hours, minutes] = time.split(":");
-    return {
-      hours: parseInt(hours, 10),
-      minutes: parseInt(minutes, 10),
-    };
-  }) satisfies ZodSchema<Time, ZodTypeDef, unknown>;
+  .transform((time): Time => time as Time) satisfies ZodSchema<
+  Time,
+  ZodTypeDef,
+  unknown
+>;
 
 export function timeToMinutes(time: Time) {
-  return time.hours * 60 + time.minutes;
-}
-
-export function getDateTime(date: string, time: Time) {
-  return moment(date)
-    .set("hours", time.hours)
-    .set("minutes", time.minutes)
-    .toDate();
+  return moment.duration(time).asMinutes();
 }
 
 export function minutesToTime(minutes: number) {
@@ -67,9 +63,9 @@ export function minuteStringToInt(minutes: string): number {
 }
 
 export function convertTimeToFloat(time: Time) {
-  let { hours, minutes } = time;
-  let minuteFractions = minutes / 60;
-  return Number(hours) + minuteFractions;
+  const [hours, minutes] = time.split(":");
+  let minuteFractions = parseInt(minutes) / 60;
+  return parseInt(hours) + minuteFractions;
 }
 
 export function convertTimeStringToFloat(time: string) {

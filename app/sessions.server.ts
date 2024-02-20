@@ -11,10 +11,7 @@ import type {
   CalculationPosition,
   TroiProjectTimesById,
 } from "./apis/troi/troi.types";
-import type {
-  PersonioAttendance,
-  PersonioEmployee,
-} from "./apis/personio/Personio.types";
+import type { PersonioEmployee } from "./apis/personio/Personio.types";
 
 export type SessionData = {
   username: string;
@@ -25,7 +22,6 @@ export type SessionData = {
   troiProjectTimes: TroiProjectTimesById;
   troiCalendarEvents: CalendarEvent[];
   personioEmployee: PersonioEmployee;
-  personioAttendances: PersonioAttendance[];
 };
 
 function createSessionStorage(cookie: Cookie) {

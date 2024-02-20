@@ -58,9 +58,9 @@ export function WeekTable({
       minutesToTime(attendance.breakTime),
       "HH:mm",
     );
-    const momentStartTime = moment(attendance.start_time, "HH:mm");
+    const momentStartTime = moment(attendance.startTime, "HH:mm");
 
-    return moment(attendance.end_time, "HH:mm")
+    return moment(attendance.endTime, "HH:mm")
       .subtract(momentBreakTime.hours(), "hours")
       .subtract(momentBreakTime.minutes(), "minutes")
       .subtract(momentStartTime.hours(), "hours")

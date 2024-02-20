@@ -228,7 +228,7 @@ export function ProjectTimeForm({
                   <TimeInput
                     name="hours"
                     time={hours}
-                    onChangeTime={setHours}
+                    onChange={setHours}
                     label="Hours"
                     // data-testid={hoursTestId}
                   />

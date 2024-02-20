@@ -38,6 +38,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     ]);
 
     return json({
+      timestamp: Date.now(),
       username: session.get("username")!,
       calculationPositions,
       calendarEvents,
@@ -58,6 +59,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Index() {
   const {
+    timestamp,
     username,
     calculationPositions,
     calendarEvents,

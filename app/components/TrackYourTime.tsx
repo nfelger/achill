@@ -19,19 +19,10 @@ import {
   TransformedCalendarEvent,
   transformCalendarEvent,
 } from "~/utils/transformCalendarEvents";
-import { WorkTimeForm } from "./WorkTimeForm";
+import { WorkTimeForm } from "../routes/work_time.($id)";
 import { ProjectTimes } from "./projectTime/ProjectTimes";
 import { InfoBanner } from "./week/InfoBanner";
 import { WeekView } from "./week/WeekView";
-
-interface Props {
-  calculationPositions: CalculationPosition[];
-  calendarEvents: CalendarEvent[];
-  projectTimesById: TroiProjectTimesById;
-  tasks: TrackyTask[];
-  workingHours: WorkingHours;
-  attendances: PersonioAttendance[];
-}
 
 function findEventsOfDate(
   calendarEvents: TransformedCalendarEvent[],
@@ -66,7 +57,26 @@ const DAYS_OF_WEEK: Array<keyof WorkingHours> = [
   "friday",
 ];
 
+interface Props {
+  timestamp: number;
+  calculationPositions: CalculationPosition[];
+  calendarEvents: CalendarEvent[];
+  projectTimesById: TroiProjectTimesById;
+  tasks: TrackyTask[];
+  workingHours: WorkingHours;
+  attendances: PersonioAttendance[];
+}
+
 export default function TrackYourTime(props: Props) {
+  const [attendances, setAttendances] = useState(props.attendances);
+
+  // set state to loader data after loading
+  const [prevTimestamp, setPrevTimestamp] = useState(props.timestamp);
+  if (props.timestamp !== prevTimestamp) {
+    setPrevTimestamp(props.timestamp);
+    setAttendances(props.attendances);
+  }
+
   const recurringTasks = filterRecurringTasks(props.tasks);
   const phaseTasks = filterPhaseTasks(props.tasks);
 
@@ -85,10 +95,6 @@ export default function TrackYourTime(props: Props) {
   }));
   const workingHoursOfSelectedDate =
     props.workingHours[DAYS_OF_WEEK[moment(selectedDate).weekday() - 1]];
-  const attendanceOfSelectedDate = props.attendances.find(
-    (attendance) =>
-      attendance.date === moment(selectedDate).format("YYYY-MM-DD"),
-  );
 
   const positions = props.calculationPositions;
 
@@ -100,7 +106,7 @@ export default function TrackYourTime(props: Props) {
   const attendancesOfSelectedWeek: (PersonioAttendance | undefined)[] =
     selectedWeek.map((element) => {
       const date = moment(element).format("YYYY-MM-DD");
-      return props.attendances.find((attendance) => attendance.date === date);
+      return attendances.find((attendance) => attendance.date === date);
     });
 
   return (
@@ -136,12 +142,15 @@ export default function TrackYourTime(props: Props) {
       >
         Working hours
       </h2>
-      <WorkTimeForm
-        key={selectedDate.getDate()}
-        selectedDate={selectedDate}
-        workTime={workingHoursOfSelectedDate}
-        attendance={attendanceOfSelectedDate}
-      />
+      <section className="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
+        <WorkTimeForm
+          key={selectedDate.getDate()}
+          selectedDate={selectedDate}
+          workTime={workingHoursOfSelectedDate}
+          attendances={attendances}
+          setAttendances={setAttendances}
+        />
+      </section>
 
       <h2
         className="mt-8 mb-4 text-lg font-semibold text-gray-900"
