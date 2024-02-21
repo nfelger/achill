@@ -17,25 +17,25 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSessionAndThrowIfInvalid(request);
 
   try {
-    // await all the promises in parallel
     const { personioId, workingHours } = session.get("personioEmployee");
 
-    const [
+    // await all the promises in parallel
+    const [calculationPositions, calendarEvents, attendances, tasks] =
+      await Promise.all([
+        // TROI API calls
+        getCalculationPositions(session),
+        getCalendarEvents(session),
+        // PERSONIO API call
+        getAttendances(personioId),
+        // NOCODB API call
+        loadTasks(),
+      ]);
+
+    // API call that depends on calculationPositions
+    const projectTimesById = await getProjectTimes(
+      session,
       calculationPositions,
-      calendarEvents,
-      projectTimesById,
-      tasks,
-      attendances,
-    ] = await Promise.all([
-      // TROI API calls
-      getCalculationPositions(session),
-      getCalendarEvents(session),
-      getProjectTimes(session),
-      // NOCODB API call
-      loadTasks(),
-      // PERSONIO API call
-      getAttendances(personioId),
-    ]);
+    );
 
     return json({
       timestamp: Date.now(),
