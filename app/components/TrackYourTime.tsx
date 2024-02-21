@@ -69,12 +69,14 @@ interface Props {
 
 export default function TrackYourTime(props: Props) {
   const [attendances, setAttendances] = useState(props.attendances);
+  const [projectTimes, setProjectTimes] = useState(props.projectTimesById);
 
   // set state to loader data after loading
   const [prevTimestamp, setPrevTimestamp] = useState(props.timestamp);
   if (props.timestamp !== prevTimestamp) {
     setPrevTimestamp(props.timestamp);
     setAttendances(props.attendances);
+    setProjectTimes(props.projectTimesById);
   }
 
   const [selectedDate, setSelectedDate] = useState(() => new Date());
@@ -150,6 +152,7 @@ export default function TrackYourTime(props: Props) {
             recurringTasks={recurringTasks}
             phaseTasks={phaseTasks}
             projectTimes={projectTimesForSelectedDate}
+            setProjectTimes={setProjectTimes}
             disabled={false}
           />
         )}

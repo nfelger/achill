@@ -9,6 +9,7 @@ interface Props {
   recurringTasks: TrackyTask[];
   phaseTasks: TrackyTask[];
   projectTimes: TroiProjectTime[];
+  setProjectTimes: (projectTimes: TroiProjectTime[]) => void;
   disabled: boolean;
 }
 
@@ -18,6 +19,7 @@ export function ProjectTimes({
   recurringTasks,
   phaseTasks,
   projectTimes,
+  setProjectTimes,
   disabled = false,
 }: Props) {
   return calculationPositions.map((position) => (
