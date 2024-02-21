@@ -46,20 +46,16 @@ const sessionCookie = createCookie("__session", {
 const { getSession, commitSession, destroySession } =
   createSessionStorage(sessionCookie);
 
-export async function isSessionValid(session: Session): Promise<boolean> {
-  return session.has("username") && session.has("troiPassword");
-}
-
 export async function getSessionAndThrowIfInvalid(
   request: Request,
 ): Promise<Session> {
   const cookieHeader = request.headers.get("Cookie");
   const session = await getSession(cookieHeader);
-  if (!(await isSessionValid(session))) {
+  if (!(session.has("username") && session.has("troiPassword"))) {
     console.error("Invalid session");
     throw redirect("/login");
   }
   return session;
 }
 
-export { getSession, commitSession, destroySession };
+export { commitSession, destroySession, getSession };
