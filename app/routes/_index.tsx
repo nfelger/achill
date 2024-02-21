@@ -75,41 +75,33 @@ export default function Index() {
 
   return (
     <div className="container mx-auto mt-8 w-full max-w-screen-lg text-sm text-gray-800 sm:px-2">
-      <main>
+      <main className="rounded-sm bg-white p-2 shadow-md sm:w-full md:px-8 md:py-6">
         {anyFetcherSubmitting && <LoadingOverlay message="Loading data..." />}
-        <div className="rounded-sm bg-white px-2 py-2 shadow-md sm:w-full md:px-8 md:py-6">
-          <nav className="border-1 w-full border-b pb-1 text-center md:text-left">
-            <div className=" ">
-              <div className="flex h-16 justify-between">
-                <div className="flex items-center">
-                  <img
-                    src="timetracking_blue.svg"
-                    alt="Track-Your-Time logo"
-                    className="pr-4"
-                  />
-                </div>
-                <div className="flex w-full items-center justify-between">
-                  <div className="text-black">
-                    <h1 className="font-bold">Track-Your-Time</h1>
-                    <div className="text-sm">Logged in as {username}.</div>
-                  </div>
-                  <Form method="post" action="/logout">
-                    <TrackyButton testId="logout-button">Logout</TrackyButton>
-                  </Form>
-                </div>
-              </div>
-            </div>
-          </nav>
-          <TrackYourTime
-            timestamp={timestamp}
-            calendarEvents={calendarEvents}
-            projectTimesById={projectTimesById}
-            calculationPositions={calculationPositions}
-            tasks={tasks}
-            workingHours={workingHours}
-            attendances={attendances}
+        <nav className="flex h-16 justify-between border-1 w-full border-b pb-1 text-left">
+          <img
+            src="timetracking_blue.svg"
+            alt="Track-Your-Time logo"
+            className="pr-4 py-1"
           />
-        </div>
+          <div className="flex w-full items-center justify-between">
+            <div className="text-black">
+              <h1 className="font-bold">Track-Your-Time</h1>
+              <div className="text-sm">Logged in as {username}.</div>
+            </div>
+            <Form method="post" action="/logout">
+              <TrackyButton testId="logout-button">Logout</TrackyButton>
+            </Form>
+          </div>
+        </nav>
+        <TrackYourTime
+          timestamp={timestamp}
+          calendarEvents={calendarEvents}
+          projectTimesById={projectTimesById}
+          calculationPositions={calculationPositions}
+          tasks={tasks}
+          workingHours={workingHours}
+          attendances={attendances}
+        />
       </main>
     </div>
   );
