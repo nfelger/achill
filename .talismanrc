@@ -40,7 +40,9 @@ fileignoreconfig:
   - filename: app/sessions.server.ts
     allowed_patterns: [sessionCookieSecret, SESSION_COOKIE_SECRET]
   - filename: app/personio/PersonioApiController.ts
-    allowed_patterns: [PERSONIO_CLIENT_SECRET, client_secret, process.env.PERSONIO_CLIENT_ID]
+    allowed_patterns: [PERSONIO_CLIENT_SECRET, client_secret, process.env.PERSONIO_CLIENT_ID, process.env.PERSONIO_CLIENT_SECRET]
+  - filename: app/troi/troiApiController.ts
+    allowed_patterns: [session.get("troiPassword")]
 version: ""
 scopeconfig:
   - scope: node
