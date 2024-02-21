@@ -10,7 +10,7 @@ import TroiApiService, { AuthenticationFailed } from "troi-library";
 import { getEmployeeDataByMail as getPersonioDataByMail } from "~/apis/personio/PersonioApiController";
 import Spinner from "~/components/common/Spinner";
 import { TrackyButton } from "~/components/common/TrackyButton";
-import { commitSession, getSession } from "~/sessions.server";
+import { commitSession, destroySession, getSession } from "~/sessions.server";
 
 export const meta: MetaFunction = () => {
   return [
@@ -44,6 +44,9 @@ export async function action({ request }: ActionFunctionArgs) {
   const username = getParamFromBody(bodyParams, "username");
   const password = getParamFromBody(bodyParams, "password");
 
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader);
+
   try {
     const troiApi = new TroiApiService({
       baseUrl: troiBaseUrl,
@@ -51,8 +54,18 @@ export async function action({ request }: ActionFunctionArgs) {
       username,
       password,
     });
-    await troiApi.initialize();
+    const [_, personioEmployee] = await Promise.all([
+      troiApi.initialize(),
+      getPersonioDataByMail(username),
+    ]);
+
+    session.set("username", username);
+    session.set("troiPassword", password);
+    session.set("troiClientId", troiApi.clientId!);
+    session.set("troiEmployeeId", troiApi.employeeId!);
+    session.set("personioEmployee", personioEmployee);
   } catch (error) {
+    await destroySession(session);
     if (error instanceof AuthenticationFailed) {
       return json({
         message: "Login failed! Please check your username & password.",
@@ -61,14 +74,6 @@ export async function action({ request }: ActionFunctionArgs) {
       throw error;
     }
   }
-
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
-  session.set("username", username);
-  session.set("troiPassword", password);
-
-  const { personioId, workingHours } = await getPersonioDataByMail(username);
-  session.set("personioEmployee", { personioId, workingHours });
 
   const headers = new Headers();
   headers.append("Set-Cookie", await commitSession(session));
