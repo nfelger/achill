@@ -1,6 +1,6 @@
 import { json } from "@remix-run/node";
 import moment from "moment";
-import { getSession } from "~/sessions.server";
+import { getSessionAndThrowIfInvalid } from "~/sessions.server";
 import type { Time } from "~/utils/dateTimeUtils";
 import {
   END_DATE,
@@ -161,8 +161,7 @@ export async function postAttendance(
   endTime: Time,
   breakTime: Time,
 ) {
-  const cookieHeader = request.headers.get("cookie");
-  const session = await getSession(cookieHeader);
+  const session = await getSessionAndThrowIfInvalid(request);
   const employee = session.get("personioEmployee")?.personioId;
 
   const response = await fetchWithPersonioAuth(PERSONIO_ATTENDANCES_URL, {
