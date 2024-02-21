@@ -192,7 +192,6 @@ export function ProjectTimeForm({
   }
 
   function onRecurringTaskChange(event: React.ChangeEvent<HTMLInputElement>) {
-    console.log(event.target);
     if (event.target.checked) {
       addDescriptionSegment(event.target.value);
     } else {
