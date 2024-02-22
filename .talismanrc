@@ -21,6 +21,10 @@ fileignoreconfig:
     checksum: 4013141db60d72f20e9867642310c167f9f32d55406e7d9b788995eeac3c2111
   - filename: tests/e2e/login.spec.ts
     checksum: 1a0d9ceaf8e4a6d76c7c9c0df4fcaca85edf5bd08344dd7a02cafa17cf01031a
+  - filename: app/apis/troi/troiApiController.ts
+    checksum: 61875c83ebe19250f36cee2a1424c2c211ff67f247e17eeb032a500ad736e6e2
+  - filename: app/apis/personio/PersonioApiController.ts
+    checksum: 7fba4ab37edced37309253500c36b30e8fe8fdc587511ce5949b00d557aa1088
   - filename: app/routes/login.tsx
     allowed_patterns: [password, troiPassword]
   - filename: app/components/troi.tsx
