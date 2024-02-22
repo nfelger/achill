@@ -1,6 +1,5 @@
 import { json, redirect, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useFetchers, useLoaderData } from "@remix-run/react";
-import { AuthenticationFailed } from "troi-library";
 import { loadTasks } from "~/apis/tasks/TrackyTask";
 import {
   getCalculationPositions,
@@ -20,22 +19,22 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const { personioId, workingHours } = session.get("personioEmployee");
 
     // await all the promises in parallel
-    const [calculationPositions, calendarEvents, attendances, tasks] =
-      await Promise.all([
-        // TROI API calls
-        getCalculationPositions(session),
-        getCalendarEvents(session),
-        // PERSONIO API call
-        getAttendances(personioId),
-        // NOCODB API call
-        loadTasks(),
-      ]);
-
-    // API call that depends on calculationPositions
-    const projectTimesById = await getProjectTimes(
-      session,
+    const [
+      calendarEvents,
       calculationPositions,
-    );
+      projectTimesById,
+      attendances,
+      tasks,
+    ] = await Promise.all([
+      // TROI API calls
+      getCalendarEvents(session),
+      getCalculationPositions(session),
+      getProjectTimes(session),
+      // PERSONIO API call
+      getAttendances(personioId),
+      // NOCODB API call
+      loadTasks(),
+    ]);
 
     return json({
       timestamp: Date.now(),
@@ -47,13 +46,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
       workingHours,
       attendances,
     });
-  } catch (e) {
-    if (e instanceof AuthenticationFailed) {
-      console.error("Authentication failed", e);
+  } catch (error) {
+    if (error instanceof Error && error.message === "Invalid credentials") {
+      console.error("Authentication failed", error);
       throw redirect("/login");
     }
 
-    throw e;
+    throw error;
   }
 }
 

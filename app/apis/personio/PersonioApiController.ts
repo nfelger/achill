@@ -86,7 +86,7 @@ async function fetchWithPersonioAuth(
   return response;
 }
 
-export async function getEmployeeDataByMail(
+export async function initializePersonioApi(
   username: string,
 ): Promise<PersonioEmployee> {
   const url = new URL(PERSONIO_EMPLOYEES_URL);

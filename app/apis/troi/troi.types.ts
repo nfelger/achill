@@ -4,12 +4,21 @@ export type CalculationPosition = {
   subprojectId: number;
 };
 
-export type TroiProjectTime = {
+export type ProjectTime = {
   id: number;
   date: string;
   hours: number;
   description: string;
-  calculationPosition: number;
+  calculationPositionId: number;
 };
 
-export type TroiProjectTimesById = { [key: number]: TroiProjectTime };
+export type ProjectTimesById = { [key: number]: ProjectTime };
+
+export type CalendarEventType = "R" | "H" | "G" | "P" | "T";
+export type CalendarEvent = {
+  id: string;
+  startDate: string;
+  endDate: string;
+  subject: string;
+  type: CalendarEventType;
+};

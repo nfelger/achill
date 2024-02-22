@@ -1,5 +1,5 @@
 import { TrackyTask } from "~/apis/tasks/TrackyTask";
-import { CalculationPosition, TroiProjectTime } from "~/apis/troi/troi.types";
+import { CalculationPosition, ProjectTime } from "~/apis/troi/troi.types";
 import { convertFloatTimeToHHMM } from "~/utils/dateTimeUtils";
 import { ProjectTimeForm } from "../routes/project_time.($id)";
 
@@ -8,8 +8,8 @@ interface Props {
   calculationPositions: CalculationPosition[];
   recurringTasks: TrackyTask[];
   phaseTasks: TrackyTask[];
-  projectTimes: TroiProjectTime[];
-  setProjectTimes: (projectTimes: TroiProjectTime[]) => void;
+  projectTimes: ProjectTime[];
+  setProjectTimes: (projectTimes: ProjectTime[]) => void;
   disabled: boolean;
 }
 
@@ -25,7 +25,7 @@ export function ProjectTimes({
   return calculationPositions.map((position) => (
     <div key={position.id} className="mb-4 container mx-auto">
       {!projectTimes.some(
-        ({ calculationPosition }) => calculationPosition === position.id,
+        ({ calculationPositionId }) => calculationPositionId === position.id,
       ) ? (
         <ProjectTimeForm
           date={selectedDate}
@@ -37,7 +37,8 @@ export function ProjectTimes({
       ) : (
         projectTimes
           .filter(
-            ({ calculationPosition }) => calculationPosition === position.id,
+            ({ calculationPositionId }) =>
+              calculationPositionId === position.id,
           )
           .map((projectTime) => (
             <div

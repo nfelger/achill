@@ -1,177 +1,198 @@
 import type { Session } from "@remix-run/node";
+import md5 from "crypto-js/md5.js";
 import moment from "moment";
-import TroiApiService from "troi-library";
 import { END_DATE, START_DATE } from "~/utils/dateTimeUtils";
-import type {
-  CalculationPosition,
-  TroiProjectTime,
-  TroiProjectTimesById,
-} from "./troi.types";
+import type { CalendarEvent, CalendarEventType } from "./troi.types";
 
 const BASE_URL = "https://digitalservice.troi.software/api/v2/rest";
 const CLIENT_NAME = "DigitalService GmbH des Bundes";
 const START_DATE_YYYYMMDD = moment(START_DATE).format("YYYYMMDD");
 const END_DATE_YYYYMMDD = moment(END_DATE).format("YYYYMMDD");
 
-async function getInitializedTroiApi(
+async function fetchWithTroiAuth<T>(
   session: Session,
-): Promise<TroiApiService> {
-  const troiApi = new TroiApiService({
-    baseUrl: BASE_URL,
-    clientName: CLIENT_NAME,
-    username: session.get("username"),
-    password: session.get("troiPassword"),
+  url: URL | string,
+  init?: RequestInit,
+): Promise<T> {
+  const username = session.get("username");
+  const password = session.get("troiPassword");
+
+  console.log("[TroiAPI]", url.toString());
+
+  const response = await fetch(url, {
+    ...init,
+    headers: {
+      ...init?.headers,
+      Authorization: `Basic ${btoa(`${username}:${md5(password)}`)}`,
+    },
   });
-  troiApi.clientId = session.get("troiClientId");
-  troiApi.employeeId = session.get("troiEmployeeId");
-  return troiApi;
+
+  if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      console.error("Invalid credentials", response.status);
+      throw new Error("Invalid credentials");
+    }
+    console.error("Request failed", response);
+    throw new Error("Request failed");
+  }
+
+  return await response.json();
 }
 
-export async function getCalculationPositions(session: Session) {
-  const troiApi = await getInitializedTroiApi(session);
+type TroiClient = {
+  Id: number;
+  Name: string;
+};
+type TroiEmployee = {
+  Id: number;
+};
+export async function initializeTroiApi(session: Session) {
+  const troiClient = (
+    await fetchWithTroiAuth<TroiClient[]>(session, `${BASE_URL}/clients`)
+  ).find((client) => {
+    return client.Name === CLIENT_NAME;
+  });
+  if (!troiClient) {
+    throw new Error("Client not found");
+  }
+  const troiClientId = troiClient.Id.toString();
 
-  console.log("[TroiAPI]", "GET /calculationPositions");
-  const calculationPositions: CalculationPosition[] = (
-    (await troiApi.makeRequest({
-      url: "/calculationPositions",
-      params: {
-        clientId: troiApi.clientId!.toString(),
-        favoritesOnly: true.toString(),
-      },
-    })) as {
-      Id: number;
-      DisplayPath: string;
-      Subproject: {
-        id: number;
-      };
-    }[]
-  ).map((obj) => ({
-    name: obj.DisplayPath,
-    id: obj.Id,
-    subprojectId: obj.Subproject.id,
-  }));
-
-  return calculationPositions;
+  const url = new URL(`${BASE_URL}/employees`);
+  url.searchParams.set("clientId", troiClientId);
+  url.searchParams.set("employeeLoginName", session.get("username"));
+  const troiEmployees = await fetchWithTroiAuth<TroiEmployee[]>(session, url);
+  const troiEmployee = troiEmployees[0];
+  if (!troiEmployee) {
+    throw new Error("Employee not found");
+  }
+  const troiEmployeeId = troiEmployee.Id.toString();
+  return { troiClientId, troiEmployeeId };
 }
 
+type TroiCalendarEvent = {
+  id: string;
+  Start: string;
+  End: string;
+  Subject: string;
+  Type: string;
+};
 export async function getCalendarEvents(session: Session) {
-  const troiApi = await getInitializedTroiApi(session);
+  const url = new URL(`${BASE_URL}/calendarEvents`);
+  url.searchParams.set("start", START_DATE_YYYYMMDD);
+  url.searchParams.set("end", END_DATE_YYYYMMDD);
 
-  console.log("[TroiAPI]", "getCalendarEvents()");
-  return await troiApi.getCalendarEvents(
-    START_DATE_YYYYMMDD,
-    END_DATE_YYYYMMDD,
+  return (await fetchWithTroiAuth<TroiCalendarEvent[]>(session, url))
+    .map((event) => ({
+      id: event.id,
+      startDate: event.Start,
+      endDate: event.End,
+      subject: event.Subject,
+      type: event.Type as CalendarEventType,
+    }))
+    .sort((a: CalendarEvent, b: CalendarEvent) =>
+      a.startDate > b.startDate ? 1 : -1,
+    );
+}
+
+type TroiCalculationPosition = {
+  Id: number;
+  DisplayPath: string;
+  Subproject: {
+    id: number;
+  };
+};
+export async function getCalculationPositions(session: Session) {
+  const url = new URL(`${BASE_URL}/calculationPositions`);
+  url.searchParams.set("clientId", session.get("troiClientId")!);
+  url.searchParams.set("favoritesOnly", "true");
+
+  return (await fetchWithTroiAuth<TroiCalculationPosition[]>(session, url)).map(
+    (pos) => ({
+      name: pos.DisplayPath,
+      id: pos.Id,
+      subprojectId: pos.Subproject.id,
+    }),
   );
 }
 
-export async function getProjectTimes(
-  session: Session,
-  calculationPositions: CalculationPosition[],
-) {
-  const troiApi = await getInitializedTroiApi(session);
+type TroiProjectTime = {
+  id: number;
+  Date: string;
+  Quantity: string;
+  Remark: string;
+  CalculationPosition: {
+    id: number;
+  };
+};
+export async function getProjectTimes(session: Session) {
+  const url = new URL(`${BASE_URL}/billings/hours`);
+  url.searchParams.set("clientId", session.get("troiClientId"));
+  url.searchParams.set("employeeId", session.get("troiEmployeeId"));
+  url.searchParams.set("startDate", START_DATE_YYYYMMDD);
+  url.searchParams.set("endDate", END_DATE_YYYYMMDD);
 
-  const projectTimes: TroiProjectTime[] = (
-    await Promise.all(
-      calculationPositions.map((calcPos: CalculationPosition) => {
-        console.log(
-          "[TroiAPI]",
-          `GET /billings/hours for CalculationPosition ${calcPos.id}`,
-        );
-
-        return troiApi.makeRequest({
-          url: "/billings/hours",
-          params: {
-            clientId: troiApi.clientId!.toString(),
-            employeeId: troiApi.employeeId!.toString(),
-            calculationPositionId: calcPos.id.toString(),
-            startDate: START_DATE_YYYYMMDD,
-            endDate: END_DATE_YYYYMMDD,
-          },
-        }) as Promise<{
-          id: number;
-          Date: string;
-          Quantity: string;
-          Remark: string;
-          CalculationPosition: CalculationPosition;
-        }>;
-      }),
-    )
-  )
-    .flat()
-    .map((projectTime) => {
-      return {
+  return (await fetchWithTroiAuth<TroiProjectTime[]>(session, url)).reduce(
+    (all, projectTime) => ({
+      ...all,
+      [projectTime.id]: {
         id: projectTime.id,
         date: projectTime.Date,
         hours: parseFloat(projectTime.Quantity),
         description: projectTime.Remark,
-        calculationPosition: projectTime.CalculationPosition.id,
-      };
-    });
-
-  const projectTimesById: TroiProjectTimesById = {};
-  for (const projectTime of projectTimes) {
-    projectTimesById[projectTime.id] = projectTime;
-  }
-
-  return projectTimesById;
+        calculationPositionId: projectTime.CalculationPosition.id,
+      },
+    }),
+    {},
+  );
 }
 
 export async function addProjectTime(
   session: Session,
-  calculationPostionId: number,
+  calculationPostionId: string,
   date: string,
   hours: number,
   description: string,
 ) {
-  const troiApi = await getInitializedTroiApi(session);
-
-  console.log("[TroiAPI]", "postTimeEntry()");
-  return (await troiApi.postTimeEntry(
-    calculationPostionId,
-    date,
-    hours,
-    description,
-  )) as {
-    id: number;
-    Name: string;
-    Quantity: string;
-  };
+  return await fetchWithTroiAuth(session, "/billings/hours", {
+    method: "POST",
+    body: JSON.stringify({
+      Client: { Path: `/clients/${session.get("troiClientId")}` },
+      CalculationPosition: {
+        Path: `/calculationPositions/${calculationPostionId}`,
+      },
+      Employee: { Path: `/employees/${session.get("troiEmployeeId")}` },
+      Date: date,
+      Quantity: hours,
+      Remark: description,
+    }),
+  });
 }
 
 export async function updateProjectTime(
   session: Session,
-  id: number,
+  id: string,
+  calculationPostionId: string,
+  date: string,
   hours: number,
   description: string,
 ) {
-  const troiApi = await getInitializedTroiApi(session);
-
-  const payload = {
-    Client: {
-      Path: `/clients/${troiApi.clientId}`,
-    },
-    Employee: {
-      Path: `/employees/${troiApi.employeeId}`,
-    },
-    Quantity: hours,
-    Remark: description,
-  };
-
-  console.log("[TroiAPI]", `PUT /billings/hours/${id}`);
-  return (await troiApi.makeRequest({
-    url: `/billings/hours/${id}`,
-    headers: { "Content-Type": "application/json" },
+  return await fetchWithTroiAuth(session, `/billings/hours/${id}`, {
     method: "PUT",
-    body: JSON.stringify(payload),
-  })) as {
-    Name: string;
-    Quantity: string;
-  };
+    body: JSON.stringify({
+      Client: { Path: `/clients/${session.get("troiClientId")}` },
+      CalculationPosition: {
+        Path: `/calculationPositions/${calculationPostionId}`,
+      },
+      Employee: { Path: `/employees/${session.get("troiEmployeeId")}` },
+      Date: date,
+      Quantity: hours,
+      Remark: description,
+    }),
+  });
 }
 
-export async function deleteProjectTime(session: Session, id: number) {
-  const troiApi = await getInitializedTroiApi(session);
-
-  console.log("[TroiAPI]", "deleteTimeEntry()");
-  return await troiApi.deleteTimeEntry(id);
+export async function deleteProjectTime(session: Session, id: string) {
+  return await fetchWithTroiAuth(session, `/billings/hours/${id}`, {
+    method: "DELETE",
+  });
 }

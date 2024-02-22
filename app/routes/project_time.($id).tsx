@@ -2,7 +2,6 @@ import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { AuthenticationFailed } from "troi-library";
 import { TrackyPhase } from "~/apis/tasks/TrackyPhase";
 import { TrackyTask } from "~/apis/tasks/TrackyTask";
 import { CalculationPosition } from "~/apis/troi/troi.types";
@@ -48,7 +47,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       case "POST":
         const result = await addProjectTime(
           session,
-          parseInt(calculationPositionId),
+          calculationPositionId,
           date,
           hoursFloat,
           description,
@@ -60,7 +59,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
         await updateProjectTime(
           session,
-          parseInt(params.id),
+          params.id,
+          calculationPositionId,
+          date,
           hoursFloat,
           description,
         );
@@ -69,14 +70,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
       case "DELETE":
         checkIDOrThrow(params.id);
 
-        await deleteProjectTime(session, parseInt(params.id));
+        await deleteProjectTime(session, params.id);
 
         return new Response(null, { status: 204 });
       default:
         throw new Response("Method Not Allowed", { status: 405 });
     }
   } catch (e) {
-    if (e instanceof AuthenticationFailed) {
+    if (e instanceof Error && e.message === "Invalid credentials") {
       console.error("Troi auth failed", e);
       throw redirect("/login");
     }

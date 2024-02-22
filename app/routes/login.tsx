@@ -6,8 +6,8 @@ import {
   type MetaFunction,
 } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
-import TroiApiService, { AuthenticationFailed } from "troi-library";
-import { getEmployeeDataByMail as getPersonioDataByMail } from "~/apis/personio/PersonioApiController";
+import { initializePersonioApi } from "~/apis/personio/PersonioApiController";
+import { initializeTroiApi } from "~/apis/troi/troiApiController";
 import Spinner from "~/components/common/Spinner";
 import { TrackyButton } from "~/components/common/TrackyButton";
 import { commitSession, destroySession, getSession } from "~/sessions.server";
@@ -48,25 +48,21 @@ export async function action({ request }: ActionFunctionArgs) {
   const session = await getSession(cookieHeader);
 
   try {
-    const troiApi = new TroiApiService({
-      baseUrl: troiBaseUrl,
-      clientName: "DigitalService GmbH des Bundes",
-      username,
-      password,
-    });
-    const [_, personioEmployee] = await Promise.all([
-      troiApi.initialize(),
-      getPersonioDataByMail(username),
-    ]);
-
     session.set("username", username);
     session.set("troiPassword", password);
-    session.set("troiClientId", troiApi.clientId!);
-    session.set("troiEmployeeId", troiApi.employeeId!);
+
+    const [{ troiClientId, troiEmployeeId }, personioEmployee] =
+      await Promise.all([
+        initializeTroiApi(session),
+        initializePersonioApi(username),
+      ]);
+
+    session.set("troiClientId", troiClientId);
+    session.set("troiEmployeeId", troiEmployeeId);
     session.set("personioEmployee", personioEmployee);
   } catch (error) {
     await destroySession(session);
-    if (error instanceof AuthenticationFailed) {
+    if (error instanceof Error && error.message === "Invalid credentials") {
       return json({
         message: "Login failed! Please check your username & password.",
       });

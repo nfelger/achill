@@ -10,8 +10,8 @@ import type { PersonioEmployee } from "./apis/personio/Personio.types";
 export type SessionData = {
   username: string;
   troiPassword: string;
-  troiClientId: number;
-  troiEmployeeId: number;
+  troiClientId: string;
+  troiEmployeeId: string;
   personioEmployee: PersonioEmployee;
 };
 

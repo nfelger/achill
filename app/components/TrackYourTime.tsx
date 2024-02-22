@@ -1,6 +1,5 @@
 import moment from "moment";
 import { useState } from "react";
-import type { CalendarEvent } from "troi-library";
 import {
   PersonioAttendance,
   WorkingHours,
@@ -12,7 +11,8 @@ import {
 } from "~/apis/tasks/TrackyTask";
 import type {
   CalculationPosition,
-  TroiProjectTimesById,
+  CalendarEvent,
+  ProjectTimesById,
 } from "~/apis/troi/troi.types";
 import { END_DATE, START_DATE, getWeekDaysFor } from "~/utils/dateTimeUtils";
 import {
@@ -21,7 +21,6 @@ import {
 } from "~/utils/transformCalendarEvents";
 import { WorkTimeForm } from "../routes/work_time.($id)";
 import { ProjectTimes } from "./ProjectTimes";
-import { InfoBanner } from "./week/InfoBanner";
 import { WeekView } from "./week/WeekView";
 
 function findEventsOfDate(
@@ -34,7 +33,7 @@ function findEventsOfDate(
 }
 
 function findProjectTimesOfDate(
-  projectTimesById: TroiProjectTimesById,
+  projectTimesById: ProjectTimesById,
   date: Date,
 ) {
   return Object.values(projectTimesById).filter((projectTime) =>
@@ -42,7 +41,7 @@ function findProjectTimesOfDate(
   );
 }
 
-function calcHoursOfDate(projectTimesById: TroiProjectTimesById, date: Date) {
+function calcHoursOfDate(projectTimesById: ProjectTimesById, date: Date) {
   return findProjectTimesOfDate(projectTimesById, date).reduce(
     (acc, projectTime) => acc + projectTime.hours,
     0,
@@ -61,7 +60,7 @@ interface Props {
   timestamp: number;
   calculationPositions: CalculationPosition[];
   calendarEvents: CalendarEvent[];
-  projectTimesById: TroiProjectTimesById;
+  projectTimesById: ProjectTimesById;
   tasks: TrackyTask[];
   workingHours: WorkingHours;
   attendances: PersonioAttendance[];
