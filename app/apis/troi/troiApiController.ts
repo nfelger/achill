@@ -153,7 +153,7 @@ export async function addProjectTime(
   hours: number,
   description: string,
 ) {
-  return await fetchWithTroiAuth(session, "/billings/hours", {
+  return await fetchWithTroiAuth(session, `${BASE_URL}/billings/hours`, {
     method: "POST",
     body: JSON.stringify({
       Client: { Path: `/clients/${session.get("troiClientId")}` },
@@ -176,7 +176,7 @@ export async function updateProjectTime(
   hours: number,
   description: string,
 ) {
-  return await fetchWithTroiAuth(session, `/billings/hours/${id}`, {
+  return await fetchWithTroiAuth(session, `${BASE_URL}/billings/hours/${id}`, {
     method: "PUT",
     body: JSON.stringify({
       Client: { Path: `/clients/${session.get("troiClientId")}` },
@@ -192,7 +192,7 @@ export async function updateProjectTime(
 }
 
 export async function deleteProjectTime(session: Session, id: string) {
-  return await fetchWithTroiAuth(session, `/billings/hours/${id}`, {
+  return await fetchWithTroiAuth(session, `${BASE_URL}/billings/hours/${id}`, {
     method: "DELETE",
   });
 }
