@@ -55,12 +55,14 @@ export async function loadPhases(
 ): Promise<TrackyPhase[]> {
   let whereClause: string[] = [];
 
-  const positionPhases = await loadPostionPhases(positionId);
+  const [positionPhases, subprojectPhases] = await Promise.all([
+    loadPostionPhases(positionId),
+    loadSubprojectPhases(subprojectId),
+  ]);
+
   positionPhases.forEach((phase) =>
     whereClause.push(`(Phase ID,eq,${phase["Phase ID"]})`),
   );
-
-  const subprojectPhases = await loadSubprojectPhases(subprojectId);
   subprojectPhases.forEach((phase) =>
     whereClause.push(`(Phase ID,eq,${phase["Phase ID"]})`),
   );
