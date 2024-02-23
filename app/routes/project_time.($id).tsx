@@ -98,6 +98,20 @@ function segmentsToDescription(segments: string[]): string {
   return segments.join(", ");
 }
 
+const normalAppearance = "border-1 border-b-[1px] border-gray-300 ";
+const errorAppearance =
+  "border border-b-2 border-red-500 focus:ring-red-500 focus:border-red-500";
+
+const textAreaClass =
+  "inherit border-box absolute top-0 overflow-hidden p-[0.5em] leading-4 ";
+const textareaNormalAppearance = textAreaClass + normalAppearance;
+const textareaErrorAppearance = textAreaClass + errorAppearance;
+
+const minRows = 4;
+const maxRows = 40;
+const minHeight = `${1 + minRows * 1.2}em`;
+const maxHeight = maxRows ? `${1 + maxRows * 1.2}em` : `auto`;
+
 export interface ProjectTimeFormErrors {
   hours?: string;
   description?: string;
@@ -113,8 +127,6 @@ interface Props {
   phaseTasks: TrackyTask[];
   calculationPosition: CalculationPosition;
   disabled: boolean;
-  minRows?: number;
-  maxRows?: number;
 }
 
 export function ProjectTimeForm({
@@ -128,23 +140,8 @@ export function ProjectTimeForm({
   phaseTasks,
   calculationPosition,
   disabled,
-  minRows = 4,
-  maxRows = 40,
 }: Props) {
-  const hoursTestId = `hours-${calculationPosition.id}`;
   const descriptionTestId = `description-${calculationPosition.id}`;
-
-  const normalAppearance = "border-1 border-b-[1px] border-gray-300 ";
-  const errorAppearance =
-    "border border-b-2 border-red-500 focus:ring-red-500 focus:border-red-500";
-
-  const textAreaClass =
-    "inherit border-box absolute top-0 overflow-hidden p-[0.5em] leading-4 ";
-  const textareaNormalAppearance = textAreaClass + normalAppearance;
-  const textareaErrorAppearance = textAreaClass + errorAppearance;
-
-  const minHeight = `${1 + minRows * 1.2}em`;
-  const maxHeight = maxRows ? `${1 + maxRows * 1.2}em` : `auto`;
 
   const [description, setDescription] = useState(() => values.description);
   const descriptionSegments = descriptionToSegments(description);
