@@ -4,6 +4,7 @@ import {
   PersonioAttendance,
   WorkingHours,
 } from "~/apis/personio/Personio.types";
+import { TrackyPhase } from "~/apis/tasks/TrackyPhase";
 import {
   TrackyTask,
   filterPhaseTasks,
@@ -62,6 +63,7 @@ interface Props {
   calendarEvents: CalendarEvent[];
   projectTimesById: ProjectTimesById;
   tasks: TrackyTask[];
+  phasesPerCalculationPosition: Record<number, TrackyPhase[]>;
   workingHours: WorkingHours;
   attendances: PersonioAttendance[];
 }
@@ -150,6 +152,7 @@ export default function TrackYourTime(props: Props) {
             calculationPositions={positions ?? []}
             recurringTasks={recurringTasks}
             phaseTasks={phaseTasks}
+            phasesPerCalculationPosition={props.phasesPerCalculationPosition}
             projectTimes={projectTimesForSelectedDate}
             setProjectTimes={setProjectTimes}
             disabled={false}

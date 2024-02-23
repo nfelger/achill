@@ -1,5 +1,6 @@
 import { json, redirect, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useFetchers, useLoaderData } from "@remix-run/react";
+import { TrackyPhase, loadPhases } from "~/apis/tasks/TrackyPhase";
 import { loadTasks } from "~/apis/tasks/TrackyTask";
 import {
   getCalculationPositions,
@@ -36,6 +37,19 @@ export async function loader({ request }: LoaderFunctionArgs) {
       loadTasks(),
     ]);
 
+    // load phases for each calculation position in parallel
+    const phasesPerCalculationPosition = Object.fromEntries(
+      await Promise.all(
+        calculationPositions.map(async (calculationPosition) => [
+          [calculationPosition.id],
+          await loadPhases(
+            calculationPosition.id,
+            calculationPosition.subprojectId,
+          ),
+        ]),
+      ),
+    );
+
     return json({
       timestamp: Date.now(),
       username: session.get("username")!,
@@ -43,6 +57,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       calendarEvents,
       projectTimesById,
       tasks,
+      phasesPerCalculationPosition,
       workingHours,
       attendances,
     });
@@ -64,6 +79,7 @@ export default function Index() {
     calendarEvents,
     projectTimesById,
     tasks,
+    phasesPerCalculationPosition,
     workingHours,
     attendances,
   } = useLoaderData<typeof loader>();
@@ -98,6 +114,7 @@ export default function Index() {
           projectTimesById={projectTimesById}
           calculationPositions={calculationPositions}
           tasks={tasks}
+          phasesPerCalculationPosition={phasesPerCalculationPosition}
           workingHours={workingHours}
           attendances={attendances}
         />

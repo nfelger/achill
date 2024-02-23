@@ -1,4 +1,5 @@
-import { TrackyTask } from "~/apis/tasks/TrackyTask";
+import type { TrackyPhase } from "~/apis/tasks/TrackyPhase";
+import type { TrackyTask } from "~/apis/tasks/TrackyTask";
 import { CalculationPosition, ProjectTime } from "~/apis/troi/troi.types";
 import { convertFloatTimeToHHMM } from "~/utils/dateTimeUtils";
 import { ProjectTimeForm } from "../routes/project_time.($id)";
@@ -8,6 +9,7 @@ interface Props {
   calculationPositions: CalculationPosition[];
   recurringTasks: TrackyTask[];
   phaseTasks: TrackyTask[];
+  phasesPerCalculationPosition: Record<number, TrackyPhase[]>;
   projectTimes: ProjectTime[];
   setProjectTimes: (projectTimes: ProjectTime[]) => void;
   disabled: boolean;
@@ -18,6 +20,7 @@ export function ProjectTimes({
   calculationPositions,
   recurringTasks,
   phaseTasks,
+  phasesPerCalculationPosition,
   projectTimes,
   setProjectTimes,
   disabled = false,
@@ -32,6 +35,7 @@ export function ProjectTimes({
           calculationPosition={position}
           recurringTasks={recurringTasks}
           phaseTasks={phaseTasks}
+          phases={phasesPerCalculationPosition[position.id]}
           disabled={disabled}
         />
       ) : (
@@ -54,6 +58,7 @@ export function ProjectTimes({
                 }}
                 recurringTasks={recurringTasks}
                 phaseTasks={phaseTasks}
+                phases={phasesPerCalculationPosition[position.id]}
                 calculationPosition={position}
                 disabled={disabled}
               />

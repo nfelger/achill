@@ -1,7 +1,7 @@
 import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TrackyPhase } from "~/apis/tasks/TrackyPhase";
 import { TrackyTask } from "~/apis/tasks/TrackyTask";
 import { CalculationPosition } from "~/apis/troi/troi.types";
@@ -125,6 +125,7 @@ interface Props {
   };
   recurringTasks: TrackyTask[];
   phaseTasks: TrackyTask[];
+  phases: TrackyPhase[];
   calculationPosition: CalculationPosition;
   disabled: boolean;
 }
@@ -138,10 +139,11 @@ export function ProjectTimeForm({
   },
   recurringTasks,
   phaseTasks,
+  phases,
   calculationPosition,
   disabled,
 }: Props) {
-  const descriptionTestId = `description-${calculationPosition.id}`;
+  const troiFetcher = useFetcher({ key: "Troi" });
 
   const [description, setDescription] = useState(() => values.description);
   const descriptionSegments = descriptionToSegments(description);
@@ -151,28 +153,14 @@ export function ProjectTimeForm({
   const [updateMode, setUpdateMode] = useState(projectTimeId ? false : true);
   const [errors, setErrors] = useState<ProjectTimeFormErrors>({});
 
-  const troiFetcher = useFetcher({ key: "Troi" });
-  const phaseFetcher = useFetcher<TrackyPhase[]>({
-    key: `/phases?calculationPositionId=${calculationPosition.id}`,
-  });
-  useEffect(() => {
-    if (phaseFetcher.data == undefined) {
-      phaseFetcher.load(
-        `/phases?calculationPositionId=${calculationPosition.id}`,
-      );
-    }
-  }, []);
+  const descriptionTestId = `description-${calculationPosition.id}`;
 
-  const phaseNames =
-    phaseFetcher.data?.map((phase) => phase["Phase Name"]) ?? [];
-  const phases = phaseNames.map((value) => {
-    for (const phaseTask of phaseTasks) {
-      if (descriptionSegments.includes([phaseTask.name, value].join(" "))) {
-        return { name: value, open: true };
-      }
-    }
-    return { name: value, open: false };
-  });
+  const phasesToDisplay = phases.map((phase) => ({
+    name: phase["Phase Name"],
+    open: phaseTasks.some((task) =>
+      descriptionSegments.includes([task.name, phase["Phase Name"]].join(" ")),
+    ),
+  }));
 
   function addDescriptionSegment(segment: string) {
     setDescription((description) =>
@@ -240,6 +228,20 @@ export function ProjectTimeForm({
     }
   }
 
+  function handleCancel() {
+    setHours(values.hours);
+    setDescription(values.description);
+    setUpdateMode(false);
+  }
+
+  function handleChipClick(phaseAndTask: string) {
+    toggleDescriptionSegment(phaseAndTask);
+  }
+
+  function removeChip(phaseAndTask: string) {
+    removeDescriptionSegment(phaseAndTask);
+  }
+
   async function onKeyDown(e: React.KeyboardEvent) {
     if (e.key === "Enter") {
       submit(projectTimeId ? "PUT" : "POST");
@@ -267,20 +269,6 @@ export function ProjectTimeForm({
       action: `/project_time/${projectTimeId ?? ""}`,
     });
     setUpdateMode(false);
-  }
-
-  function handleCancel() {
-    setHours(values.hours);
-    setDescription(values.description);
-    setUpdateMode(false);
-  }
-
-  function handleChipClick(phaseAndTask: string) {
-    toggleDescriptionSegment(phaseAndTask);
-  }
-
-  function removeChip(phaseAndTask: string) {
-    removeDescriptionSegment(phaseAndTask);
   }
 
   return (
@@ -352,7 +340,7 @@ export function ProjectTimeForm({
                 )}
               </div>
               <div className="mb-4">
-                {phases.map((phase) => (
+                {phasesToDisplay.map((phase) => (
                   <details
                     key={phase.name}
                     className="mb-[20px]"
