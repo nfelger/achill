@@ -105,6 +105,7 @@ export async function getCalculationPositions(session: Session) {
   const url = new URL(`${BASE_URL}/calculationPositions`);
   url.searchParams.set("clientId", session.get("troiClientId")!);
   url.searchParams.set("favoritesOnly", "true");
+  url.searchParams.set("timeRecording", "true");
 
   return (await fetchWithTroiAuth<TroiCalculationPosition[]>(session, url)).map(
     (pos) => ({
