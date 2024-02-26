@@ -1,4 +1,4 @@
-import type { CalendarEvent } from "troi-library";
+import { CalendarEvent } from "~/apis/troi/troi.types";
 import { utcMidnightDateFromString } from "~/utils/dateTimeUtils";
 import { transformCalendarEvent } from "~/utils/transformCalendarEvents";
 
