@@ -247,8 +247,5 @@ export async function deleteAttendance(attendanceId: string) {
     return response;
   }
 
-  return await json(
-    { success: true, id: parseInt(attendanceId) },
-    { status: 200 },
-  );
+  return json({ success: true, id: parseInt(attendanceId) }, { status: 200 });
 }
