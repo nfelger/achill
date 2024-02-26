@@ -235,9 +235,17 @@ export async function patchAttendance(
 }
 
 export async function deleteAttendance(attendanceId: string) {
-  await fetchWithPersonioAuth(`${PERSONIO_ATTENDANCES_URL}/${attendanceId}`, {
-    method: "DELETE",
-  });
+  const response = await fetchWithPersonioAuth(
+    `${PERSONIO_ATTENDANCES_URL}/${attendanceId}`,
+    {
+      method: "DELETE",
+    },
+  );
+
+  const data = await response.json();
+  if (!data.success) {
+    return response;
+  }
 
   return await json(
     { success: true, id: parseInt(attendanceId) },
