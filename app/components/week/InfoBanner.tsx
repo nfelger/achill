@@ -22,7 +22,7 @@ export function InfoBanner({ event }: Props) {
   return (
     <div
       data-testid={event.type}
-      className="mt-4 flex w-full items-center justify-start rounded-lg bg-blue-600 p-4"
+      className="flex w-full items-center justify-start rounded-lg bg-blue-600 p-4"
     >
       <span className="material-symbols-outlined mr-2 text-white">
         {symbol}

@@ -20,7 +20,11 @@ fileignoreconfig:
   - filename: app/mocks/stubs/calculationPositions.json
     checksum: 4013141db60d72f20e9867642310c167f9f32d55406e7d9b788995eeac3c2111
   - filename: tests/e2e/login.spec.ts
-    checksum: 1a0d9ceaf8e4a6d76c7c9c0df4fcaca85edf5bd08344dd7a02cafa17cf01031a
+    checksum: d970f342115f516a302970ed92a67abd76924c4000ef0b270b3c67835667eb32
+  - filename: app/apis/troi/troiApiController.ts
+    checksum: a93109e3db2700ff2f4071fb8458d55d2ee75289cd9fff502cf042df9361548c
+  - filename: app/apis/personio/PersonioApiController.ts
+    checksum: 81f6a91a395aa6cadebc7669c632af3b5eb704af5cf2b46bd2a2129b7d9bcb21
   - filename: app/routes/login.tsx
     allowed_patterns: [password, troiPassword]
   - filename: app/components/troi.tsx
@@ -32,7 +36,9 @@ fileignoreconfig:
   - filename: app/sessions.server.ts
     allowed_patterns: [sessionCookieSecret, SESSION_COOKIE_SECRET]
   - filename: app/personio/PersonioApiController.ts
-    allowed_patterns: [PERSONIO_CLIENT_SECRET, client_secret]
+    allowed_patterns: [PERSONIO_CLIENT_SECRET, client_secret, process.env.PERSONIO_CLIENT_ID, process.env.PERSONIO_CLIENT_SECRET]
+  - filename: app/troi/troiApiController.ts
+    allowed_patterns: [session.get("troiPassword")]
 version: ""
 scopeconfig:
   - scope: node

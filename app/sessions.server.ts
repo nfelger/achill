@@ -1,31 +1,23 @@
-import type { CalendarEvent } from "troi-library";
-
-import type { Cookie } from "@remix-run/node";
+import type { Cookie, Session } from "@remix-run/node";
 import {
   createCookie,
   createFileSessionStorage,
   createMemorySessionStorage,
+  redirect,
 } from "@remix-run/node";
-import type { TimeEntries } from "./troi/TimeEntry";
-import type { CalculationPosition } from "./troi/CalculationPosition";
-import type { PersonioEmployee } from "./personio/PersonioEmployee";
-import type { PersonioAttendance } from "./personio/PersonioAttendance";
+import type { PersonioEmployee } from "./apis/personio/Personio.types";
 
 export type SessionData = {
   username: string;
   troiPassword: string;
-  troiClientId: number;
-  troiEmployeeId: number;
-  troiCalculationPositions: CalculationPosition[];
-  troiTimeEntries: TimeEntries;
-  troiCalendarEvents: CalendarEvent[];
+  troiClientId: string;
+  troiEmployeeId: string;
   personioEmployee: PersonioEmployee;
-  personioAttendances: PersonioAttendance[];
 };
 
 function createSessionStorage(cookie: Cookie) {
   if (process.env.MOCK_EXTERNAL_APIS && process.env.NODE_ENV !== "production") {
-    return createMemorySessionStorage({
+    return createMemorySessionStorage<SessionData>({
       cookie,
     });
   }
@@ -54,11 +46,16 @@ const sessionCookie = createCookie("__session", {
 const { getSession, commitSession, destroySession } =
   createSessionStorage(sessionCookie);
 
-export async function isSessionValid(request: Request): Promise<boolean> {
+export async function getSessionAndThrowIfInvalid(
+  request: Request,
+): Promise<Session> {
   const cookieHeader = request.headers.get("Cookie");
   const session = await getSession(cookieHeader);
-
-  return session.has("username") && session.has("troiPassword");
+  if (!(session.has("username") && session.has("troiPassword"))) {
+    console.error("Invalid session");
+    throw redirect("/login");
+  }
+  return session;
 }
 
-export { getSession, commitSession, destroySession };
+export { commitSession, destroySession, getSession };

@@ -1,8 +1,12 @@
 import moment from "moment";
-import { PersonioAttendance } from "~/personio/PersonioAttendance";
+import { PersonioAttendance } from "~/apis/personio/Personio.types";
 import { getItemForEventType } from "~/utils/calendarEventUtils";
-import { datesEqual, getWeekDaysFor, minutesToTime } from "~/utils/dateUtils";
-import { convertFloatTimeToHHMM } from "~/utils/timeConverter";
+import {
+  datesEqual,
+  getWeekDaysFor,
+  minutesToTime,
+} from "~/utils/dateTimeUtils";
+import { convertFloatTimeToHHMM } from "~/utils/dateTimeUtils";
 import { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
 
 interface Props {
@@ -54,14 +58,14 @@ export function WeekTable({
       minutesToTime(attendance.breakTime),
       "HH:mm",
     );
-    const momentStartTime = moment(attendance.start_time, "HH:mm");
+    const momentStartTime = moment(attendance.startTime, "HH:mm");
 
-    return moment(attendance.end_time, "HH:mm")
+    return moment(attendance.endTime, "HH:mm")
       .subtract(momentBreakTime.hours(), "hours")
       .subtract(momentBreakTime.minutes(), "minutes")
       .subtract(momentStartTime.hours(), "hours")
       .subtract(momentStartTime.minutes(), "minutes")
-      .format("HH:mm");
+      .format("H:mm");
   }
 
   return (

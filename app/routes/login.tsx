@@ -1,13 +1,16 @@
 import {
   ActionFunctionArgs,
+  LoaderFunctionArgs,
   json,
   redirect,
   type MetaFunction,
 } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
-import TroiApiService, { AuthenticationFailed } from "troi-library";
-import { LoadingOverlay } from "~/components/LoadingOverlay";
-import { commitSession, getSession } from "~/sessions.server";
+import { initializePersonioApi } from "~/apis/personio/PersonioApiController";
+import { initializeTroiApi } from "~/apis/troi/troiApiController";
+import Spinner from "~/components/common/Spinner";
+import { TrackyButton } from "~/components/common/TrackyButton";
+import { commitSession, destroySession, getSession } from "~/sessions.server";
 
 export const meta: MetaFunction = () => {
   return [
@@ -18,30 +21,48 @@ export const meta: MetaFunction = () => {
 
 const troiBaseUrl = "https://digitalservice.troi.software/api/v2/rest";
 
+export async function loader({ request }: LoaderFunctionArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+
+  if (session.has("username")) {
+    return redirect("/");
+  }
+
+  return json(null);
+}
+
+function getParamFromBody(params: FormData, key: string) {
+  const value = params.get(key);
+  if (!value || typeof value !== "string") {
+    throw new Response(`Missing ${key}`, { status: 400 });
+  }
+  return value;
+}
+
 export async function action({ request }: ActionFunctionArgs) {
-  const cookieHeader = request.headers.get("Cookie");
   const bodyParams = await request.formData();
+  const username = getParamFromBody(bodyParams, "username");
+  const password = getParamFromBody(bodyParams, "password");
 
-  const username = bodyParams.get("username");
-  if (typeof username !== "string") {
-    throw new Response("Missing username", { status: 400 });
-  }
-
-  const password = bodyParams.get("password");
-  if (typeof password !== "string") {
-    throw new Response("Missing password", { status: 400 });
-  }
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader);
 
   try {
-    const troiApi = new TroiApiService({
-      baseUrl: troiBaseUrl,
-      clientName: "DigitalService GmbH des Bundes",
-      username,
-      password,
-    });
-    await troiApi.initialize();
+    session.set("username", username);
+    session.set("troiPassword", password);
+
+    const [{ troiClientId, troiEmployeeId }, personioEmployee] =
+      await Promise.all([
+        initializeTroiApi(session),
+        initializePersonioApi(username),
+      ]);
+
+    session.set("troiClientId", troiClientId);
+    session.set("troiEmployeeId", troiEmployeeId);
+    session.set("personioEmployee", personioEmployee);
   } catch (error) {
-    if (error instanceof AuthenticationFailed) {
+    await destroySession(session);
+    if (error instanceof Error && error.message === "Invalid credentials") {
       return json({
         message: "Login failed! Please check your username & password.",
       });
@@ -50,14 +71,10 @@ export async function action({ request }: ActionFunctionArgs) {
     }
   }
 
-  const session = await getSession(cookieHeader);
-  session.set("username", username);
-  session.set("troiPassword", password);
-
   const headers = new Headers();
   headers.append("Set-Cookie", await commitSession(session));
 
-  return redirect("/projects", {
+  return redirect("/", {
     headers,
   });
 }
@@ -71,8 +88,6 @@ export default function Index() {
   return (
     <main>
       <div className="mx-auto mt-8 w-full max-w-sm overflow-hidden rounded-sm bg-white px-8 py-6 shadow-md">
-        {!isIdle && <LoadingOverlay message="Logging in..."></LoadingOverlay>}
-
         <h1 className="mb-8 mt-4 text-center text-3xl font-bold text-blue-600">
           Enter. Time.
         </h1>
@@ -126,12 +141,16 @@ export default function Index() {
           </div>
 
           <div className="mb-4 mt-8">
-            <button
-              type="submit"
-              className="w-full transform rounded-sm bg-blue-600 px-4 py-2 tracking-wide text-white transition-colors duration-200 hover:bg-blue-400 focus:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50"
-            >
-              Sign in
-            </button>
+            <TrackyButton additionalClasses="w-full inline-flex justify-center">
+              {isIdle ? (
+                "Sign in"
+              ) : (
+                <>
+                  <Spinner />
+                  Signing in
+                </>
+              )}
+            </TrackyButton>
           </div>
         </Form>
       </div>

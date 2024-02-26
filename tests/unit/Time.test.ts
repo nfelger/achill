@@ -1,7 +1,7 @@
 import {
   convertFloatTimeToHHMM,
   convertTimeStringToFloat,
-} from "~/utils/timeConverter";
+} from "~/utils/dateTimeUtils";
 
 describe("convertFloatTimeToHHMM", () => {
   test("1 returns 1:00", () => {

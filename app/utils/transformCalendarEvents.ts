@@ -1,10 +1,10 @@
-import type { CalendarEvent } from "troi-library";
+import moment from "moment";
+import { CalendarEvent } from "~/apis/troi/troi.types";
 import {
   convertToUTCMidnight,
   getDatesBetween,
   utcMidnightDateFromString,
-} from "./dateUtils";
-import moment from "moment";
+} from "./dateTimeUtils";
 
 export type TransformedCalendarEvent = {
   type?: CalendarEventType;
