@@ -20,7 +20,7 @@ fileignoreconfig:
   - filename: app/mocks/stubs/calculationPositions.json
     checksum: 4013141db60d72f20e9867642310c167f9f32d55406e7d9b788995eeac3c2111
   - filename: tests/e2e/login.spec.ts
-    checksum: 1a0d9ceaf8e4a6d76c7c9c0df4fcaca85edf5bd08344dd7a02cafa17cf01031a
+    checksum: d970f342115f516a302970ed92a67abd76924c4000ef0b270b3c67835667eb32
   - filename: app/apis/troi/troiApiController.ts
     checksum: a93109e3db2700ff2f4071fb8458d55d2ee75289cd9fff502cf042df9361548c
   - filename: app/apis/personio/PersonioApiController.ts
