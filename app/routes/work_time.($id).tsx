@@ -19,7 +19,7 @@ function parseWorkTimeFormData(formData: FormData) {
   try {
     return workTimeFormDataSchema.parse(Object.fromEntries(formData.entries()));
   } catch (error) {
-    throw json(error, { status: 400 });
+    throw json(error, { status: 422 });
   }
 }
 
@@ -112,10 +112,9 @@ export function WorkTimeForm({
       fetcher.data?.success &&
       fetcher.formData
     ) {
-      const intent = fetcher.formData.get("_action");
       const submittedAttendance = fetcher.data;
 
-      switch (intent) {
+      switch (fetcher.formData.get("_action")) {
         case "POST":
           setIsEdit(false);
           setAttendances([...attendances, submittedAttendance]);

@@ -1,82 +1,55 @@
 import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import moment from "moment";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { ZodError } from "zod";
 import { TrackyPhase } from "~/apis/tasks/TrackyPhase";
 import { TrackyTask } from "~/apis/tasks/TrackyTask";
-import { CalculationPosition } from "~/apis/troi/troi.types";
+import type { CalculationPosition, ProjectTime } from "~/apis/troi/troi.types";
 import {
   addProjectTime,
   deleteProjectTime,
   updateProjectTime,
 } from "~/apis/troi/troiApiController";
 import { getSessionAndThrowIfInvalid } from "~/sessions.server";
-import { convertTimeToFloat } from "~/utils/dateTimeUtils";
-import type { ProjectTimeSaveFormData } from "~/utils/projectTimeFormValidator";
 import { projectTimeSaveFormSchema } from "~/utils/projectTimeFormValidator";
 import { TimeInput } from "../components/common/TimeInput";
 import { TrackyButton, buttonRed } from "../components/common/TrackyButton";
 
-function checkIDOrThrow(
-  ID: string | undefined,
-): asserts ID is NonNullable<string> {
-  if (ID === undefined) {
-    throw new Response("ProjectTime ID is required.", { status: 400 });
-  }
-}
-
-function parseProjectTimeFormData(formData: FormData): ProjectTimeSaveFormData {
-  try {
-    return projectTimeSaveFormSchema.parse(
-      Object.fromEntries(formData.entries()),
-    );
-  } catch (error) {
-    throw json(error, { status: 400 });
-  }
-}
-
 export async function action({ request, params }: ActionFunctionArgs) {
   const session = await getSessionAndThrowIfInvalid(request);
   const formData = await request.formData();
-  const { calculationPositionId, date, hours, description } =
-    parseProjectTimeFormData(formData);
-  const hoursFloat = convertTimeToFloat(hours);
+  const formDataObject = Object.fromEntries(formData.entries());
 
   try {
-    switch (request.method) {
-      case "POST":
-        const result = await addProjectTime(
-          session,
-          calculationPositionId,
-          date,
-          hoursFloat,
-          description,
-        );
-
-        return new Response(null, { status: 201 });
-      case "PUT":
-        checkIDOrThrow(params.id);
-
-        await updateProjectTime(
-          session,
-          params.id,
-          calculationPositionId,
-          date,
-          hoursFloat,
-          description,
-        );
-
-        return new Response(null, { status: 201 });
-      case "DELETE":
-        checkIDOrThrow(params.id);
-
-        await deleteProjectTime(session, params.id);
-
-        return new Response(null, { status: 204 });
+    switch (formDataObject._action) {
+      case "POST": {
+        const parsedData = projectTimeSaveFormSchema.parse(formDataObject);
+        return await addProjectTime(session, parsedData);
+      }
+      case "PUT": {
+        if (params.id === undefined) {
+          throw new Response("ProjectTime ID is required.", { status: 400 });
+        }
+        const id = parseInt(params.id);
+        const parsedData = projectTimeSaveFormSchema.parse(formDataObject);
+        return await updateProjectTime(session, id, parsedData);
+      }
+      case "DELETE": {
+        if (params.id === undefined) {
+          throw new Response("ProjectTime ID is required.", { status: 400 });
+        }
+        const id = parseInt(params.id);
+        return await deleteProjectTime(session, id);
+      }
       default:
         throw new Response("Method Not Allowed", { status: 405 });
     }
   } catch (e) {
+    if (e instanceof ZodError) {
+      console.log("ZodError", e);
+      return json(e, { status: 422 });
+    }
     if (e instanceof Error && e.message === "Invalid credentials") {
       console.error("Troi auth failed", e);
       throw redirect("/login");
@@ -128,8 +101,10 @@ interface Props {
   phases: TrackyPhase[];
   calculationPosition: CalculationPosition;
   disabled: boolean;
+  onAddProjectTime?: (projectTime: ProjectTime) => void;
+  onUpdateProjectTime?: (projectTime: ProjectTime) => void;
+  onDeleteProjectTime?: (projectTimeId: number) => void;
 }
-
 export function ProjectTimeForm({
   date,
   projectTimeId,
@@ -142,15 +117,19 @@ export function ProjectTimeForm({
   phases,
   calculationPosition,
   disabled,
+  onAddProjectTime,
+  onUpdateProjectTime,
+  onDeleteProjectTime,
 }: Props) {
-  const troiFetcher = useFetcher({ key: "Troi" });
+  const fetcher = useFetcher<typeof action>();
+  const formRef = useRef<HTMLFormElement>(null);
 
   const [description, setDescription] = useState(() => values.description);
   const descriptionSegments = descriptionToSegments(description);
   const [hours, setHours] = useState(
     moment(values.hours, "HH:mm").format("HH:mm"),
   );
-  const [updateMode, setUpdateMode] = useState(projectTimeId ? false : true);
+  const [isEdit, setIsEdit] = useState(projectTimeId ? false : true);
   const [errors, setErrors] = useState<ProjectTimeFormErrors>({});
 
   const descriptionTestId = `description-${calculationPosition.id}`;
@@ -231,7 +210,7 @@ export function ProjectTimeForm({
   function handleCancel() {
     setHours(values.hours);
     setDescription(values.description);
-    setUpdateMode(false);
+    setIsEdit(false);
   }
 
   function handleChipClick(phaseAndTask: string) {
@@ -243,39 +222,58 @@ export function ProjectTimeForm({
   }
 
   async function onKeyDown(e: React.KeyboardEvent) {
-    if (e.key === "Enter") {
-      submit(projectTimeId ? "PUT" : "POST");
+    if (e.key === "Enter" && formRef.current) {
+      formRef.current.submit();
     }
   }
 
-  async function submit(method: "POST" | "PUT" | "DELETE") {
-    setErrors({});
-    const formData = {
-      date: moment(date).format("YYYY-MM-DD"),
-      calculationPositionId: calculationPosition.id.toString(),
-      hours,
-      description,
-    };
-    const parseResult = projectTimeSaveFormSchema.safeParse(formData);
-    if (!parseResult.success) {
-      for (const issue of parseResult.error.issues) {
+  useEffect(() => {
+    if (fetcher.state !== "loading" || !fetcher.data) return;
+    if ("issues" in fetcher.data) {
+      console.log("fetcher.data.issues", fetcher.data.issues);
+      fetcher.data.issues.forEach((issue: any) => {
         const field = issue.path[0];
         setErrors({ ...errors, [field]: issue.message });
-      }
+      });
       return;
+    } else if (fetcher.data.id && fetcher.formData) {
+      const submittedProjectTime = fetcher.data;
+
+      switch (fetcher.formData.get("_action")) {
+        case "POST":
+          onAddProjectTime!(submittedProjectTime as ProjectTime);
+          break;
+        case "PUT":
+          onUpdateProjectTime!(submittedProjectTime as ProjectTime);
+          setIsEdit(false);
+          break;
+        case "DELETE":
+          onDeleteProjectTime!(submittedProjectTime.id);
+          break;
+        default:
+          break;
+      }
     }
-    await troiFetcher.submit(formData, {
-      method,
-      action: `/project_time/${projectTimeId ?? ""}`,
-    });
-    setUpdateMode(false);
-  }
+  }, [fetcher.state]);
 
   return (
-    <div
+    <fetcher.Form
+      ref={formRef}
+      method="POST"
+      action={`/project_time/${projectTimeId ?? ""}`}
       data-test="projectTime-form"
       className="block w-full rounded-lg bg-gray-100 p-4 shadow-lg"
     >
+      <input
+        type="hidden"
+        name="calculationPositionId"
+        value={calculationPosition.id}
+      />
+      <input
+        type="hidden"
+        name="date"
+        value={moment(date).format("YYYY-MM-DD")}
+      />
       <div className="flex flex-col">
         <div className="basis-3/4">
           <h3
@@ -285,7 +283,7 @@ export function ProjectTimeForm({
           >
             {calculationPosition.name}
           </h3>
-          {updateMode ? (
+          {isEdit ? (
             <div id="projectTimeForm">
               <div className="relative flex w-full items-center">
                 <TimeInput
@@ -427,18 +425,20 @@ export function ProjectTimeForm({
                   />
                 </div>
                 <div className="flex flex-row space-x-2 md:flex-col md:space-x-0 md:space-y-2">
-                  {!disabled && updateMode && (
+                  {!disabled && isEdit && (
                     <>
                       {projectTimeId ? (
                         <TrackyButton
-                          onClick={() => submit("PUT")}
+                          name="_action"
+                          value="PUT"
                           testId={`update-${calculationPosition.id}`}
                         >
                           Update
                         </TrackyButton>
                       ) : (
                         <TrackyButton
-                          onClick={() => submit("POST")}
+                          name="_action"
+                          value="POST"
                           testId={`add-${calculationPosition.id}`}
                         >
                           Save
@@ -467,7 +467,8 @@ export function ProjectTimeForm({
               <br />
               <div className="flex flex-row space-x-2">
                 <TrackyButton
-                  onClick={() => submit("DELETE")}
+                  name="_action"
+                  value="DELETE"
                   color={buttonRed}
                   testId={`delete-${calculationPosition.id}`}
                 >
@@ -478,7 +479,7 @@ export function ProjectTimeForm({
                     type="button"
                     onClick={() => {
                       // openPhases();
-                      setUpdateMode(true);
+                      setIsEdit(true);
                     }}
                     testId={`edit-${calculationPosition.id}`}
                   >
@@ -490,6 +491,6 @@ export function ProjectTimeForm({
           )}
         </div>
       </div>
-    </div>
+    </fetcher.Form>
   );
 }

@@ -13,7 +13,7 @@ import {
 import type {
   CalculationPosition,
   CalendarEvent,
-  ProjectTimesById,
+  ProjectTime,
 } from "~/apis/troi/troi.types";
 import { END_DATE, START_DATE, getWeekDaysFor } from "~/utils/dateTimeUtils";
 import {
@@ -33,17 +33,17 @@ function findEventsOfDate(
   );
 }
 
-function findProjectTimesOfDate(
-  projectTimesById: ProjectTimesById,
+export function findProjectTimesOfDate(
+  projectTimes: ProjectTime[],
   date: Date,
 ) {
-  return Object.values(projectTimesById).filter((projectTime) =>
+  return projectTimes.filter((projectTime) =>
     moment(projectTime.date).isSame(date, "day"),
   );
 }
 
-function calcHoursOfDate(projectTimesById: ProjectTimesById, date: Date) {
-  return findProjectTimesOfDate(projectTimesById, date).reduce(
+function calcHoursOfDate(projectTimes: ProjectTime[], date: Date) {
+  return findProjectTimesOfDate(projectTimes, date).reduce(
     (acc, projectTime) => acc + projectTime.hours,
     0,
   );
@@ -61,7 +61,7 @@ interface Props {
   timestamp: number;
   calculationPositions: CalculationPosition[];
   calendarEvents: CalendarEvent[];
-  projectTimesById: ProjectTimesById;
+  projectTimes: ProjectTime[];
   tasks: TrackyTask[];
   phasesPerCalculationPosition: Record<number, TrackyPhase[]>;
   workingHours: WorkingHours;
@@ -70,14 +70,14 @@ interface Props {
 
 export default function TrackYourTime(props: Props) {
   const [attendances, setAttendances] = useState(props.attendances);
-  const [projectTimes, setProjectTimes] = useState(props.projectTimesById);
+  const [projectTimes, setProjectTimes] = useState(props.projectTimes);
 
   // set state to loader data after loading
   const [prevTimestamp, setPrevTimestamp] = useState(props.timestamp);
   if (props.timestamp !== prevTimestamp) {
     setPrevTimestamp(props.timestamp);
     setAttendances(props.attendances);
-    setProjectTimes(props.projectTimesById);
+    setProjectTimes(props.projectTimes);
   }
 
   const [selectedDate, setSelectedDate] = useState(() => new Date());
@@ -87,26 +87,20 @@ export default function TrackYourTime(props: Props) {
   );
   const selectedDayEvents = findEventsOfDate(calendarEvents, selectedDate);
   const timesAndEventsOfSelectedWeek = selectedWeek.map((weekday) => ({
-    hours: calcHoursOfDate(props.projectTimesById, weekday),
+    hours: calcHoursOfDate(projectTimes, weekday),
     events: findEventsOfDate(calendarEvents, weekday),
   }));
   const workingHoursOfSelectedDate =
     props.workingHours[DAYS_OF_WEEK[moment(selectedDate).weekday() - 1]];
 
   const attendancesOfSelectedWeek: (PersonioAttendance | undefined)[] =
-    selectedWeek.map((element) => {
-      const date = moment(element).format("YYYY-MM-DD");
+    selectedWeek.map((day) => {
+      const date = moment(day).format("YYYY-MM-DD");
       return attendances.find((attendance) => attendance.date === date);
     });
 
   const recurringTasks = filterRecurringTasks(props.tasks);
   const phaseTasks = filterPhaseTasks(props.tasks);
-
-  const positions = props.calculationPositions;
-  const projectTimesForSelectedDate = findProjectTimesOfDate(
-    props.projectTimesById,
-    selectedDate,
-  );
 
   return (
     <div>
@@ -148,12 +142,13 @@ export default function TrackYourTime(props: Props) {
         </h2>
         {!selectedDayEvents?.some((event) => event.type == "Holiday") && (
           <ProjectTimes
+            key={selectedDate.getDate()}
             selectedDate={selectedDate}
-            calculationPositions={positions ?? []}
+            calculationPositions={props.calculationPositions ?? []}
             recurringTasks={recurringTasks}
             phaseTasks={phaseTasks}
             phasesPerCalculationPosition={props.phasesPerCalculationPosition}
-            projectTimes={projectTimesForSelectedDate}
+            projectTimes={projectTimes}
             setProjectTimes={setProjectTimes}
             disabled={false}
           />

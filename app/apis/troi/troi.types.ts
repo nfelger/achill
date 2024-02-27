@@ -12,8 +12,6 @@ export type ProjectTime = {
   calculationPositionId: number;
 };
 
-export type ProjectTimesById = { [key: number]: ProjectTime };
-
 export type CalendarEventType = "R" | "H" | "G" | "P" | "T";
 export type CalendarEvent = {
   id: string;

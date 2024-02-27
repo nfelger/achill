@@ -1,18 +1,21 @@
 import type { ZodSchema, ZodTypeDef } from "zod";
 import { z } from "zod";
-import type { Time } from "./dateTimeUtils";
-import { YYYY_MM_DD_FORMAT, timeSchema } from "./dateTimeUtils";
+import {
+  YYYY_MM_DD_FORMAT,
+  convertTimeToFloat,
+  timeSchema,
+} from "./dateTimeUtils";
 
 export type ProjectTimeSaveFormData = {
-  calculationPositionId: string;
+  calculationPositionId: number;
   date: string;
-  hours: Time;
+  hours: number;
   description: string;
 };
 
 export const projectTimeSaveFormSchema = z.object({
-  calculationPositionId: z.string(),
+  calculationPositionId: z.string().transform((id) => parseInt(id)),
   date: z.string().regex(YYYY_MM_DD_FORMAT),
-  hours: timeSchema,
+  hours: timeSchema.transform(convertTimeToFloat),
   description: z.string().min(1, "Description is required."),
 }) satisfies ZodSchema<ProjectTimeSaveFormData, ZodTypeDef, unknown>;

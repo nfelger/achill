@@ -23,7 +23,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const [
       calendarEvents,
       calculationPositions,
-      projectTimesById,
+      projectTimes,
       attendances,
       tasks,
     ] = await Promise.all([
@@ -55,7 +55,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       username: session.get("username")!,
       calculationPositions,
       calendarEvents,
-      projectTimesById,
+      projectTimes,
       tasks,
       phasesPerCalculationPosition,
       workingHours,
@@ -77,7 +77,7 @@ export default function Index() {
     username,
     calculationPositions,
     calendarEvents,
-    projectTimesById,
+    projectTimes,
     tasks,
     phasesPerCalculationPosition,
     workingHours,
@@ -111,7 +111,7 @@ export default function Index() {
         <TrackYourTime
           timestamp={timestamp}
           calendarEvents={calendarEvents}
-          projectTimesById={projectTimesById}
+          projectTimes={projectTimes}
           calculationPositions={calculationPositions}
           tasks={tasks}
           phasesPerCalculationPosition={phasesPerCalculationPosition}

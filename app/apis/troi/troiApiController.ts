@@ -1,7 +1,8 @@
-import type { Session } from "@remix-run/node";
+import { json, type Session } from "@remix-run/node";
 import md5 from "crypto-js/md5.js";
 import moment from "moment";
 import { END_DATE, START_DATE } from "~/utils/dateTimeUtils";
+import { ProjectTimeSaveFormData } from "~/utils/projectTimeFormValidator";
 import type { CalendarEvent, CalendarEventType } from "./troi.types";
 
 const BASE_URL = "https://digitalservice.troi.software/api/v2/rest";
@@ -132,16 +133,13 @@ export async function getProjectTimes(session: Session) {
   url.searchParams.set("startDate", START_DATE_YYYYMMDD);
   url.searchParams.set("endDate", END_DATE_YYYYMMDD);
 
-  return (await fetchWithTroiAuth<TroiProjectTime[]>(session, url)).reduce(
-    (all, projectTime) => ({
-      ...all,
-      [projectTime.id]: {
-        id: projectTime.id,
-        date: projectTime.Date,
-        hours: parseFloat(projectTime.Quantity),
-        description: projectTime.Remark,
-        calculationPositionId: projectTime.CalculationPosition.id,
-      },
+  return (await fetchWithTroiAuth<TroiProjectTime[]>(session, url)).map(
+    (projectTime) => ({
+      id: projectTime.id,
+      date: projectTime.Date,
+      hours: parseFloat(projectTime.Quantity),
+      description: projectTime.Remark,
+      calculationPositionId: projectTime.CalculationPosition.id,
     }),
     {},
   );
@@ -149,40 +147,50 @@ export async function getProjectTimes(session: Session) {
 
 export async function addProjectTime(
   session: Session,
-  calculationPostionId: string,
-  date: string,
-  hours: number,
-  description: string,
+  { calculationPositionId, date, hours, description }: ProjectTimeSaveFormData,
 ) {
-  return await fetchWithTroiAuth(session, `${BASE_URL}/billings/hours`, {
-    method: "POST",
-    body: JSON.stringify({
-      Client: { Path: `/clients/${session.get("troiClientId")}` },
-      CalculationPosition: {
-        Path: `/calculationPositions/${calculationPostionId}`,
-      },
-      Employee: { Path: `/employees/${session.get("troiEmployeeId")}` },
-      Date: date,
-      Quantity: hours,
-      Remark: description,
-    }),
-  });
+  const data = await fetchWithTroiAuth<{ id: number }>(
+    session,
+    `${BASE_URL}/billings/hours`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        Client: { Path: `/clients/${session.get("troiClientId")}` },
+        CalculationPosition: {
+          Path: `/calculationPositions/${calculationPositionId}`,
+        },
+        Employee: { Path: `/employees/${session.get("troiEmployeeId")}` },
+        Date: date,
+        Quantity: hours,
+        Remark: description,
+      }),
+    },
+  );
+
+  return json(
+    {
+      success: true,
+      id: data.id,
+      date,
+      hours,
+      description,
+      calculationPositionId,
+    },
+    { status: 200 },
+  );
 }
 
 export async function updateProjectTime(
   session: Session,
-  id: string,
-  calculationPostionId: string,
-  date: string,
-  hours: number,
-  description: string,
+  id: number,
+  { calculationPositionId, date, hours, description }: ProjectTimeSaveFormData,
 ) {
-  return await fetchWithTroiAuth(session, `${BASE_URL}/billings/hours/${id}`, {
+  await fetchWithTroiAuth(session, `${BASE_URL}/billings/hours/${id}`, {
     method: "PUT",
     body: JSON.stringify({
       Client: { Path: `/clients/${session.get("troiClientId")}` },
       CalculationPosition: {
-        Path: `/calculationPositions/${calculationPostionId}`,
+        Path: `/calculationPositions/${calculationPositionId}`,
       },
       Employee: { Path: `/employees/${session.get("troiEmployeeId")}` },
       Date: date,
@@ -190,10 +198,23 @@ export async function updateProjectTime(
       Remark: description,
     }),
   });
+
+  return json(
+    {
+      id,
+      date,
+      hours,
+      description,
+      calculationPositionId,
+    },
+    { status: 200 },
+  );
 }
 
-export async function deleteProjectTime(session: Session, id: string) {
-  return await fetchWithTroiAuth(session, `${BASE_URL}/billings/hours/${id}`, {
+export async function deleteProjectTime(session: Session, id: number) {
+  await fetchWithTroiAuth(session, `${BASE_URL}/billings/hours/${id}`, {
     method: "DELETE",
   });
+
+  return json({ id, test: "test" }, { status: 200 });
 }
