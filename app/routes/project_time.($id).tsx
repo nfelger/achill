@@ -11,10 +11,10 @@ import {
   deleteProjectTime,
   updateProjectTime,
 } from "~/apis/troi/troiApiController";
+import { TimeInput } from "~/components/common/TimeInput";
+import { TrackyButton, buttonRed } from "~/components/common/TrackyButton";
 import { getSessionAndThrowIfInvalid } from "~/sessions.server";
 import { projectTimeSaveFormSchema } from "~/utils/projectTimeFormValidator";
-import { TimeInput } from "../components/common/TimeInput";
-import { TrackyButton, buttonRed } from "../components/common/TrackyButton";
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const session = await getSessionAndThrowIfInvalid(request);
@@ -47,7 +47,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
   } catch (e) {
     if (e instanceof ZodError) {
-      console.log("ZodError", e);
       return json(e, { status: 422 });
     }
     if (e instanceof Error && e.message === "Invalid credentials") {

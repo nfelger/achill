@@ -1,17 +1,31 @@
-import { json, redirect, type LoaderFunctionArgs } from "@remix-run/node";
+import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useFetchers, useLoaderData } from "@remix-run/react";
+import moment from "moment";
+import { useState } from "react";
+import { getAttendances } from "~/apis/personio/PersonioApiController";
 import { loadPhases } from "~/apis/tasks/TrackyPhase";
 import { loadTasks } from "~/apis/tasks/TrackyTask";
+import type { ProjectTime } from "~/apis/troi/troi.types";
 import {
   getCalculationPositions,
   getCalendarEvents,
   getProjectTimes,
 } from "~/apis/troi/troiApiController";
 import { LoadingOverlay } from "~/components/common/LoadingOverlay";
+import Section from "~/components/common/Section";
 import { TrackyButton } from "~/components/common/TrackyButton";
+import { ProjectTimes } from "~/components/ProjectTimes";
+import { WeekView } from "~/components/week/WeekView";
+import { WorkTimeForm } from "~/routes/work_time.($id)";
 import { getSessionAndThrowIfInvalid } from "~/sessions.server";
-import { getAttendances } from "../apis/personio/PersonioApiController";
-import TrackYourTime from "../components/TrackYourTime";
+import { END_DATE, START_DATE } from "~/utils/dateTimeUtils";
+import {
+  transformCalendarEvent,
+  TransformedCalendarEvent,
+} from "~/utils/transformCalendarEvents";
+
+const HOW_TO_URL = "https://digitalservicebund.atlassian.net/wiki/x/iIFqFQ";
+const SET_UP_URL = "https://digitalservicebund.atlassian.net/wiki/x/T4BfJg";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSessionAndThrowIfInvalid(request);
@@ -61,53 +75,117 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 }
 
-export default function Index() {
-  const {
-    timestamp,
-    username,
-    calculationPositions,
-    calendarEvents,
-    projectTimes,
-    tasks,
-    phasesPerCalculationPosition,
-    workingHours,
-    attendances,
-  } = useLoaderData<typeof loader>();
-
-  const anyFetcherSubmitting = useFetchers().some(
-    (fetcher) => fetcher.state === "submitting",
+export function findEventsOfDate(
+  calendarEvents: TransformedCalendarEvent[],
+  date: Date,
+) {
+  return calendarEvents.filter((calendarEvent) =>
+    moment(calendarEvent.date).isSame(date, "day"),
   );
+}
+
+export function findProjectTimesOfDate(
+  projectTimes: ProjectTime[],
+  date: Date,
+) {
+  return projectTimes.filter((projectTime) =>
+    moment(projectTime.date).isSame(date, "day"),
+  );
+}
+
+export default function TrackYourTime() {
+  const loaderData = useLoaderData<typeof loader>();
+
+  const [selectedDate, setSelectedDate] = useState(() => new Date());
+  const [attendances, setAttendances] = useState(loaderData.attendances);
+  const [projectTimes, setProjectTimes] = useState(loaderData.projectTimes);
+
+  // set state to loader data after loading
+  const [prevTimestamp, setPrevTimestamp] = useState(loaderData.timestamp);
+  if (loaderData.timestamp !== prevTimestamp) {
+    setPrevTimestamp(loaderData.timestamp);
+    setAttendances(loaderData.attendances);
+    setProjectTimes(loaderData.projectTimes);
+  }
+
+  const calendarEvents = loaderData.calendarEvents.flatMap((calendarEvent) =>
+    transformCalendarEvent(calendarEvent, START_DATE, END_DATE),
+  );
+  const selectedDayEvents = findEventsOfDate(calendarEvents, selectedDate);
+
+  const anySubmitting = useFetchers().some((f) => f.state === "submitting");
 
   return (
     <div className="container mx-auto mt-8 w-full max-w-screen-lg text-sm text-gray-800 sm:px-2">
       <main className="rounded-sm bg-white p-2 shadow-md sm:w-full md:px-8 md:py-6">
-        {anyFetcherSubmitting && <LoadingOverlay message="Loading data..." />}
-        <nav className="flex h-16 justify-between border-1 w-full border-b pb-1 text-left">
+        {anySubmitting && <LoadingOverlay message="Loading data..." />}
+        <nav className="flex h-16 justify-between items-center border-1 w-full border-b pb-1 text-left">
           <img
             src="timetracking_blue.svg"
             alt="Track-Your-Time logo"
             className="pr-4 py-1"
           />
-          <div className="flex w-full items-center justify-between">
-            <div className="text-black">
-              <h1 className="font-bold">Track-Your-Time</h1>
-              <div className="text-sm">Logged in as {username}.</div>
-            </div>
-            <Form method="post" action="/logout">
-              <TrackyButton testId="logout-button">Logout</TrackyButton>
-            </Form>
+          <div className="flex-grow">
+            <h1 className="font-bold">Track-Your-Time</h1>
+            <div className="text-sm">Logged in as {loaderData.username}.</div>
           </div>
+          <Form method="post" action="/logout">
+            <TrackyButton testId="logout-button">Logout</TrackyButton>
+          </Form>
         </nav>
-        <TrackYourTime
-          timestamp={timestamp}
-          calendarEvents={calendarEvents}
-          projectTimes={projectTimes}
-          calculationPositions={calculationPositions}
-          tasks={tasks}
-          phasesPerCalculationPosition={phasesPerCalculationPosition}
-          workingHours={workingHours}
-          attendances={attendances}
-        />
+        <div>
+          <Section>
+            <a className="angie-link" href={HOW_TO_URL} target="_blank">
+              Read about how to track your time in confluence
+            </a>
+          </Section>
+          <Section extraClasses="pt-2 z-10 w-full bg-white md:sticky md:top-0">
+            <WeekView
+              selectedDate={selectedDate}
+              projectTimes={projectTimes}
+              calendarEvents={calendarEvents}
+              onSelectDate={setSelectedDate}
+              attendances={attendances}
+              selectedDayEvents={selectedDayEvents}
+            />
+          </Section>
+
+          <Section title="Working hours">
+            <WorkTimeForm
+              key={selectedDate.getDate()}
+              selectedDate={selectedDate}
+              workingHours={loaderData.workingHours}
+              attendances={attendances}
+              setAttendances={setAttendances}
+            />
+          </Section>
+
+          {!selectedDayEvents?.some((event) => event.type == "Holiday") && (
+            <Section title="Project hours">
+              <ProjectTimes
+                key={selectedDate.getDate()}
+                selectedDate={selectedDate}
+                calculationPositions={loaderData.calculationPositions ?? []}
+                tasks={loaderData.tasks}
+                phasesPerCalculationPosition={
+                  loaderData.phasesPerCalculationPosition
+                }
+                projectTimes={projectTimes}
+                setProjectTimes={setProjectTimes}
+                disabled={false}
+              />
+            </Section>
+          )}
+
+          <Section>
+            <p className="text-xs text-gray-600">
+              Project not showing up?{" "}
+              <a className="angie-link" href={SET_UP_URL} target="_blank">
+                Make sure it's available in Troi and marked as a "favorite".
+              </a>
+            </p>
+          </Section>
+        </div>
       </main>
     </div>
   );

@@ -4,16 +4,19 @@ import { useFetcher } from "@remix-run/react";
 import moment from "moment";
 import type { Dispatch, SetStateAction } from "react";
 import { useEffect, useState } from "react";
-import type { PersonioAttendance } from "~/apis/personio/Personio.types";
+import {
+  DAYS_OF_WEEK,
+  type PersonioAttendance,
+} from "~/apis/personio/Personio.types";
 import {
   deleteAttendance,
   patchAttendance,
   postAttendance,
 } from "~/apis/personio/PersonioApiController";
+import { TimeInput } from "~/components/common/TimeInput";
+import { TrackyButton, buttonRed } from "~/components/common/TrackyButton";
 import { minutesToTime } from "~/utils/dateTimeUtils";
 import { workTimeFormDataSchema } from "~/utils/workTimeFormValidator";
-import { TimeInput } from "../components/common/TimeInput";
-import { TrackyButton, buttonRed } from "../components/common/TrackyButton";
 
 function parseWorkTimeFormData(formData: FormData) {
   try {
@@ -66,14 +69,13 @@ function getEndTime(workTime: number) {
 
 interface Props {
   selectedDate: Date;
-  workTime: number;
+  workingHours: Record<string, number>;
   attendances: PersonioAttendance[];
   setAttendances: Dispatch<SetStateAction<PersonioAttendance[]>>;
 }
-
 export function WorkTimeForm({
   selectedDate,
-  workTime,
+  workingHours,
   attendances,
   setAttendances,
 }: Props) {
@@ -83,6 +85,9 @@ export function WorkTimeForm({
     (attendance) =>
       attendance.date === moment(selectedDate).format("YYYY-MM-DD"),
   );
+
+  const workTime =
+    workingHours[DAYS_OF_WEEK[moment(selectedDate).weekday() - 1]];
 
   const [startTime, setStartTime] = useState(
     attendanceOfSelectedDate

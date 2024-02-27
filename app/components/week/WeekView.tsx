@@ -1,8 +1,9 @@
+import moment from "moment";
 import { PersonioAttendance } from "~/apis/personio/Personio.types";
 import type { ProjectTime } from "~/apis/troi/troi.types";
+import { findEventsOfDate, findProjectTimesOfDate } from "~/routes/_index";
 import { getWeekDaysFor } from "~/utils/dateTimeUtils";
 import { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
-import { findEventsOfDate, findProjectTimesOfDate } from "../TrackYourTime";
 import { InfoBanner } from "./InfoBanner";
 import { WeekSelect } from "./WeekSelect";
 import { WeekTable } from "./WeekTable";
@@ -19,7 +20,7 @@ interface Props {
   projectTimes: ProjectTime[];
   calendarEvents: TransformedCalendarEvent[];
   onSelectDate: (newDate: Date) => unknown;
-  attendancesOfSelectedWeek: (PersonioAttendance | undefined)[];
+  attendances: PersonioAttendance[];
   selectedDayEvents: TransformedCalendarEvent[];
 }
 export function WeekView({
@@ -27,7 +28,7 @@ export function WeekView({
   projectTimes,
   calendarEvents,
   onSelectDate,
-  attendancesOfSelectedWeek,
+  attendances,
   selectedDayEvents,
 }: Props) {
   const selectedWeek = getWeekDaysFor(selectedDate);
@@ -35,6 +36,13 @@ export function WeekView({
     hours: calcHoursOfDate(projectTimes, weekday),
     events: findEventsOfDate(calendarEvents, weekday),
   }));
+
+  const attendancesOfSelectedWeek: (PersonioAttendance | undefined)[] =
+    selectedWeek.map((day) => {
+      const date = moment(day).format("YYYY-MM-DD");
+      return attendances.find((attendance) => attendance.date === date);
+    });
+
   return (
     <div className="flex flex-wrap gap-8">
       <div className="min-w-[30ch]">
