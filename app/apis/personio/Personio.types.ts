@@ -38,6 +38,14 @@ export type WorkingHours = {
   friday: number;
 };
 
+export const DAYS_OF_WEEK: Array<keyof WorkingHours> = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+];
+
 export type PersonioEmployee = {
   personioId: number;
   workingHours: WorkingHours;

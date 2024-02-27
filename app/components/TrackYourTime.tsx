@@ -1,15 +1,12 @@
 import moment from "moment";
 import { useState } from "react";
 import {
+  DAYS_OF_WEEK,
   PersonioAttendance,
   WorkingHours,
 } from "~/apis/personio/Personio.types";
 import { TrackyPhase } from "~/apis/tasks/TrackyPhase";
-import {
-  TrackyTask,
-  filterPhaseTasks,
-  filterRecurringTasks,
-} from "~/apis/tasks/TrackyTask";
+import { TrackyTask } from "~/apis/tasks/TrackyTask";
 import type {
   CalculationPosition,
   CalendarEvent,
@@ -24,7 +21,7 @@ import { WorkTimeForm } from "../routes/work_time.($id)";
 import { ProjectTimes } from "./ProjectTimes";
 import { WeekView } from "./week/WeekView";
 
-function findEventsOfDate(
+export function findEventsOfDate(
   calendarEvents: TransformedCalendarEvent[],
   date: Date,
 ) {
@@ -42,21 +39,6 @@ export function findProjectTimesOfDate(
   );
 }
 
-function calcHoursOfDate(projectTimes: ProjectTime[], date: Date) {
-  return findProjectTimesOfDate(projectTimes, date).reduce(
-    (acc, projectTime) => acc + projectTime.hours,
-    0,
-  );
-}
-
-const DAYS_OF_WEEK: Array<keyof WorkingHours> = [
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-];
-
 interface Props {
   timestamp: number;
   calculationPositions: CalculationPosition[];
@@ -67,7 +49,6 @@ interface Props {
   workingHours: WorkingHours;
   attendances: PersonioAttendance[];
 }
-
 export default function TrackYourTime(props: Props) {
   const [attendances, setAttendances] = useState(props.attendances);
   const [projectTimes, setProjectTimes] = useState(props.projectTimes);
@@ -86,10 +67,6 @@ export default function TrackYourTime(props: Props) {
     transformCalendarEvent(calendarEvent, START_DATE, END_DATE),
   );
   const selectedDayEvents = findEventsOfDate(calendarEvents, selectedDate);
-  const timesAndEventsOfSelectedWeek = selectedWeek.map((weekday) => ({
-    hours: calcHoursOfDate(projectTimes, weekday),
-    events: findEventsOfDate(calendarEvents, weekday),
-  }));
   const workingHoursOfSelectedDate =
     props.workingHours[DAYS_OF_WEEK[moment(selectedDate).weekday() - 1]];
 
@@ -98,9 +75,6 @@ export default function TrackYourTime(props: Props) {
       const date = moment(day).format("YYYY-MM-DD");
       return attendances.find((attendance) => attendance.date === date);
     });
-
-  const recurringTasks = filterRecurringTasks(props.tasks);
-  const phaseTasks = filterPhaseTasks(props.tasks);
 
   return (
     <div>
@@ -115,8 +89,9 @@ export default function TrackYourTime(props: Props) {
       </section>
       <section className="z-10 w-full bg-white md:sticky md:top-0">
         <WeekView
-          timesAndEventsOfSelectedWeek={timesAndEventsOfSelectedWeek}
           selectedDate={selectedDate}
+          projectTimes={projectTimes}
+          calendarEvents={calendarEvents}
           onSelectDate={setSelectedDate}
           attendancesOfSelectedWeek={attendancesOfSelectedWeek}
           selectedDayEvents={selectedDayEvents}
@@ -145,8 +120,7 @@ export default function TrackYourTime(props: Props) {
             key={selectedDate.getDate()}
             selectedDate={selectedDate}
             calculationPositions={props.calculationPositions ?? []}
-            recurringTasks={recurringTasks}
-            phaseTasks={phaseTasks}
+            tasks={props.tasks}
             phasesPerCalculationPosition={props.phasesPerCalculationPosition}
             projectTimes={projectTimes}
             setProjectTimes={setProjectTimes}

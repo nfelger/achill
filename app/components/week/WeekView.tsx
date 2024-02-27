@@ -1,27 +1,40 @@
 import { PersonioAttendance } from "~/apis/personio/Personio.types";
+import type { ProjectTime } from "~/apis/troi/troi.types";
+import { getWeekDaysFor } from "~/utils/dateTimeUtils";
 import { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
+import { findEventsOfDate, findProjectTimesOfDate } from "../TrackYourTime";
 import { InfoBanner } from "./InfoBanner";
 import { WeekSelect } from "./WeekSelect";
 import { WeekTable } from "./WeekTable";
 
+function calcHoursOfDate(projectTimes: ProjectTime[], date: Date) {
+  return findProjectTimesOfDate(projectTimes, date).reduce(
+    (acc, projectTime) => acc + projectTime.hours,
+    0,
+  );
+}
+
 interface Props {
-  timesAndEventsOfSelectedWeek: {
-    hours: number;
-    events: TransformedCalendarEvent[];
-  }[];
   selectedDate: Date;
+  projectTimes: ProjectTime[];
+  calendarEvents: TransformedCalendarEvent[];
   onSelectDate: (newDate: Date) => unknown;
   attendancesOfSelectedWeek: (PersonioAttendance | undefined)[];
   selectedDayEvents: TransformedCalendarEvent[];
 }
-
 export function WeekView({
-  timesAndEventsOfSelectedWeek,
   selectedDate,
+  projectTimes,
+  calendarEvents,
   onSelectDate,
   attendancesOfSelectedWeek,
   selectedDayEvents,
 }: Props) {
+  const selectedWeek = getWeekDaysFor(selectedDate);
+  const timesAndEventsOfSelectedWeek = selectedWeek.map((weekday) => ({
+    hours: calcHoursOfDate(projectTimes, weekday),
+    events: findEventsOfDate(calendarEvents, weekday),
+  }));
   return (
     <div className="flex flex-wrap gap-8">
       <div className="min-w-[30ch]">
