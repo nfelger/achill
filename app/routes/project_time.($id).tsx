@@ -5,12 +5,12 @@ import { useEffect, useRef, useState } from "react";
 import { ZodError } from "zod";
 import { TrackyPhase } from "~/apis/tasks/TrackyPhase";
 import { TrackyTask } from "~/apis/tasks/TrackyTask";
-import type { CalculationPosition, ProjectTime } from "~/apis/troi/troi.types";
+import type { CalculationPosition, ProjectTime } from "~/apis/troi/Troi.types";
 import {
   addProjectTime,
   deleteProjectTime,
   updateProjectTime,
-} from "~/apis/troi/troiApiController";
+} from "~/apis/troi/TroiApiController";
 import { TimeInput } from "~/components/common/TimeInput";
 import { TrackyButton, buttonRed } from "~/components/common/TrackyButton";
 import { getSessionAndThrowIfInvalid } from "~/sessions.server";

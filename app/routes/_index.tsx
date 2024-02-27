@@ -5,12 +5,12 @@ import { useState } from "react";
 import { getAttendances } from "~/apis/personio/PersonioApiController";
 import { loadPhases } from "~/apis/tasks/TrackyPhase";
 import { loadTasks } from "~/apis/tasks/TrackyTask";
-import type { ProjectTime } from "~/apis/troi/troi.types";
+import type { ProjectTime } from "~/apis/troi/Troi.types";
 import {
   getCalculationPositions,
   getCalendarEvents,
   getProjectTimes,
-} from "~/apis/troi/troiApiController";
+} from "~/apis/troi/TroiApiController";
 import { LoadingOverlay } from "~/components/common/LoadingOverlay";
 import Section from "~/components/common/Section";
 import { TrackyButton } from "~/components/common/TrackyButton";

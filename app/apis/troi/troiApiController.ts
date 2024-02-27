@@ -3,7 +3,7 @@ import md5 from "crypto-js/md5.js";
 import moment from "moment";
 import { END_DATE, START_DATE } from "~/utils/dateTimeUtils";
 import { ProjectTimeSaveFormData } from "~/utils/projectTimeFormValidator";
-import type { CalendarEvent, CalendarEventType } from "./troi.types";
+import type { CalendarEvent, CalendarEventType } from "./Troi.types";
 
 const BASE_URL = "https://digitalservice.troi.software/api/v2/rest";
 const CLIENT_NAME = "DigitalService GmbH des Bundes";

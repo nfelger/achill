@@ -1,4 +1,4 @@
-import nocodbApi from "./nocodbClient.server";
+import nocodbApi from "./NocoDBClient.server";
 
 type TrackyPositionPhase = {
   Id: number;
