@@ -1,6 +1,6 @@
 import { json, redirect, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useFetchers, useLoaderData } from "@remix-run/react";
-import { TrackyPhase, loadPhases } from "~/apis/tasks/TrackyPhase";
+import { loadPhases } from "~/apis/tasks/TrackyPhase";
 import { loadTasks } from "~/apis/tasks/TrackyTask";
 import {
   getCalculationPositions,
