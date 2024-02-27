@@ -15,60 +15,50 @@ import TrackYourTime from "../components/TrackYourTime";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSessionAndThrowIfInvalid(request);
+  const { personioId, workingHours } = session.get("personioEmployee");
 
-  try {
-    const { personioId, workingHours } = session.get("personioEmployee");
+  // await all the promises in parallel
+  const [
+    calendarEvents,
+    calculationPositions,
+    projectTimes,
+    attendances,
+    tasks,
+  ] = await Promise.all([
+    // TROI API calls
+    getCalendarEvents(session),
+    getCalculationPositions(session),
+    getProjectTimes(session),
+    // PERSONIO API call
+    getAttendances(personioId),
+    // NOCODB API call
+    loadTasks(),
+  ]);
 
-    // await all the promises in parallel
-    const [
-      calendarEvents,
-      calculationPositions,
-      projectTimes,
-      attendances,
-      tasks,
-    ] = await Promise.all([
-      // TROI API calls
-      getCalendarEvents(session),
-      getCalculationPositions(session),
-      getProjectTimes(session),
-      // PERSONIO API call
-      getAttendances(personioId),
-      // NOCODB API call
-      loadTasks(),
-    ]);
+  // load phases for each calculation position in parallel
+  const phasesPerCalculationPosition = Object.fromEntries(
+    await Promise.all(
+      calculationPositions.map(async (calculationPosition) => [
+        [calculationPosition.id],
+        await loadPhases(
+          calculationPosition.id,
+          calculationPosition.subprojectId,
+        ),
+      ]),
+    ),
+  );
 
-    // load phases for each calculation position in parallel
-    const phasesPerCalculationPosition = Object.fromEntries(
-      await Promise.all(
-        calculationPositions.map(async (calculationPosition) => [
-          [calculationPosition.id],
-          await loadPhases(
-            calculationPosition.id,
-            calculationPosition.subprojectId,
-          ),
-        ]),
-      ),
-    );
-
-    return json({
-      timestamp: Date.now(),
-      username: session.get("username")!,
-      calculationPositions,
-      calendarEvents,
-      projectTimes,
-      tasks,
-      phasesPerCalculationPosition,
-      workingHours,
-      attendances,
-    });
-  } catch (error) {
-    if (error instanceof Error && error.message === "Invalid credentials") {
-      console.error("Authentication failed", error);
-      throw redirect("/login");
-    }
-
-    throw error;
-  }
+  return json({
+    timestamp: Date.now(),
+    username: session.get("username")!,
+    calculationPositions,
+    calendarEvents,
+    projectTimes,
+    tasks,
+    phasesPerCalculationPosition,
+    workingHours,
+    attendances,
+  });
 }
 
 export default function Index() {
