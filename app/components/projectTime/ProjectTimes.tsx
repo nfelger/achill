@@ -16,9 +16,7 @@ interface Props {
   phasesPerCalculationPosition: Record<number, TrackyPhase[]>;
   projectTimes: ProjectTime[];
   setProjectTimes: (projectTimes: ProjectTime[]) => void;
-  disabled: boolean;
 }
-
 export function ProjectTimes({
   selectedDate,
   calculationPositions,
@@ -26,7 +24,6 @@ export function ProjectTimes({
   phasesPerCalculationPosition,
   projectTimes,
   setProjectTimes,
-  disabled = false,
 }: Props) {
   function addProjectTime(projectTime: ProjectTime) {
     setProjectTimes([...projectTimes, projectTime]);
@@ -73,7 +70,6 @@ export function ProjectTimes({
             phaseTasks={phaseTasks}
             phases={phasesPerCalculationPosition[position.id]}
             calculationPosition={position}
-            disabled={disabled}
             onUpdateProjectTime={updateProjectTime}
             onDeleteProjectTime={deleteProjectTime}
             data-testid={`projectTimeCard-${position.id}`}
@@ -86,7 +82,6 @@ export function ProjectTimes({
           recurringTasks={recurringTasks}
           phaseTasks={phaseTasks}
           phases={phasesPerCalculationPosition[position.id]}
-          disabled={disabled}
           onAddProjectTime={addProjectTime}
         />
       )}

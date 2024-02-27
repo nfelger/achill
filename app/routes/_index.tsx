@@ -14,7 +14,7 @@ import {
 import { LoadingOverlay } from "~/components/common/LoadingOverlay";
 import Section from "~/components/common/Section";
 import { TrackyButton } from "~/components/common/TrackyButton";
-import { ProjectTimes } from "~/components/ProjectTimes";
+import { ProjectTimes } from "~/components/projectTime/ProjectTimes";
 import { WeekView } from "~/components/week/WeekView";
 import { WorkTimeForm } from "~/routes/work_time.($id)";
 import { getSessionAndThrowIfInvalid } from "~/sessions.server";
@@ -172,7 +172,6 @@ export default function TrackYourTime() {
                 }
                 projectTimes={projectTimes}
                 setProjectTimes={setProjectTimes}
-                disabled={false}
               />
             </Section>
           )}
