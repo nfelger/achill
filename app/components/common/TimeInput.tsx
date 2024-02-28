@@ -20,43 +20,45 @@ export function TimeInput({
   }
 
   return (
-    <div className="flex justify-start items-center">
-      <label className="inline-block w-24" htmlFor={name}>
+    <div>
+      <label className="inline-block mb-2 ml-7" htmlFor={name}>
         {label}
       </label>
-      {!readOnly && (
-        <span
-          className="material-symbols-outlined cursor-pointer select-none"
-          onClick={() => {
-            onChange(addMinutesToTime(-15, time));
+      <div className="flex items-center">
+        {!readOnly && (
+          <span
+            className="material-symbols-outlined cursor-pointer select-none"
+            onClick={() => {
+              onChange(addMinutesToTime(-15, time));
+            }}
+          >
+            Remove
+          </span>
+        )}
+        <input
+          className="mx-1 read-only:bg-gray-200 read-only:cursor-not-allowed read-only:border-gray-200 read-only:mx-7"
+          id={name}
+          name={name}
+          type="time"
+          value={time}
+          step={900}
+          readOnly={readOnly}
+          onChange={(e) => {
+            console.log(e.target.value);
+            onChange(e.target.value);
           }}
-        >
-          Remove
-        </span>
-      )}
-      <input
-        className="mx-4 read-only:bg-gray-200 read-only:cursor-not-allowed read-only:border-gray-200 read-only:ml-10"
-        id={name}
-        name={name}
-        type="time"
-        value={time}
-        step={900}
-        readOnly={readOnly}
-        onChange={(e) => {
-          console.log(e.target.value);
-          onChange(e.target.value);
-        }}
-      />
-      {!readOnly && (
-        <span
-          className="material-symbols-outlined cursor-pointer select-none"
-          onClick={() => {
-            onChange(addMinutesToTime(15, time));
-          }}
-        >
-          Add
-        </span>
-      )}
+        />
+        {!readOnly && (
+          <span
+            className="material-symbols-outlined cursor-pointer select-none"
+            onClick={() => {
+              onChange(addMinutesToTime(15, time));
+            }}
+          >
+            Add
+          </span>
+        )}
+      </div>
     </div>
   );
 }

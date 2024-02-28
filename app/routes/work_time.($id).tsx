@@ -152,36 +152,38 @@ export function WorkTimeForm({
     <fetcher.Form
       method="POST"
       action={`/work_time/${attendanceOfSelectedDate?.id ?? ""}`}
-      className="flex flex-col gap-3 block rounded-lg bg-gray-100 p-4 shadow-lg"
+      className="flex flex-col md:flex-row block rounded-lg bg-gray-100 p-4 shadow-lg"
     >
-      <TimeInput
-        name="startTime"
-        time={startTime}
-        onChange={setStartTime}
-        label="Start time"
-        readOnly={!isEdit}
-      />
-      <TimeInput
-        name="breakTime"
-        time={breakTime}
-        onChange={setBreakTime}
-        label="Break"
-        readOnly={!isEdit}
-      />
-      <TimeInput
-        name="endTime"
-        time={endTime}
-        onChange={setEndTime}
-        label="End time"
-        readOnly={!isEdit}
-      />
+      <div className="flex justify-between basis-2/3">
+        <TimeInput
+          name="startTime"
+          time={startTime}
+          onChange={setStartTime}
+          label="Start time"
+          readOnly={!isEdit}
+        />
+        <TimeInput
+          name="breakTime"
+          time={breakTime}
+          onChange={setBreakTime}
+          label="Break"
+          readOnly={!isEdit}
+        />
+        <TimeInput
+          name="endTime"
+          time={endTime}
+          onChange={setEndTime}
+          label="End time"
+          readOnly={!isEdit}
+        />
+      </div>
       <input
         name="date"
         value={moment(selectedDate).format("YYYY-MM-DD")}
         readOnly
         hidden
       />
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-grow mt-4 md:self-end md:justify-end">
         {attendanceOfSelectedDate ? (
           isEdit ? (
             <>
