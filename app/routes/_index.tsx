@@ -5,13 +5,12 @@ import { useState } from "react";
 import { getAttendances } from "~/apis/personio/PersonioApiController";
 import { loadPhases } from "~/apis/tasks/TrackyPhase";
 import { loadTasks } from "~/apis/tasks/TrackyTask";
-import type { ProjectTime } from "~/apis/troi/troi.types";
+import type { ProjectTime } from "~/apis/troi/Troi.types";
 import {
   getCalculationPositions,
   getCalendarEvents,
   getProjectTimes,
-} from "~/apis/troi/troiApiController";
-import { mergeAttendendancesForDays } from "~/utils/attendanceUtils";
+} from "~/apis/troi/TroiApiController";
 import { LoadingOverlay } from "~/components/common/LoadingOverlay";
 import Section from "~/components/common/Section";
 import { TrackyButton } from "~/components/common/TrackyButton";
@@ -19,6 +18,7 @@ import { ProjectTimes } from "~/components/projectTime/ProjectTimes";
 import { WeekView } from "~/components/week/WeekView";
 import { WorkTimeForm } from "~/routes/work_time.($id)";
 import { getSessionAndThrowIfInvalid } from "~/sessions.server";
+import { mergeAttendendancesForDays } from "~/utils/attendanceUtils";
 import { END_DATE, START_DATE } from "~/utils/dateTimeUtils";
 import {
   transformCalendarEvent,

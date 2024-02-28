@@ -1,5 +1,5 @@
 import moment from "moment";
-import { CalendarEvent } from "~/apis/troi/troi.types";
+import { CalendarEvent } from "~/apis/troi/Troi.types";
 import {
   convertToUTCMidnight,
   getDatesBetween,

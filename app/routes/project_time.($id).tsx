@@ -10,7 +10,7 @@ import {
   addProjectTime,
   deleteProjectTime,
   updateProjectTime,
-} from "~/apis/troi/troiApiController";
+} from "~/apis/troi/TroiApiController";
 import { TimeInput } from "~/components/common/TimeInput";
 import { TrackyButton, buttonRed } from "~/components/common/TrackyButton";
 import ProjectTimeDescription from "~/components/projectTime/ProjectTimeDescription";
