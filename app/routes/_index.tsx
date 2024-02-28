@@ -155,7 +155,7 @@ export default function TrackYourTime() {
 
           <Section title="Working hours (Personio)">
             <WorkTimeForm
-              key={selectedDate.getDate()}
+              key={selectedDate.toDateString()}
               selectedDate={selectedDate}
               workingHours={loaderData.workingHours}
               attendances={attendances}
@@ -166,7 +166,7 @@ export default function TrackYourTime() {
           {!selectedDayEvents?.some((event) => event.type == "Holiday") && (
             <Section title="Project hours (Troi)">
               <ProjectTimes
-                key={selectedDate.getDate()}
+                key={selectedDate.toDateString()}
                 selectedDate={selectedDate}
                 calculationPositions={loaderData.calculationPositions ?? []}
                 tasks={loaderData.tasks}
