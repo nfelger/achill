@@ -1,5 +1,9 @@
 import moment from "moment";
+<<<<<<< HEAD
 import { CalendarEvent } from "~/apis/troi/Troi.types";
+=======
+import type { CalendarEvent } from "~/apis/troi/troi.types";
+>>>>>>> 8ca7624 (Sum up multiple attendances from personio)
 import {
   convertToUTCMidnight,
   getDatesBetween,
