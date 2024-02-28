@@ -57,10 +57,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
         [calculationPosition.id],
         await loadPhases(
           calculationPosition.id,
-          calculationPosition.subprojectId
+          calculationPosition.subprojectId,
         ),
-      ])
-    )
+      ]),
+    ),
   );
 
   return json({
@@ -78,19 +78,19 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export function findEventsOfDate(
   calendarEvents: TransformedCalendarEvent[],
-  date: Date
+  date: Date,
 ) {
   return calendarEvents.filter((calendarEvent) =>
-    moment(calendarEvent.date).isSame(date, "day")
+    moment(calendarEvent.date).isSame(date, "day"),
   );
 }
 
 export function findProjectTimesOfDate(
   projectTimes: ProjectTime[],
-  date: Date
+  date: Date,
 ) {
   return projectTimes.filter((projectTime) =>
-    moment(projectTime.date).isSame(date, "day")
+    moment(projectTime.date).isSame(date, "day"),
   );
 }
 
@@ -99,7 +99,7 @@ export default function TrackYourTime() {
 
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [attendances, setAttendances] = useState(
-    mergeAttendendancesForDays(loaderData.attendances)
+    mergeAttendendancesForDays(loaderData.attendances),
   );
   const [projectTimes, setProjectTimes] = useState(loaderData.projectTimes);
 
@@ -112,7 +112,7 @@ export default function TrackYourTime() {
   }
 
   const calendarEvents = loaderData.calendarEvents.flatMap((calendarEvent) =>
-    transformCalendarEvent(calendarEvent, START_DATE, END_DATE)
+    transformCalendarEvent(calendarEvent, START_DATE, END_DATE),
   );
   const selectedDayEvents = findEventsOfDate(calendarEvents, selectedDate);
 

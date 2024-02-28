@@ -11,7 +11,7 @@ import { WeekTable } from "./WeekTable";
 function calcHoursOfDate(projectTimes: ProjectTime[], date: Date) {
   return findProjectTimesOfDate(projectTimes, date).reduce(
     (acc, projectTime) => acc + projectTime.hours,
-    0
+    0,
   );
 }
 
