@@ -149,7 +149,7 @@ export default function ProjectTimeDescription({
   return (
     <>
       <div className="my-8">
-        {recurringTasks && phases && (
+        {recurringTasks && phases.length > 0 && (
           <>
             <label htmlFor="recurring" className="basis-1/4">
               Recurring tasks
