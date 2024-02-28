@@ -5,8 +5,8 @@ import {
   datesEqual,
   getWeekDaysFor,
   minutesToTime,
+  convertFloatTimeToHHMM,
 } from "~/utils/dateTimeUtils";
-import { convertFloatTimeToHHMM } from "~/utils/dateTimeUtils";
 import { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
 
 interface Props {
@@ -56,7 +56,7 @@ export function WeekTable({
   function calculateWorkTime(attendance: PersonioAttendance): string {
     const momentBreakTime = moment(
       minutesToTime(attendance.breakTime),
-      "HH:mm",
+      "HH:mm"
     );
     const momentStartTime = moment(attendance.startTime, "HH:mm");
 

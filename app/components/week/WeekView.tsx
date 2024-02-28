@@ -1,6 +1,6 @@
 import moment from "moment";
 import { PersonioAttendance } from "~/apis/personio/Personio.types";
-import type { ProjectTime } from "~/apis/troi/Troi.types";
+import type { ProjectTime } from "~/apis/troi/troi.types";
 import { findEventsOfDate, findProjectTimesOfDate } from "~/routes/_index";
 import { getWeekDaysFor } from "~/utils/dateTimeUtils";
 import { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
@@ -11,7 +11,7 @@ import { WeekTable } from "./WeekTable";
 function calcHoursOfDate(projectTimes: ProjectTime[], date: Date) {
   return findProjectTimesOfDate(projectTimes, date).reduce(
     (acc, projectTime) => acc + projectTime.hours,
-    0,
+    0
   );
 }
 

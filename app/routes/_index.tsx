@@ -5,12 +5,13 @@ import { useState } from "react";
 import { getAttendances } from "~/apis/personio/PersonioApiController";
 import { loadPhases } from "~/apis/tasks/TrackyPhase";
 import { loadTasks } from "~/apis/tasks/TrackyTask";
-import type { ProjectTime } from "~/apis/troi/Troi.types";
+import type { ProjectTime } from "~/apis/troi/troi.types";
 import {
   getCalculationPositions,
   getCalendarEvents,
   getProjectTimes,
-} from "~/apis/troi/TroiApiController";
+} from "~/apis/troi/troiApiController";
+import { mergeAttendendancesForDays } from "~/utils/attendanceUtils";
 import { LoadingOverlay } from "~/components/common/LoadingOverlay";
 import Section from "~/components/common/Section";
 import { TrackyButton } from "~/components/common/TrackyButton";
@@ -56,10 +57,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
         [calculationPosition.id],
         await loadPhases(
           calculationPosition.id,
-          calculationPosition.subprojectId,
+          calculationPosition.subprojectId
         ),
-      ]),
-    ),
+      ])
+    )
   );
 
   return json({
@@ -77,19 +78,19 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export function findEventsOfDate(
   calendarEvents: TransformedCalendarEvent[],
-  date: Date,
+  date: Date
 ) {
   return calendarEvents.filter((calendarEvent) =>
-    moment(calendarEvent.date).isSame(date, "day"),
+    moment(calendarEvent.date).isSame(date, "day")
   );
 }
 
 export function findProjectTimesOfDate(
   projectTimes: ProjectTime[],
-  date: Date,
+  date: Date
 ) {
   return projectTimes.filter((projectTime) =>
-    moment(projectTime.date).isSame(date, "day"),
+    moment(projectTime.date).isSame(date, "day")
   );
 }
 
@@ -97,19 +98,21 @@ export default function TrackYourTime() {
   const loaderData = useLoaderData<typeof loader>();
 
   const [selectedDate, setSelectedDate] = useState(() => new Date());
-  const [attendances, setAttendances] = useState(loaderData.attendances);
+  const [attendances, setAttendances] = useState(
+    mergeAttendendancesForDays(loaderData.attendances)
+  );
   const [projectTimes, setProjectTimes] = useState(loaderData.projectTimes);
 
   // set state to loader data after loading
   const [prevTimestamp, setPrevTimestamp] = useState(loaderData.timestamp);
   if (loaderData.timestamp !== prevTimestamp) {
     setPrevTimestamp(loaderData.timestamp);
-    setAttendances(loaderData.attendances);
+    setAttendances(mergeAttendendancesForDays(loaderData.attendances));
     setProjectTimes(loaderData.projectTimes);
   }
 
   const calendarEvents = loaderData.calendarEvents.flatMap((calendarEvent) =>
-    transformCalendarEvent(calendarEvent, START_DATE, END_DATE),
+    transformCalendarEvent(calendarEvent, START_DATE, END_DATE)
   );
   const selectedDayEvents = findEventsOfDate(calendarEvents, selectedDate);
 

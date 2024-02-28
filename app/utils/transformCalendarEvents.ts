@@ -1,9 +1,5 @@
 import moment from "moment";
-<<<<<<< HEAD
-import { CalendarEvent } from "~/apis/troi/Troi.types";
-=======
-import type { CalendarEvent } from "~/apis/troi/troi.types";
->>>>>>> 8ca7624 (Sum up multiple attendances from personio)
+import { CalendarEvent } from "~/apis/troi/troi.types";
 import {
   convertToUTCMidnight,
   getDatesBetween,
@@ -53,12 +49,12 @@ export const CalendarEventDuration = Object.freeze(_CalendarEventDuration);
 export function transformCalendarEvent(
   eventInApiFormat: CalendarEvent,
   minDate: Date,
-  maxDate: Date,
+  maxDate: Date
 ) {
   const synthesisedEventsInApiFormat = _synthesiseMultiDayEvents(
     eventInApiFormat,
     minDate,
-    maxDate,
+    maxDate
   );
   const tranformedEvents = synthesisedEventsInApiFormat.map((event) => {
     return _transformSingleDayEvent(event);
@@ -68,7 +64,7 @@ export function transformCalendarEvent(
 }
 
 function _transformSingleDayEvent(
-  eventInApiFormat: CalendarEvent,
+  eventInApiFormat: CalendarEvent
 ): TransformedCalendarEvent {
   const normalizedDate = utcMidnightDateFromString(eventInApiFormat.startDate);
   const tranformedEvent = {
@@ -83,7 +79,7 @@ function _transformSingleDayEvent(
 function _synthesiseMultiDayEvents(
   eventInApiFormat: CalendarEvent,
   minDate: Date,
-  maxDate: Date,
+  maxDate: Date
 ) {
   const synthesisedEventsInApiFormat: CalendarEvent[] = [];
 
@@ -91,15 +87,15 @@ function _synthesiseMultiDayEvents(
     new Date(
       Math.max(
         utcMidnightDateFromString(eventInApiFormat.startDate).getTime(),
-        convertToUTCMidnight(minDate).getTime(),
-      ),
+        convertToUTCMidnight(minDate).getTime()
+      )
     ),
     new Date(
       Math.min(
         utcMidnightDateFromString(eventInApiFormat.endDate).getTime(),
-        convertToUTCMidnight(maxDate).getTime(),
-      ),
-    ),
+        convertToUTCMidnight(maxDate).getTime()
+      )
+    )
   );
 
   datesBetween.forEach((date) => {
@@ -135,7 +131,7 @@ function _synthesiseMultiDayEvents(
 }
 
 function _getCalendarEventTypForEvent(
-  event: CalendarEvent,
+  event: CalendarEvent
 ): CalendarEventType | undefined {
   if (event === undefined) {
     return undefined;

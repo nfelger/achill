@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { CalendarEvent } from "~/apis/troi/Troi.types";
-=======
 import type { CalendarEvent } from "~/apis/troi/troi.types";
->>>>>>> 8ca7624 (Sum up multiple attendances from personio)
 import { utcMidnightDateFromString } from "~/utils/dateTimeUtils";
 import { transformCalendarEvent } from "~/utils/transformCalendarEvents";
 
@@ -107,7 +103,7 @@ describe("Single day event tests", () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate,
+      maxDate
     );
 
     // THEN
@@ -129,7 +125,7 @@ describe("Single day event tests", () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate,
+      maxDate
     );
 
     // THEN
@@ -151,7 +147,7 @@ describe("Single day event tests", () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate,
+      maxDate
     );
 
     // THEN
@@ -173,7 +169,7 @@ describe("Single day event tests", () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate,
+      maxDate
     );
 
     // THEN
@@ -195,7 +191,7 @@ describe("Single day event tests", () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate,
+      maxDate
     );
 
     // THEN
@@ -217,7 +213,7 @@ describe("Single day event tests", () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate,
+      maxDate
     );
 
     // THEN
@@ -239,7 +235,7 @@ describe("Single day event tests", () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate,
+      maxDate
     );
 
     // THEN
@@ -261,7 +257,7 @@ describe("Single day event tests", () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate,
+      maxDate
     );
 
     // THEN
@@ -285,7 +281,7 @@ describe("Multi day event tests", () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate,
+      maxDate
     );
 
     // THEN
@@ -325,7 +321,7 @@ describe("Multi day event tests", () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate,
+      maxDate
     );
 
     // THEN
@@ -365,7 +361,7 @@ describe("Multi day event tests", () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate,
+      maxDate
     );
 
     // THEN
@@ -406,7 +402,7 @@ describe("Multi day event tests", () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate,
+      maxDate
     );
 
     // THEN
@@ -447,7 +443,7 @@ describe("Multi day event tests", () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate,
+      maxDate
     );
 
     // THEN
@@ -478,7 +474,7 @@ describe("Multi day event tests", () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate,
+      maxDate
     );
 
     // THEN
@@ -509,7 +505,7 @@ describe("Multi day event tests", () => {
     const tranformedEvents = transformCalendarEvent(
       mockEvent,
       minDate,
-      maxDate,
+      maxDate
     );
 
     // THEN
