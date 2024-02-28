@@ -133,7 +133,7 @@ export function ProjectTimeForm({
       ref={formRef}
       method="POST"
       action={`/project_time/${projectTimeId ?? ""}`}
-      className="block w-full rounded-lg bg-gray-100 p-4 shadow-lg"
+      className="block w-full mb-4 rounded-lg bg-gray-100 p-4 shadow-lg"
     >
       <h3 className="mb-4 text-base text-gray-900">
         {calculationPosition.name}

@@ -54,37 +54,36 @@ export function ProjectTimes({
   const recurringTasks = filterRecurringTasks(tasks);
   const phaseTasks = filterPhaseTasks(tasks);
 
-  return timesForCalculationPosition.map(({ position, projectTimes }) => (
-    <div key={position.id} className="mb-4 container mx-auto">
-      {projectTimes.length ? (
-        projectTimes.map((projectTime) => (
-          <ProjectTimeForm
-            key={projectTime.id}
-            date={selectedDate}
-            projectTimeId={projectTime.id}
-            values={{
-              hours: convertFloatTimeToHHMM(projectTime.hours),
-              description: projectTime.description,
-            }}
-            recurringTasks={recurringTasks}
-            phaseTasks={phaseTasks}
-            phases={phasesPerCalculationPosition[position.id]}
-            calculationPosition={position}
-            onUpdateProjectTime={updateProjectTime}
-            onDeleteProjectTime={deleteProjectTime}
-            data-testid={`projectTimeCard-${position.id}`}
-          />
-        ))
-      ) : (
+  return timesForCalculationPosition.map(({ position, projectTimes }) =>
+    projectTimes.length ? (
+      projectTimes.map((projectTime) => (
         <ProjectTimeForm
+          key={projectTime.id}
           date={selectedDate}
-          calculationPosition={position}
+          projectTimeId={projectTime.id}
+          values={{
+            hours: convertFloatTimeToHHMM(projectTime.hours),
+            description: projectTime.description,
+          }}
           recurringTasks={recurringTasks}
           phaseTasks={phaseTasks}
           phases={phasesPerCalculationPosition[position.id]}
-          onAddProjectTime={addProjectTime}
+          calculationPosition={position}
+          onUpdateProjectTime={updateProjectTime}
+          onDeleteProjectTime={deleteProjectTime}
+          data-testid={`projectTimeCard-${position.id}`}
         />
-      )}
-    </div>
-  ));
+      ))
+    ) : (
+      <ProjectTimeForm
+        key={position.id}
+        date={selectedDate}
+        calculationPosition={position}
+        recurringTasks={recurringTasks}
+        phaseTasks={phaseTasks}
+        phases={phasesPerCalculationPosition[position.id]}
+        onAddProjectTime={addProjectTime}
+      />
+    ),
+  );
 }
