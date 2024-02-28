@@ -135,7 +135,9 @@ export function ProjectTimeForm({
       action={`/project_time/${projectTimeId ?? ""}`}
       className="block w-full rounded-lg bg-gray-100 p-4 shadow-lg"
     >
-      <h3 className="mb-4 text-gray-900">{calculationPosition.name}</h3>
+      <h3 className="mb-4 text-base text-gray-900">
+        {calculationPosition.name}
+      </h3>
       <input
         type="hidden"
         name="calculationPositionId"
