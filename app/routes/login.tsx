@@ -7,7 +7,7 @@ import {
 } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { initializePersonioApi } from "~/apis/personio/PersonioApiController";
-import { initializeTroiApi } from "~/apis/troi/TroiApiController";
+import { initializeTroiApi } from "~/apis/troi/troiApiController";
 import Spinner from "~/components/common/Spinner";
 import { TrackyButton } from "~/components/common/TrackyButton";
 import { commitSession, destroySession, getSession } from "~/sessions.server";

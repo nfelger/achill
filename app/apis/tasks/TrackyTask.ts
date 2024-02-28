@@ -20,7 +20,7 @@ export async function loadTasks() {
   const tasks = await nocodbApi.dbTableRow.list(
     "v1",
     "ds4g-data",
-    "Tracky-Task",
+    "Tracky-Task"
   );
 
   return tasks.list as TrackyTask[];
