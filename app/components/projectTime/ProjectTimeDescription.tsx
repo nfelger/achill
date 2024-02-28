@@ -39,6 +39,7 @@ type ProjectTimeDescriptionProps = {
   submitForm: () => void;
   hasErrors: boolean;
   resetErrors: () => void;
+  projectTimeId?: number;
 };
 export default function ProjectTimeDescription({
   description,
@@ -51,6 +52,7 @@ export default function ProjectTimeDescription({
   submitForm,
   hasErrors,
   resetErrors,
+  projectTimeId,
 }: ProjectTimeDescriptionProps) {
   const descriptionTestId = `description-${calculationPositionId}`;
 
@@ -161,14 +163,14 @@ export default function ProjectTimeDescription({
                   <input
                     checked={descriptionSegments.includes(task.name)}
                     className="rounded-md border border-gray-300 bg-white p-2"
-                    id={`${calculationPositionId}-${task.name}`}
+                    id={`${calculationPositionId}/${projectTimeId}-${task.name}`}
                     value={task.name}
                     type="checkbox"
                     onChange={onRecurringTaskChange}
                   />
                   <label
                     className="pr-5"
-                    htmlFor={`${calculationPositionId}-${task.name}`}
+                    htmlFor={`${calculationPositionId}/${projectTimeId}-${task.name}`}
                   >
                     {task.name}
                   </label>

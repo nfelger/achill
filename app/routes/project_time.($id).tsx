@@ -175,6 +175,7 @@ export function ProjectTimeForm({
             submitForm={() => formRef.current!.submit()}
             hasErrors={Object.values(errors).length > 0}
             resetErrors={() => setErrors([])}
+            projectTimeId={projectTimeId}
           >
             {projectTimeId ? (
               <>
