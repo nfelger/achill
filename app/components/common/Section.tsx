@@ -8,7 +8,7 @@ export default function Section({
   extraClasses?: string;
 }) {
   return (
-    <section className={`mt-4 ${extraClasses}`}>
+    <section className={`mt-4 ${extraClasses ?? ""}`}>
       {title && (
         <h2 className="pt-4 mb-4 text-lg font-semibold text-gray-900">
           {title}
