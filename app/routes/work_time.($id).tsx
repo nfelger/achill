@@ -79,7 +79,7 @@ export function WorkTimeForm({
   attendances,
   setAttendances,
 }: Props) {
-  const fetcher = useFetcher<typeof action>({ key: "Personio" });
+  const fetcher = useFetcher<typeof action>();
 
   const attendanceOfSelectedDate = attendances.find(
     (attendance) =>
@@ -135,6 +135,7 @@ export function WorkTimeForm({
           );
           break;
         case "DELETE":
+          setIsEdit(true);
           setAttendances(
             attendances.filter(
               (attendance) => attendance.id !== submittedAttendance.id,
