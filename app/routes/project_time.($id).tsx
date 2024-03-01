@@ -1,5 +1,5 @@
 import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
+import { useFetcher, useSubmit } from "@remix-run/react";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { ZodError } from "zod";
@@ -92,10 +92,19 @@ export function ProjectTimeForm({
   const formRef = useRef<HTMLFormElement>(null);
 
   const [description, setDescription] = useState(() => values.description);
-
   const [hours, setHours] = useState(values.hours);
   const [isEdit, setIsEdit] = useState(projectTimeId ? false : true);
   const [errors, setErrors] = useState<string[]>([]);
+
+  function submitForm(method: "POST" | "PUT") {
+    if (!formRef.current) return;
+    const formData = new FormData(formRef.current);
+    formData.append("_action", method);
+    fetcher.submit(formData, {
+      method: "POST", // required for action to matter
+      action: `/project_time/${projectTimeId ?? ""}`,
+    });
+  }
 
   function handleCancel() {
     setHours(values.hours);
@@ -172,7 +181,9 @@ export function ProjectTimeForm({
             phaseTasks={phaseTasks}
             phases={phases}
             calculationPositionId={calculationPosition.id}
-            submitForm={() => formRef.current!.submit()}
+            submitForm={() =>
+              projectTimeId ? submitForm("PUT") : submitForm("POST")
+            }
             hasErrors={Object.values(errors).length > 0}
             resetErrors={() => setErrors([])}
             projectTimeId={projectTimeId}
