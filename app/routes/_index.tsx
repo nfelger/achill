@@ -119,7 +119,7 @@ export default function TrackYourTime() {
   const anySubmitting = useFetchers().some((f) => f.state === "submitting");
 
   return (
-    <div className="container mx-auto mt-8 w-full max-w-screen-lg text-sm text-gray-800 sm:px-2">
+    <div className="container mx-auto md:mt-8 w-full max-w-screen-lg text-sm text-gray-800 md:px-2">
       <main className="rounded-sm bg-white p-2 shadow-md sm:w-full md:px-8 md:py-6">
         {anySubmitting && <LoadingOverlay message="Loading data..." />}
         <nav className="flex h-16 justify-between items-center border-1 w-full border-b pb-1 text-left">
