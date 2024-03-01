@@ -36,7 +36,7 @@ export function TimeInput({
           </span>
         )}
         <input
-          className="mx-1 read-only:bg-gray-200 read-only:cursor-not-allowed read-only:border-gray-200 read-only:mx-7"
+          className="mx-1 read-only:bg-gray-200 read-only:cursor-not-allowed read-only:border-gray-200 read-only:mx-7 sm:p-1 md:px-3 md:py-2"
           id={name}
           name={name}
           type="time"
