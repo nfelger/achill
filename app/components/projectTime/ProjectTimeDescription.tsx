@@ -141,7 +141,9 @@ export default function ProjectTimeDescription({
   }
 
   async function onKeyDown(e: React.KeyboardEvent) {
-    if (e.key === "Enter") {
+    // allow shift + enter to add newline
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // dont add newline
       submitForm();
     }
   }
