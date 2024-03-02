@@ -1,4 +1,3 @@
-/* eslint-disable no-case-declarations */
 import { ActionFunctionArgs, json } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import moment from "moment";
@@ -152,7 +151,7 @@ export function WorkTimeForm({
     <fetcher.Form
       method="POST"
       action={`/work_time/${attendanceOfSelectedDate?.id ?? ""}`}
-      className="flex justify-between block rounded-lg bg-gray-100 p-4 shadow-lg"
+      className="flex justify-between rounded-lg bg-gray-100 p-4 shadow-lg"
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:gap-0 justify-between basis-2/3">
         <TimeInput

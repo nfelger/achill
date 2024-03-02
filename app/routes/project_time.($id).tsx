@@ -1,5 +1,5 @@
 import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
-import { useFetcher, useSubmit } from "@remix-run/react";
+import { useFetcher } from "@remix-run/react";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { ZodError } from "zod";
@@ -11,7 +11,6 @@ import {
   deleteProjectTime,
   updateProjectTime,
 } from "~/apis/troi/TroiApiController";
-import { TimeInput } from "~/components/common/TimeInput";
 import { TrackyButton, buttonRed } from "~/components/common/TrackyButton";
 import ProjectTimeDescription from "~/components/projectTime/ProjectTimeDescription";
 import { getSessionAndThrowIfInvalid } from "~/sessions.server";
@@ -77,7 +76,7 @@ export function ProjectTimeForm({
   date,
   projectTimeId,
   values = {
-    hours: "04:00",
+    hours: "",
     description: "",
   },
   recurringTasks,
@@ -94,29 +93,21 @@ export function ProjectTimeForm({
   const [description, setDescription] = useState(() => values.description);
   const [hours, setHours] = useState(values.hours);
   const [isEdit, setIsEdit] = useState(projectTimeId ? false : true);
-  const [errors, setErrors] = useState<string[]>([]);
-
-  function submitForm(method: "POST" | "PUT") {
-    if (!formRef.current) return;
-    const formData = new FormData(formRef.current);
-    formData.append("_action", method);
-    fetcher.submit(formData, {
-      method: "POST", // required for action to matter
-      action: `/project_time/${projectTimeId ?? ""}`,
-    });
-  }
-
-  function handleCancel() {
-    setHours(values.hours);
-    setDescription(values.description);
-    setIsEdit(false);
-  }
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
 
   useEffect(() => {
     if (fetcher.state !== "loading" || !fetcher.data) return;
     if ("issues" in fetcher.data) {
-      setErrors(fetcher.data.issues.map((issue) => issue.message));
-      return;
+      const errors = fetcher.data.issues.reduce(
+        (errors, issue) => ({
+          ...errors,
+          [issue.path[0]]: issue.message,
+        }),
+        {},
+      );
+      setValidationErrors(errors);
     } else if (fetcher.data.id && fetcher.formData) {
       const submittedProjectTime = fetcher.data;
 
@@ -131,11 +122,39 @@ export function ProjectTimeForm({
         case "DELETE":
           onDeleteProjectTime!(submittedProjectTime.id);
           break;
-        default:
-          break;
       }
     }
   }, [fetcher.state]);
+
+  function saveForm() {
+    if (!formRef.current) return;
+    const method = projectTimeId ? "PUT" : "POST";
+    const formData = new FormData(formRef.current);
+    formData.append("_action", method);
+    fetcher.submit(formData, {
+      method,
+      action: `/project_time/${projectTimeId ?? ""}`,
+    });
+  }
+
+  async function onKeyDown(e: React.KeyboardEvent) {
+    // allow shift + enter to add newline
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // dont add newline on enter
+      saveForm();
+    }
+  }
+
+  function handleCancel() {
+    setHours(values.hours);
+    setDescription(values.description);
+    setIsEdit(false);
+  }
+
+  function resetError(errorKey: string) {
+    const { [errorKey]: _, ...rest } = validationErrors;
+    setValidationErrors(rest);
+  }
 
   return (
     <fetcher.Form
@@ -159,17 +178,29 @@ export function ProjectTimeForm({
       />
       {isEdit ? (
         <>
-          <div className="relative flex w-full items-center">
-            <TimeInput
-              name="hours"
-              time={moment(hours, "HH:mm").format("HH:mm")}
-              onChange={setHours}
-              label="Hours"
-            />
-            {errors.length > 0 && (
+          <div className="flex w-full items-center mb-3">
+            <div className="flex items-center">
+              <label htmlFor="hours" className="mr-4">
+                Hours
+              </label>
+              <input
+                name="hours"
+                value={hours}
+                onKeyDown={onKeyDown}
+                onChange={(e) => {
+                  resetError("hours");
+                  setHours(e.target.value);
+                }}
+                type="text"
+                id="hours"
+                className={`${validationErrors.hours ? "error " : ""}w-20`}
+                placeholder="2:15"
+              />
+            </div>
+            {Object.entries(validationErrors).length > 0 && (
               <ul className="mt-1 ml-2 font-bold text-red-600">
-                {errors.map((error) => (
-                  <li key={error}>&#x26A0; {error}</li>
+                {Object.entries(validationErrors).map(([key, value]) => (
+                  <li key={key}>&#x26A0; {value}</li>
                 ))}
               </ul>
             )}
@@ -181,11 +212,9 @@ export function ProjectTimeForm({
             phaseTasks={phaseTasks}
             phases={phases}
             calculationPositionId={calculationPosition.id}
-            submitForm={() =>
-              projectTimeId ? submitForm("PUT") : submitForm("POST")
-            }
-            hasErrors={Object.values(errors).length > 0}
-            resetErrors={() => setErrors([])}
+            onKeyDown={onKeyDown}
+            hasErrors={!!validationErrors.description}
+            resetErrors={() => resetError("description")}
             projectTimeId={projectTimeId}
           >
             {projectTimeId ? (
