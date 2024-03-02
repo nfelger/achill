@@ -14,11 +14,6 @@ function segmentsToDescription(segments: string[]): string {
   return segments.join(", ");
 }
 
-const minRows = 4;
-const maxRows = 40;
-const minHeight = `${1 + minRows * 1.2}em`;
-const maxHeight = maxRows ? `${1 + maxRows * 1.2}em` : `auto`;
-
 type ProjectTimeDescriptionProps = {
   description: string;
   setDescription: React.Dispatch<React.SetStateAction<string>>;
@@ -219,16 +214,8 @@ export default function ProjectTimeDescription({
           )}
         </details>
       ))}
-      <div className="relative flex w-full flex-col items-center justify-between md:flex-row">
-        <div className="mb-2 w-full md:mb-0 md:w-4/6">
-          <pre
-            aria-hidden="true"
-            className="inherit border-box overflow-hidden p-[0.5em] leading-4"
-            style={{ minHeight, maxHeight }}
-          >
-            {description + "\n"}
-          </pre>
-
+      <div className="flex w-full flex-col md:flex-row items-stretch">
+        <div className="w-full md:mb-0 md:mr-5">
           <textarea
             name="description"
             value={description}
@@ -236,7 +223,7 @@ export default function ProjectTimeDescription({
             onInput={handleDescriptionChange}
             id="description"
             data-testid={descriptionTestId}
-            className={`h-3/5 w-full md:h-full md:w-5/6 absolute top-0 overflow-hidden p-[0.5em] leading-4 ${hasErrors ? " error" : ""} `}
+            className={`h-full w-full leading-4 ${hasErrors ? " error" : ""} `}
             placeholder="Working the work…"
           />
         </div>
