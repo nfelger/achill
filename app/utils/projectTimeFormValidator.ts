@@ -17,7 +17,7 @@ export const projectTimeSaveFormSchema = z.object({
   date: z.string().regex(YYYY_MM_DD_FORMAT),
   hours: z
     .string()
-    .regex(timeInputFormat, "Time is in the wrong format.")
+    .regex(timeInputFormat, "Time is missing or in the wrong format.")
     .transform(convertTimeStringToFloat),
   description: z.string().min(1, "Description is required."),
 }) satisfies ZodSchema<ProjectTimeSaveFormData, ZodTypeDef, unknown>;
