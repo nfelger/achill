@@ -1,5 +1,5 @@
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
-import { Form, useFetchers, useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 import moment from "moment";
 import { useState } from "react";
 import { getAttendances } from "~/apis/personio/PersonioApiController";
@@ -11,9 +11,7 @@ import {
   getCalendarEvents,
   getProjectTimes,
 } from "~/apis/troi/TroiApiController";
-import { LoadingOverlay } from "~/components/common/LoadingOverlay";
 import Section from "~/components/common/Section";
-import { TrackyButton } from "~/components/common/TrackyButton";
 import { ProjectTimes } from "~/components/projectTime/ProjectTimes";
 import { WeekView } from "~/components/week/WeekView";
 import { WorkTimeForm } from "~/routes/work_time.($id)";
@@ -122,12 +120,9 @@ export default function TrackYourTime() {
   );
   const selectedDayEvents = findEventsOfDate(calendarEvents, selectedDate);
 
-  const anySubmitting = useFetchers().some((f) => f.state === "submitting");
-
   return (
     <div className="container mx-auto md:mt-8 w-full max-w-screen-lg text-sm text-gray-800 md:px-2">
       <main className="rounded-sm bg-white p-2 shadow-md sm:w-full md:px-8 md:py-6">
-        {anySubmitting && <LoadingOverlay message="Loading data..." />}
         <nav className="flex h-16 justify-between items-center border-1 w-full border-b pb-1 text-left">
           <img
             src="timetracking_blue.svg"
