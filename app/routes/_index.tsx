@@ -3,7 +3,12 @@ import { Form, useLoaderData } from "@remix-run/react";
 import moment from "moment";
 import { useState } from "react";
 import { getAttendances } from "~/apis/personio/PersonioApiController";
-import { loadPhases } from "~/apis/tasks/TrackyPhase";
+import {
+  loadPhases,
+  loadPositionPhases,
+  loadSubprojectPhases,
+  getPhasesPerCalculationPosition,
+} from "~/apis/tasks/TrackyPhase";
 import { loadTasks } from "~/apis/tasks/TrackyTask";
 import type { ProjectTime } from "~/apis/troi/Troi.types";
 import {
@@ -39,6 +44,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     projectTimes,
     attendances,
     tasks,
+    phases,
+    positionPhases,
+    subprojectPhases,
   ] = await Promise.all([
     // TROI API calls
     getCalendarEvents(session),
@@ -46,23 +54,21 @@ export async function loader({ request }: LoaderFunctionArgs) {
     getProjectTimes(session),
     // PERSONIO API call
     getAttendances(personioId),
-    // NOCODB API call
+    // NOCODB API calls
     loadTasks(),
+    loadPhases(),
+    loadPositionPhases(),
+    loadSubprojectPhases(),
   ]);
 
   console.timeLog("loader");
 
   // load phases for each calculation position in parallel
-  const phasesPerCalculationPosition = Object.fromEntries(
-    await Promise.all(
-      calculationPositions.map(async (calculationPosition) => [
-        [calculationPosition.id],
-        await loadPhases(
-          calculationPosition.id,
-          calculationPosition.subprojectId,
-        ),
-      ]),
-    ),
+  const phasesPerCalculationPosition = getPhasesPerCalculationPosition(
+    phases,
+    positionPhases,
+    subprojectPhases,
+    calculationPositions,
   );
 
   console.timeEnd("loader");

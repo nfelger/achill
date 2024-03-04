@@ -1,3 +1,4 @@
+import type { CalculationPosition } from "../troi/Troi.types";
 import nocodbApi from "./NocoDBClient.server";
 
 type TrackyPositionPhase = {
@@ -8,78 +9,57 @@ type TrackyPositionPhase = {
 
 type TrackySubprojectPhase = {
   Id: number;
-  "Subproject ID": number;
   "Phase ID": number;
+  "Subproject ID": number;
 };
 
 export type TrackyPhase = {
   Id: number;
   "Phase ID": number;
   "Phase Name": string;
-  Divider: unknown;
 };
 
-async function loadPositionPhases(
-  positionId: number,
-): Promise<TrackyPositionPhase[]> {
-  const positionPhases = await nocodbApi.dbViewRow.list(
-    "noco",
-    "ds4g-data",
-    "Tracky-Position-Phase",
-    "Tracky-Position-Phase",
-    {
-      where: `(Position ID,eq,${positionId})`,
-    },
-  );
-  return positionPhases.list as TrackyPositionPhase[];
+export async function loadView<T>(view: string) {
+  return (await nocodbApi.dbViewRow.list("noco", "ds4g-data", view, view))
+    .list as T[];
 }
 
-async function loadSubprojectPhases(
-  subprojectId: number,
-): Promise<TrackySubprojectPhase[]> {
-  const subprojectPhases = await nocodbApi.dbViewRow.list(
-    "noco",
-    "ds4g-data",
-    "Tracky-Subproject-Phase",
-    "Tracky-Subproject-Phase",
-    {
-      where: `(Subproject ID,eq,${subprojectId})`,
-    },
-  );
-  return subprojectPhases.list as TrackySubprojectPhase[];
+export async function loadPositionPhases() {
+  return loadView<TrackyPositionPhase>("Tracky-Position-Phase");
 }
 
-export async function loadPhases(
-  positionId: number,
-  subprojectId: number,
-): Promise<TrackyPhase[]> {
-  let whereClause: string[] = [];
+export async function loadSubprojectPhases() {
+  return loadView<TrackySubprojectPhase>("Tracky-Subproject-Phase");
+}
 
-  const [positionPhases, subprojectPhases] = await Promise.all([
-    loadPositionPhases(positionId),
-    loadSubprojectPhases(subprojectId),
-  ]);
+export async function loadPhases() {
+  return loadView<TrackyPhase>("Tracky-Phase");
+}
 
-  positionPhases.forEach((phase) =>
-    whereClause.push(`(Phase ID,eq,${phase["Phase ID"]})`),
+export function getPhasesPerCalculationPosition(
+  phases: TrackyPhase[],
+  positionPhases: TrackyPositionPhase[],
+  subprojectPhases: TrackySubprojectPhase[],
+  calculationPositions: CalculationPosition[],
+) {
+  return Object.fromEntries(
+    calculationPositions.map(({ id, subprojectId }) => {
+      const filteredPositionPhases = positionPhases.filter(
+        (positionPhase) => positionPhase["Position ID"] === id.toString(),
+      );
+      const filteredSubprojectPhases = subprojectPhases.filter(
+        (subprojectPhase) => subprojectPhase["Subproject ID"] === subprojectId,
+      );
+
+      const joinedPhaseIds = [
+        ...filteredPositionPhases,
+        ...filteredSubprojectPhases,
+      ].map((phase) => phase["Phase ID"]);
+      const trackyPhases = phases.filter((phase) =>
+        joinedPhaseIds.includes(phase["Phase ID"]),
+      );
+
+      return [id, trackyPhases];
+    }),
   );
-  subprojectPhases.forEach((phase) =>
-    whereClause.push(`(Phase ID,eq,${phase["Phase ID"]})`),
-  );
-
-  if (whereClause.length === 0) {
-    return [];
-  }
-
-  const trackyPhases = await nocodbApi.dbViewRow.list(
-    "noco",
-    "ds4g-data",
-    "Tracky-Phase",
-    "Tracky-Phase",
-    {
-      where: whereClause.join("~or"),
-    },
-  );
-
-  return trackyPhases.list as TrackyPhase[];
 }
