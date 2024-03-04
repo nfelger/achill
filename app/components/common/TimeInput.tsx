@@ -20,14 +20,14 @@ export function TimeInput({
   }
 
   return (
-    <div>
-      <label className="inline-block mb-1 ml-7" htmlFor={name}>
+    <div className="w-44">
+      <label className="inline-block mb-1 ml-9" htmlFor={name}>
         {label}
       </label>
-      <div className="flex items-center">
+      <div className="flex items-center justify-around">
         {!readOnly && (
           <span
-            className="material-symbols-outlined cursor-pointer select-none"
+            className="material-symbols-outlined cursor-pointer select-none border rounded-full border-gray-800"
             onClick={() => {
               onChange(addMinutesToTime(-15, time));
             }}
@@ -36,7 +36,7 @@ export function TimeInput({
           </span>
         )}
         <input
-          className="mx-1 read-only:bg-gray-200 read-only:cursor-not-allowed read-only:border-gray-200 read-only:mx-7"
+          className="read-only:bg-gray-200 read-only:cursor-not-allowed read-only:border-gray-200"
           id={name}
           name={name}
           type="time"
@@ -50,7 +50,7 @@ export function TimeInput({
         />
         {!readOnly && (
           <span
-            className="material-symbols-outlined cursor-pointer select-none"
+            className="material-symbols-outlined cursor-pointer select-none border rounded-full border-gray-800"
             onClick={() => {
               onChange(addMinutesToTime(15, time));
             }}
