@@ -32,6 +32,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSessionAndThrowIfInvalid(request);
   const { personioId, workingHours } = session.get("personioEmployee");
 
+  console.time("loader");
+
   // await all the promises in parallel
   const [
     calendarEvents,
@@ -50,6 +52,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
     loadTasks(),
   ]);
 
+  console.timeLog("loader");
+
   // load phases for each calculation position in parallel
   const phasesPerCalculationPosition = Object.fromEntries(
     await Promise.all(
@@ -62,6 +66,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
       ]),
     ),
   );
+
+  console.timeEnd("loader");
 
   return json({
     timestamp: Date.now(),
