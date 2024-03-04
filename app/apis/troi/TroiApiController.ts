@@ -18,8 +18,6 @@ async function fetchWithTroiAuth<T>(
   const username = session.get("username");
   const password = session.get("troiPassword");
 
-  console.log("[TroiAPI]", url.toString());
-
   const response = await fetch(url, {
     ...init,
     headers: {
@@ -27,6 +25,13 @@ async function fetchWithTroiAuth<T>(
       Authorization: `Basic ${btoa(`${username}:${md5(password)}`)}`,
     },
   });
+
+  console.log(
+    "[TroiAPI]",
+    init?.method ?? "GET",
+    url.toString(),
+    response.status,
+  );
 
   if (!response.ok) {
     if (response.status === 401 || response.status === 403) {
