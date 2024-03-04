@@ -23,7 +23,7 @@ fileignoreconfig:
     checksum: 1a0d9ceaf8e4a6d76c7c9c0df4fcaca85edf5bd08344dd7a02cafa17cf01031a
   - filename: app/apis/personio/PersonioApiController.ts
     checksum: e21fec86567320e55f7661df97909ccdf522ebb1cd3a46c4f51cb5f35c0a1187
-  - filename: app/apis/troi/troiApiController.ts
+  - filename: app/apis/troi/TroiApiController.ts
     checksum: f65dce2639d1c6272637d0fc8a4435e008e828858d7e36e26fbf918edc35ecba
   - filename: app/routes/login.tsx
     allowed_patterns: [password, troiPassword]
@@ -37,7 +37,7 @@ fileignoreconfig:
     allowed_patterns: [sessionCookieSecret, SESSION_COOKIE_SECRET]
   - filename: app/personio/PersonioApiController.ts
     allowed_patterns: [PERSONIO_CLIENT_SECRET, client_secret, process.env.PERSONIO_CLIENT_ID, process.env.PERSONIO_CLIENT_SECRET]
-  - filename: app/troi/troiApiController.ts
+  - filename: app/troi/TroiApiController.ts
     allowed_patterns: [session.get("troiPassword")]
 version: ""
 scopeconfig:
