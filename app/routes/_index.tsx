@@ -134,7 +134,7 @@ export default function TrackYourTime() {
             <div className="text-sm">Logged in as {loaderData.username}.</div>
           </div>
           <Form method="post" action="/logout">
-            <TrackyButton testId="logout-button">Logout</TrackyButton>
+            <button className="tracky-btn">Logout</button>
           </Form>
         </nav>
         <div>
