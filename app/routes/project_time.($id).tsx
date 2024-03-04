@@ -167,8 +167,8 @@ export function ProjectTimeForm({
     <fetcher.Form
       ref={formRef}
       method="POST"
-      className="block w-full mb-4 rounded-lg bg-gray-100 p-4 shadow-lg"
       action={`/project_time/${isCreate ? "" : projectTime.id}`}
+      className="block w-full mb-5 rounded-lg bg-gray-100 p-4 shadow-lg"
     >
       <h3 className="mb-4 text-base text-gray-900">
         {calculationPosition.name}
@@ -185,7 +185,7 @@ export function ProjectTimeForm({
       />
       {isEdit ? (
         <>
-          <div className="flex w-full items-center mb-3">
+          <div className="flex w-full items-center mb-5">
             <div className="flex items-center">
               <label htmlFor="hours" className="mr-4">
                 Hours

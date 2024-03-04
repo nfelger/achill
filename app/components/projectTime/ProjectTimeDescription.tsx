@@ -126,11 +126,14 @@ export default function ProjectTimeDescription({
   return (
     <>
       {recurringTasks && phases.length > 0 && (
-        <div className="mt-5 mb-3">
-          <label htmlFor="recurring" className="basis-1/4">
+        <div className="mb-5">
+          <label htmlFor={`recurring-${id}`} className="basis-1/4">
             Recurring tasks
           </label>
-          <div id="recurring" className="mt-2">
+          <div
+            id={`recurring-${id}`}
+            className="mt-2 flex flex-col gap-1 md:flex-row md:gap-4"
+          >
             {recurringTasks.map((task) => (
               <label
                 key={task.Id}
@@ -152,8 +155,8 @@ export default function ProjectTimeDescription({
         </div>
       )}
       {phasesToDisplay.map((phase) => (
-        <details key={phase.name} className="mb-[20px]" open={phase.open}>
-          <summary className="flex w-full flex-row items-center gap-4 rounded-t border-b-2 border-solid border-b-[#CED4DA] bg-[#E5E5E5] px-[16px] py-[20px]">
+        <details key={phase.name} className="mb-5" open={phase.open}>
+          <summary className="flex w-full flex-row items-center gap-4 rounded-t border-b-2 border-solid border-b-[#CED4DA] bg-[#E5E5E5] p-4">
             <span>{phase.name}</span>
             <svg
               className={`ml-auto h-4 w-4 transform transition-transform ${
