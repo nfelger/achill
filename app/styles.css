@@ -27,8 +27,9 @@
 @layer base {
   input[type="text"],
   input[type="time"],
+  input[type="password"],
   textarea {
-    @apply border border-b-[1px] border-gray-300 placeholder:text-gray-400 rounded-md;
+    @apply border border-b-[1px] border-gray-300 placeholder:text-gray-400 rounded;
   }
 
   input[type="text"],
