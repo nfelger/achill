@@ -40,8 +40,14 @@ function getParamFromBody(params: FormData, key: string) {
 
 export async function action({ request }: ActionFunctionArgs) {
   const bodyParams = await request.formData();
-  const username = getParamFromBody(bodyParams, "username");
-  const password = getParamFromBody(bodyParams, "password");
+  const username = bodyParams.get("username")?.toString();
+  const password = bodyParams.get("password")?.toString();
+  if (!username || !password) {
+    return json(
+      { message: "Please provide username and password." },
+      { status: 400 },
+    );
+  }
 
   const cookieHeader = request.headers.get("Cookie");
   const session = await getSession(cookieHeader);
@@ -73,9 +79,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const headers = new Headers();
   headers.append("Set-Cookie", await commitSession(session));
 
-  return redirect("/", {
-    headers,
-  });
+  return redirect("/", { headers });
 }
 
 export default function Index() {
