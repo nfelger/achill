@@ -126,14 +126,9 @@ export default function ProjectTimeDescription({
   return (
     <>
       {recurringTasks && phases.length > 0 && (
-        <div className="mb-5">
-          <label htmlFor={`recurring-${id}`} className="basis-1/4">
-            Recurring tasks
-          </label>
-          <div
-            id={`recurring-${id}`}
-            className="mt-2 flex flex-col gap-1 md:flex-row md:gap-4"
-          >
+        <fieldset className="mb-5">
+          <legend className="basis-1/4">Recurring tasks</legend>
+          <div className="mt-2 flex flex-col gap-1 md:flex-row md:gap-4">
             {recurringTasks.map((task) => (
               <label
                 key={task.Id}
@@ -152,7 +147,7 @@ export default function ProjectTimeDescription({
               </label>
             ))}
           </div>
-        </div>
+        </fieldset>
       )}
       {phasesToDisplay.map((phase) => (
         <details key={phase.name} className="mb-5" open={phase.open}>
