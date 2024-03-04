@@ -1,6 +1,7 @@
 export type CalculationPosition = {
   name: string;
   id: number;
+  isBillable: boolean;
   subprojectId: number;
 };
 
@@ -9,6 +10,7 @@ export type ProjectTime = {
   date: string;
   hours: number;
   description: string;
+  isBillable: boolean;
   calculationPositionId: number;
 };
 

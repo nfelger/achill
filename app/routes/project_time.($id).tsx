@@ -14,6 +14,7 @@ import {
 import { TrackyButton, buttonRed } from "~/components/common/TrackyButton";
 import ProjectTimeDescription from "~/components/projectTime/ProjectTimeDescription";
 import { getSessionAndThrowIfInvalid } from "~/sessions.server";
+import { convertFloatTimeToHHMM } from "~/utils/dateTimeUtils";
 import { projectTimeSaveFormSchema } from "~/utils/projectTimeFormValidator";
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -59,30 +60,32 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 interface Props {
   date: Date;
-  projectTimeId?: number;
-  values?: {
-    hours: string;
-    description: string;
-  };
+  calculationPosition: CalculationPosition;
+  projectTime?:
+    | ProjectTime
+    | {
+        hours: number;
+        description: string;
+        isBillable: boolean;
+      };
   recurringTasks: TrackyTask[];
   phaseTasks: TrackyTask[];
   phases: TrackyPhase[];
-  calculationPosition: CalculationPosition;
   onAddProjectTime?: (projectTime: ProjectTime) => void;
   onUpdateProjectTime?: (projectTime: ProjectTime) => void;
   onDeleteProjectTime?: (projectTimeId: number) => void;
 }
 export function ProjectTimeForm({
   date,
-  projectTimeId,
-  values = {
-    hours: "",
+  calculationPosition,
+  projectTime = {
+    hours: 0,
     description: "",
+    isBillable: calculationPosition.isBillable,
   },
   recurringTasks,
   phaseTasks,
   phases,
-  calculationPosition,
   onAddProjectTime,
   onUpdateProjectTime,
   onDeleteProjectTime,
@@ -90,9 +93,13 @@ export function ProjectTimeForm({
   const fetcher = useFetcher<typeof action>();
   const formRef = useRef<HTMLFormElement>(null);
 
-  const [description, setDescription] = useState(() => values.description);
-  const [hours, setHours] = useState(values.hours);
-  const [isEdit, setIsEdit] = useState(projectTimeId ? false : true);
+  const isCreate = !("id" in projectTime);
+  const [isEdit, setIsEdit] = useState(isCreate);
+  const initialHours = isCreate
+    ? ""
+    : convertFloatTimeToHHMM(projectTime.hours);
+  const [hours, setHours] = useState(initialHours);
+  const [description, setDescription] = useState(projectTime.description);
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
@@ -128,12 +135,12 @@ export function ProjectTimeForm({
 
   function saveForm() {
     if (!formRef.current) return;
-    const method = projectTimeId ? "PUT" : "POST";
+    const method = isCreate ? "PUT" : "POST";
     const formData = new FormData(formRef.current);
     formData.append("_action", method);
     fetcher.submit(formData, {
       method,
-      action: `/project_time/${projectTimeId ?? ""}`,
+      action: `/project_time/${isCreate ? "" : projectTime.id}`,
     });
   }
 
@@ -146,8 +153,8 @@ export function ProjectTimeForm({
   }
 
   function handleCancel() {
-    setHours(values.hours);
-    setDescription(values.description);
+    setHours(initialHours);
+    setDescription(projectTime.description);
     setIsEdit(false);
   }
 
@@ -160,8 +167,8 @@ export function ProjectTimeForm({
     <fetcher.Form
       ref={formRef}
       method="POST"
-      action={`/project_time/${projectTimeId ?? ""}`}
       className="block w-full mb-4 rounded-lg bg-gray-100 p-4 shadow-lg"
+      action={`/project_time/${isCreate ? "" : projectTime.id}`}
     >
       <h3 className="mb-4 text-base text-gray-900">
         {calculationPosition.name}
@@ -211,13 +218,19 @@ export function ProjectTimeForm({
             recurringTasks={recurringTasks}
             phaseTasks={phaseTasks}
             phases={phases}
-            calculationPositionId={calculationPosition.id}
             onKeyDown={onKeyDown}
             hasErrors={!!validationErrors.description}
             resetErrors={() => resetError("description")}
-            projectTimeId={projectTimeId}
           >
-            {projectTimeId ? (
+            {isCreate ? (
+              <TrackyButton
+                name="_action"
+                value="POST"
+                testId={`add-${calculationPosition.id}`}
+              >
+                Save
+              </TrackyButton>
+            ) : (
               <>
                 <TrackyButton
                   name="_action"
@@ -235,21 +248,13 @@ export function ProjectTimeForm({
                   Cancel
                 </TrackyButton>
               </>
-            ) : (
-              <TrackyButton
-                name="_action"
-                value="POST"
-                testId={`add-${calculationPosition.id}`}
-              >
-                Save
-              </TrackyButton>
             )}
           </ProjectTimeDescription>
         </>
       ) : (
         <div data-testid="projectTime-card-content">
-          <b>{values.hours} Hour(s)</b>
-          <p>{values.description}</p>
+          <b>{projectTime.hours} Hour(s)</b>
+          <p>{projectTime.description}</p>
           <div className="mt-2 flex space-x-2">
             <TrackyButton
               name="_action"

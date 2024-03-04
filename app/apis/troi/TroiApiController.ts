@@ -98,6 +98,7 @@ export async function getCalendarEvents(session: Session) {
 type TroiCalculationPosition = {
   Id: number;
   DisplayPath: string;
+  IsBillable: boolean;
   Subproject: {
     id: number;
   };
@@ -110,8 +111,9 @@ export async function getCalculationPositions(session: Session) {
 
   return (await fetchWithTroiAuth<TroiCalculationPosition[]>(session, url)).map(
     (pos) => ({
-      name: pos.DisplayPath,
       id: pos.Id,
+      name: pos.DisplayPath,
+      isBillable: pos.IsBillable,
       subprojectId: pos.Subproject.id,
     }),
   );
@@ -122,6 +124,7 @@ type TroiProjectTime = {
   Date: string;
   Quantity: string;
   Remark: string;
+  IsBillable: boolean;
   CalculationPosition: {
     id: number;
   };
@@ -139,6 +142,7 @@ export async function getProjectTimes(session: Session) {
       date: projectTime.Date,
       hours: parseFloat(projectTime.Quantity),
       description: projectTime.Remark,
+      isBillable: projectTime.IsBillable,
       calculationPositionId: projectTime.CalculationPosition.id,
     }),
     {},

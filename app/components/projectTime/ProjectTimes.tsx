@@ -60,18 +60,13 @@ export function ProjectTimes({
         <ProjectTimeForm
           key={projectTime.id}
           date={selectedDate}
-          projectTimeId={projectTime.id}
-          values={{
-            hours: convertFloatTimeToHHMM(projectTime.hours),
-            description: projectTime.description,
-          }}
+          projectTime={projectTime}
+          calculationPosition={position}
           recurringTasks={recurringTasks}
           phaseTasks={phaseTasks}
           phases={phasesPerCalculationPosition[position.id]}
-          calculationPosition={position}
           onUpdateProjectTime={updateProjectTime}
           onDeleteProjectTime={deleteProjectTime}
-          data-testid={`projectTimeCard-${position.id}`}
         />
       ))
     ) : (

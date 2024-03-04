@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { TrackyPhase } from "~/apis/tasks/TrackyPhase";
 import { TrackyTask } from "~/apis/tasks/TrackyTask";
 
@@ -21,11 +22,9 @@ type ProjectTimeDescriptionProps = {
   phaseTasks: TrackyTask[];
   phases: TrackyPhase[];
   children: React.ReactNode;
-  calculationPositionId: number;
   onKeyDown: (event: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   hasErrors: boolean;
   resetErrors: () => void;
-  projectTimeId?: number;
 };
 export default function ProjectTimeDescription({
   description,
@@ -34,13 +33,11 @@ export default function ProjectTimeDescription({
   phaseTasks,
   phases,
   children,
-  calculationPositionId,
   onKeyDown,
   hasErrors,
   resetErrors,
-  projectTimeId,
 }: ProjectTimeDescriptionProps) {
-  const descriptionTestId = `description-${calculationPositionId}`;
+  const id = useId();
 
   const descriptionSegments = descriptionToSegments(description);
 
@@ -135,25 +132,21 @@ export default function ProjectTimeDescription({
           </label>
           <div id="recurring" className="mt-2">
             {recurringTasks.map((task) => (
-              <div
+              <label
                 key={task.Id}
-                className="flex items-start space-x-2 md:inline-flex"
+                htmlFor={`recurring-task-${task.name}-${id}`}
+                className="flex items-center"
               >
                 <input
                   checked={descriptionSegments.includes(task.name)}
-                  className="rounded-md border border-gray-300 bg-white p-2"
-                  id={`${calculationPositionId}/${projectTimeId}-${task.name}`}
+                  className="rounded-md border border-gray-300 bg-white p-2 mr-2"
+                  id={`recurring-task-${task.name}-${id}`}
                   value={task.name}
                   type="checkbox"
                   onChange={onRecurringTaskChange}
                 />
-                <label
-                  className="pr-5"
-                  htmlFor={`${calculationPositionId}/${projectTimeId}-${task.name}`}
-                >
-                  {task.name}
-                </label>
-              </div>
+                {task.name}
+              </label>
             ))}
           </div>
         </div>
@@ -222,7 +215,6 @@ export default function ProjectTimeDescription({
             onKeyDown={onKeyDown}
             onInput={handleDescriptionChange}
             id="description"
-            data-testid={descriptionTestId}
             className={`h-full w-full leading-4 ${hasErrors ? " error" : ""} `}
             placeholder="Working the work…"
           />
