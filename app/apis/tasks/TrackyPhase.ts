@@ -19,7 +19,7 @@ export type TrackyPhase = {
   Divider: unknown;
 };
 
-async function loadPostionPhases(
+async function loadPositionPhases(
   positionId: number,
 ): Promise<TrackyPositionPhase[]> {
   const positionPhases = await nocodbApi.dbViewRow.list(
@@ -56,7 +56,7 @@ export async function loadPhases(
   let whereClause: string[] = [];
 
   const [positionPhases, subprojectPhases] = await Promise.all([
-    loadPostionPhases(positionId),
+    loadPositionPhases(positionId),
     loadSubprojectPhases(subprojectId),
   ]);
 
