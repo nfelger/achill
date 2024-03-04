@@ -68,6 +68,12 @@ export function WeekTable({
       .format("H:mm");
   }
 
+  function displayHours(index: number): string {
+    const eventOfDay = timesAndEventsOfSelectedWeek[index].events;
+    // TODO: might not work if there are multiple events on the same day
+    return eventOfDay[0]?.duration === "AllDay" ? "" : "0";
+  }
+
   return (
     <div className="flex items-center justify-between">
       <table className="w-full">
@@ -127,8 +133,9 @@ export function WeekTable({
                       attendance ? "text-black" : "text-gray-500"
                     }`}
                   >
-                    {attendance && calculateWorkTime(attendance)}
-                    {!attendance && 0}
+                    {attendance
+                      ? calculateWorkTime(attendance)
+                      : displayHours(index)}
                   </p>
                 </div>
               </td>
