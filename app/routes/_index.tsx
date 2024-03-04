@@ -131,13 +131,11 @@ export default function TrackYourTime() {
           />
           <div className="flex-grow">
             <h1 className="font-bold">Track-Your-Time</h1>
-            <div className="flex text-sm">
-              Logged in as {loaderData.username}.
-              <Form method="post" action="/logout">
-                <button className="underline ml-1">Log out</button>
-              </Form>
-            </div>
+            <div className="text-sm">Logged in as {loaderData.username}.</div>
           </div>
+          <Form method="post" action="/logout">
+            <TrackyButton testId="logout-button">Logout</TrackyButton>
+          </Form>
         </nav>
         <div>
           <Section>
