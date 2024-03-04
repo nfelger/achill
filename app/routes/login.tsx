@@ -9,7 +9,6 @@ import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { initializePersonioApi } from "~/apis/personio/PersonioApiController";
 import { initializeTroiApi } from "~/apis/troi/TroiApiController";
 import Spinner from "~/components/common/Spinner";
-import { TrackyButton } from "~/components/common/TrackyButton";
 import { commitSession, destroySession, getSession } from "~/sessions.server";
 
 export const meta: MetaFunction = () => {
@@ -141,7 +140,7 @@ export default function Index() {
           </div>
 
           <div className="mb-4 mt-8">
-            <TrackyButton additionalClasses="w-full inline-flex justify-center">
+            <button className="tracky-btn w-full inline-flex justify-center">
               {isIdle ? (
                 "Sign in"
               ) : (
@@ -150,7 +149,7 @@ export default function Index() {
                   Signing in
                 </>
               )}
-            </TrackyButton>
+            </button>
           </div>
         </Form>
       </div>

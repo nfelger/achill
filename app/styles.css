@@ -38,6 +38,16 @@
   }
 }
 
+@layer components {
+  .tracky-btn {
+    @apply rounded px-4 md:px-6 py-2.5 font-medium text-white shadow-md transition duration-150 ease-in-out hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg bg-blue-600 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800;
+  }
+
+  .danger {
+    @apply bg-red-600 hover:bg-red-700 focus:bg-red-700 active:bg-red-800;
+  }
+}
+
 @layer utilities {
   .error {
     @apply border border-b-2 border-red-500 focus:ring-red-500 focus:border-red-500;

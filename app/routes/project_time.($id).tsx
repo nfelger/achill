@@ -11,7 +11,6 @@ import {
   deleteProjectTime,
   updateProjectTime,
 } from "~/apis/troi/TroiApiController";
-import { TrackyButton, buttonRed } from "~/components/common/TrackyButton";
 import ProjectTimeDescription from "~/components/projectTime/ProjectTimeDescription";
 import { getSessionAndThrowIfInvalid } from "~/sessions.server";
 import { convertFloatTimeToHHMM } from "~/utils/dateTimeUtils";
@@ -226,30 +225,21 @@ export function ProjectTimeForm({
             resetErrors={() => resetError("description")}
           >
             {isCreate ? (
-              <TrackyButton
-                name="_action"
-                value="POST"
-                testId={`add-${calculationPosition.id}`}
-              >
+              <button name="_action" value="POST" className="tracky-btn">
                 Save
-              </TrackyButton>
+              </button>
             ) : (
               <>
-                <TrackyButton
-                  name="_action"
-                  value="PUT"
-                  testId={`update-${calculationPosition.id}`}
-                >
+                <button name="_action" value="PUT" className="tracky-btn">
                   Update
-                </TrackyButton>
-                <TrackyButton
+                </button>
+                <button
                   type="reset"
                   onClick={handleCancel}
-                  color={buttonRed}
-                  testId={`cancel-${calculationPosition.id}`}
+                  className="tracky-btn danger"
                 >
                   Cancel
-                </TrackyButton>
+                </button>
               </>
             )}
           </ProjectTimeDescription>
@@ -259,21 +249,16 @@ export function ProjectTimeForm({
           <b>{projectTime.hours} Hour(s)</b>
           <p>{projectTime.description}</p>
           <div className="mt-2 flex space-x-2">
-            <TrackyButton
-              name="_action"
-              value="DELETE"
-              color={buttonRed}
-              testId={`delete-${calculationPosition.id}`}
-            >
+            <button name="_action" value="DELETE" className="tracky-btn danger">
               Delete
-            </TrackyButton>
-            <TrackyButton
+            </button>
+            <button
               type="button"
               onClick={() => setIsEdit(true)}
-              testId={`edit-${calculationPosition.id}`}
+              className="tracky-btn"
             >
               Edit
-            </TrackyButton>
+            </button>
           </div>
         </div>
       )}

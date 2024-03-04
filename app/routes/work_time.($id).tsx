@@ -13,7 +13,6 @@ import {
   postAttendance,
 } from "~/apis/personio/PersonioApiController";
 import { TimeInput } from "~/components/common/TimeInput";
-import { TrackyButton, buttonRed } from "~/components/common/TrackyButton";
 import { minutesToTime } from "~/utils/dateTimeUtils";
 import { workTimeFormDataSchema } from "~/utils/workTimeFormValidator";
 
@@ -189,35 +188,39 @@ export function WorkTimeForm({
         {attendanceOfSelectedDate ? (
           isEdit ? (
             <>
-              <TrackyButton
+              <button
                 type="reset"
-                color={buttonRed}
                 onClick={(e) => setIsEditPreventSubmit(e, false)}
-                testId="cancel-button"
+                className="tracky-btn danger"
               >
                 Cancel
-              </TrackyButton>
-              <TrackyButton name="_action" value="PATCH">
+              </button>
+              <button name="_action" value="PATCH" className="tracky-btn">
                 Update
-              </TrackyButton>
+              </button>
             </>
           ) : (
             <>
-              <TrackyButton name="_action" value="DELETE" color={buttonRed}>
+              <button
+                name="_action"
+                value="DELETE"
+                className="tracky-btn danger"
+              >
                 Delete
-              </TrackyButton>
-              <TrackyButton
+              </button>
+              <button
                 type="button"
                 onClick={(e) => setIsEditPreventSubmit(e, true)}
+                className="tracky-btn"
               >
                 Edit
-              </TrackyButton>
+              </button>
             </>
           )
         ) : (
-          <TrackyButton name="_action" value="POST">
+          <button name="_action" value="POST" className="tracky-btn">
             Save
-          </TrackyButton>
+          </button>
         )}
       </div>
     </fetcher.Form>
