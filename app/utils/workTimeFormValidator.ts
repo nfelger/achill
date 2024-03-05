@@ -11,10 +11,17 @@ export type WorkTimeFormData = {
   _action: "POST" | "PATCH" | "DELETE";
 };
 
-export const workTimeFormDataSchema = z.object({
-  startTime: timeSchema,
-  breakTime: timeSchema.transform((time) => timeToMinutes(time)),
-  endTime: timeSchema,
-  date: z.string().regex(YYYY_MM_DD_FORMAT),
-  _action: z.enum(["POST", "PATCH", "DELETE"]),
-}) satisfies ZodSchema<WorkTimeFormData, ZodTypeDef, unknown>;
+export const workTimeFormDataSchema = z
+  .object({
+    startTime: timeSchema,
+    breakTime: timeSchema.transform((time) => timeToMinutes(time)),
+    endTime: timeSchema,
+    date: z.string().regex(YYYY_MM_DD_FORMAT),
+    _action: z.enum(["POST", "PATCH", "DELETE"]),
+  })
+  .refine(
+    (schema) =>
+      schema.breakTime >=
+      timeToMinutes(schema.startTime) - timeToMinutes(schema.endTime),
+    { message: "Invalid work time.", path: ["allTimes"] },
+  ) satisfies ZodSchema<WorkTimeFormData, ZodTypeDef, unknown>;

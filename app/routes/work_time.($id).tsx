@@ -1,8 +1,14 @@
-import { ActionFunctionArgs, TypedResponse, json } from "@remix-run/node";
+import {
+  ActionFunctionArgs,
+  TypedResponse,
+  json,
+  redirect,
+} from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import moment from "moment";
 import type { Dispatch, SetStateAction } from "react";
 import { useEffect, useState } from "react";
+import { ZodError } from "zod";
 import {
   DAYS_OF_WEEK,
   type PersonioAttendance,
@@ -16,41 +22,52 @@ import { TimeInput } from "~/components/common/TimeInput";
 import { minutesToTime } from "~/utils/dateTimeUtils";
 import { workTimeFormDataSchema } from "~/utils/workTimeFormValidator";
 
-function parseWorkTimeFormData(formData: FormData) {
-  try {
-    return workTimeFormDataSchema.parse(Object.fromEntries(formData.entries()));
-  } catch (error) {
-    throw json(error, { status: 422 });
-  }
-}
-
 type ActionResponse =
   | (PersonioAttendance & { success: boolean })
-  | { id: number; success: boolean };
+  | { id: number; success: boolean }
+  | ZodError<any>;
 export async function action({
   request,
   params,
 }: ActionFunctionArgs): Promise<TypedResponse<ActionResponse>> {
   const formData = await request.formData();
   const id = params.id;
-  const { date, startTime, breakTime, endTime, _action } =
-    parseWorkTimeFormData(formData);
 
-  switch (_action) {
-    case "POST":
-      return await postAttendance(request, date, startTime, endTime, breakTime);
-    case "PATCH":
-      if (!id) {
-        throw new Response("Attendance ID is required.", { status: 400 });
-      }
-      return await patchAttendance(id, date, startTime, endTime, breakTime);
-    case "DELETE":
-      if (!id) {
-        throw new Response("Attendance ID is required.", { status: 400 });
-      }
-      return await deleteAttendance(id);
-    default:
-      throw new Response("Method Not Allowed", { status: 405 });
+  try {
+    const { date, startTime, breakTime, endTime, _action } =
+      workTimeFormDataSchema.parse(Object.fromEntries(formData.entries()));
+
+    switch (_action) {
+      case "POST":
+        return await postAttendance(
+          request,
+          date,
+          startTime,
+          endTime,
+          breakTime,
+        );
+      case "PATCH":
+        if (!id) {
+          throw new Response("Attendance ID is required.", { status: 400 });
+        }
+        return await patchAttendance(id, date, startTime, endTime, breakTime);
+      case "DELETE":
+        if (!id) {
+          throw new Response("Attendance ID is required.", { status: 400 });
+        }
+        return await deleteAttendance(id);
+      default:
+        throw new Response("Method Not Allowed", { status: 405 });
+    }
+  } catch (e) {
+    if (e instanceof ZodError) {
+      return json(e, { status: 422 });
+    }
+    if (e instanceof Error && e.message === "Invalid credentials") {
+      console.error("Personio auth failed", e);
+      throw redirect("/login");
+    }
+    throw e;
   }
 }
 
@@ -109,6 +126,9 @@ export function WorkTimeForm({
       : getEndTime(workTime),
   );
   const [isEdit, setIsEdit] = useState(!attendanceOfSelectedDate);
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
 
   function setIsEditPreventSubmit(event: any, value: boolean) {
     event.preventDefault();
@@ -116,7 +136,17 @@ export function WorkTimeForm({
   }
 
   useEffect(() => {
-    if (
+    if (fetcher.state !== "loading" || !fetcher.data) return;
+    if ("issues" in fetcher.data) {
+      const errors = fetcher.data.issues.reduce(
+        (errors, issue) => ({
+          ...errors,
+          [issue.path[0]]: issue.message,
+        }),
+        {},
+      );
+      setValidationErrors(errors);
+    } else if (
       fetcher.state === "loading" &&
       fetcher.data?.success &&
       fetcher.formData
@@ -155,6 +185,11 @@ export function WorkTimeForm({
     }
   }, [fetcher.state]);
 
+  function setTime(time: string, setter: Dispatch<SetStateAction<string>>) {
+    setter(time);
+    setValidationErrors({});
+  }
+
   return (
     <fetcher.Form
       method="POST"
@@ -168,23 +203,26 @@ export function WorkTimeForm({
         <TimeInput
           name="startTime"
           time={startTime}
-          onChange={setStartTime}
+          onChange={(time) => setTime(time, setStartTime)}
           label="Start time"
           readOnly={!isEdit}
+          hasError={!!validationErrors.allTimes}
         />
         <TimeInput
           name="breakTime"
           time={breakTime}
-          onChange={setBreakTime}
+          onChange={(time) => setTime(time, setBreakTime)}
           label="Break"
           readOnly={!isEdit}
+          hasError={!!validationErrors.allTimes}
         />
         <TimeInput
           name="endTime"
           time={endTime}
-          onChange={setEndTime}
+          onChange={(time) => setTime(time, setEndTime)}
           label="End time"
           readOnly={!isEdit}
+          hasError={!!validationErrors.allTimes}
         />
       </div>
       <input
@@ -193,6 +231,13 @@ export function WorkTimeForm({
         readOnly
         hidden
       />
+      {Object.entries(validationErrors).length > 0 && (
+        <ul className="font-bold text-red-600 absolute right-4">
+          {Object.entries(validationErrors).map(([key, value]) => (
+            <li key={key}>&#x26A0; {value}</li>
+          ))}
+        </ul>
+      )}
       <div className="flex flex-col sm:flex-row gap-2 sm:flex-grow mt-4 self-end justify-end">
         {attendanceOfSelectedDate ? (
           isEdit ? (

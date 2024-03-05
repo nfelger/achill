@@ -6,6 +6,7 @@ type WorkingTimeInputProps = {
   onChange: (time: string) => void;
   label: string;
   readOnly?: boolean;
+  hasError?: boolean;
 };
 
 export function TimeInput({
@@ -14,6 +15,7 @@ export function TimeInput({
   onChange,
   label,
   readOnly = false,
+  hasError = false,
 }: WorkingTimeInputProps) {
   function addMinutesToTime(minutes: number, time: string) {
     return moment(time, "HH:mm").add(minutes, "minutes").format("HH:mm");
@@ -36,7 +38,7 @@ export function TimeInput({
           </span>
         )}
         <input
-          className="read-only:bg-gray-200 read-only:cursor-not-allowed read-only:border-gray-200"
+          className={`read-only:bg-gray-200 read-only:cursor-not-allowed read-only:border-gray-200${hasError ? " error" : ""}`}
           id={name}
           name={name}
           type="time"
@@ -44,7 +46,6 @@ export function TimeInput({
           step={900}
           readOnly={readOnly}
           onChange={(e) => {
-            console.log(e.target.value);
             onChange(e.target.value);
           }}
         />

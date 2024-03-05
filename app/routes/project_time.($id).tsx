@@ -202,7 +202,7 @@ export function ProjectTimeForm({
                 }}
                 type="text"
                 id="hours"
-                className={`${validationErrors.hours ? "error " : ""}w-20`}
+                className={`w-20${validationErrors.hours ? " error" : ""}`}
                 placeholder="2:15"
               />
             </div>
