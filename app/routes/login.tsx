@@ -30,14 +30,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return json(null);
 }
 
-function getParamFromBody(params: FormData, key: string) {
-  const value = params.get(key);
-  if (!value || typeof value !== "string") {
-    throw new Response(`Missing ${key}`, { status: 400 });
-  }
-  return value;
-}
-
 export async function action({ request }: ActionFunctionArgs) {
   const bodyParams = await request.formData();
   const username = bodyParams.get("username")?.toString();

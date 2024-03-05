@@ -69,7 +69,7 @@ async function fetchWithPersonioAuth(
       },
     });
     console.log(
-      "[Personio API]",
+      "[Personio]",
       init?.method ?? "GET",
       input.toString(),
       response.status,
@@ -89,6 +89,7 @@ async function fetchWithPersonioAuth(
 export async function initializePersonioApi(
   username: string,
 ): Promise<PersonioEmployee> {
+  console.time("initializePersonioApi");
   const url = new URL(PERSONIO_EMPLOYEES_URL);
   const mailAddress = `${username}@${DIGITALSERVICE_MAIL_DOMAIN}`;
   url.searchParams.set("email", mailAddress);
@@ -98,6 +99,7 @@ export async function initializePersonioApi(
 
   const schedule =
     employeeData.data[0].attributes.work_schedule.value.attributes;
+  console.timeEnd("initializePersonioApi");
   return {
     personioId: employeeData.data[0].attributes.id.value,
     workingHours: {

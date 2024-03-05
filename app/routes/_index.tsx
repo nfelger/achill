@@ -61,7 +61,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     loadSubprojectPhases(),
   ]);
 
-  console.timeLog("loader");
+  console.timeLog("loader", "loaded data");
 
   // load phases for each calculation position in parallel
   const phasesPerCalculationPosition = getPhasesPerCalculationPosition(

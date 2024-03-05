@@ -20,8 +20,14 @@ export type TrackyPhase = {
 };
 
 export async function loadView<T>(view: string) {
-  return (await nocodbApi.dbViewRow.list("noco", "ds4g-data", view, view))
-    .list as T[];
+  const response = await nocodbApi.dbViewRow.list(
+    "noco",
+    "ds4g-data",
+    view,
+    view,
+  );
+  console.log("[NocoDB] GET", view, 200);
+  return response.list as T[];
 }
 
 export async function loadPositionPhases() {

@@ -26,12 +26,7 @@ async function fetchWithTroiAuth<T>(
     },
   });
 
-  console.log(
-    "[TroiAPI]",
-    init?.method ?? "GET",
-    url.toString(),
-    response.status,
-  );
+  console.log("[Troi]", init?.method ?? "GET", url.toString(), response.status);
 
   if (!response.ok) {
     if (response.status === 401 || response.status === 403) {
@@ -53,6 +48,8 @@ type TroiEmployee = {
   Id: number;
 };
 export async function initializeTroiApi(session: Session) {
+  console.time("initializeTroiApi");
+
   const troiClient = (
     await fetchWithTroiAuth<TroiClient[]>(session, `${BASE_URL}/clients`)
   ).find((client) => {
@@ -63,6 +60,8 @@ export async function initializeTroiApi(session: Session) {
   }
   const troiClientId = troiClient.Id.toString();
 
+  console.timeLog("initializeTroiApi", "client found");
+
   const url = new URL(`${BASE_URL}/employees`);
   url.searchParams.set("clientId", troiClientId);
   url.searchParams.set("employeeLoginName", session.get("username"));
@@ -72,6 +71,9 @@ export async function initializeTroiApi(session: Session) {
     throw new Error("Employee not found");
   }
   const troiEmployeeId = troiEmployee.Id.toString();
+
+  console.timeEnd("initializeTroiApi");
+
   return { troiClientId, troiEmployeeId };
 }
 
