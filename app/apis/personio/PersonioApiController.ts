@@ -6,14 +6,8 @@ import {
   END_DATE,
   START_DATE,
   convertTimeStringToFloat,
-  timeToMinutes,
 } from "~/utils/dateTimeUtils";
-import type {
-  PersonioApiAttendance,
-  PersonioApiEmployees,
-  PersonioAttendance,
-  PersonioEmployee,
-} from "./Personio.types";
+import type { PersonioAttendance, PersonioEmployee } from "./Personio.types";
 
 const PERSONIO_BASE_URL = "https://api.personio.de/v1";
 const PERSONIO_AUTH_URL = `${PERSONIO_BASE_URL}/auth`;
@@ -54,7 +48,7 @@ let authToken: Promise<string> | undefined;
 async function fetchWithPersonioAuth(
   input: RequestInfo | URL,
   init?: RequestInit | undefined,
-): Promise<Response> {
+) {
   if (authToken === undefined) {
     authToken = getAuthToken();
   }
@@ -80,12 +74,37 @@ async function fetchWithPersonioAuth(
   const response = await fetchData(await authToken);
   if (response.status === 401) {
     authToken = getAuthToken();
-    return fetchData(await authToken);
+    return (await fetchData(await authToken)).json();
   }
 
-  return response;
+  return await response.json();
 }
 
+interface Employee {
+  type: "Employee";
+  attributes: {
+    id: {
+      value: number;
+    };
+    work_schedule: {
+      value: {
+        attributes: {
+          monday: string;
+          tuesday: string;
+          wednesday: string;
+          thursday: string;
+          friday: string;
+          saturday: string;
+          sunday: string;
+        };
+      };
+    };
+  };
+}
+export interface PersonioApiEmployees {
+  success: true;
+  data: Employee[];
+}
 export async function initializePersonioApi(
   username: string,
 ): Promise<PersonioEmployee> {
@@ -94,8 +113,9 @@ export async function initializePersonioApi(
   const mailAddress = `${username}@${DIGITALSERVICE_MAIL_DOMAIN}`;
   url.searchParams.set("email", mailAddress);
 
-  const response = await fetchWithPersonioAuth(url);
-  const employeeData: PersonioApiEmployees = await response.json();
+  const employeeData = (await fetchWithPersonioAuth(
+    url,
+  )) as PersonioApiEmployees;
 
   const schedule =
     employeeData.data[0].attributes.work_schedule.value.attributes;
@@ -112,6 +132,34 @@ export async function initializePersonioApi(
   };
 }
 
+type PersonioAttendancePeriod = {
+  id: number;
+  type: "AttendancePeriod";
+  attributes: {
+    employee: number;
+    date: string;
+    start_time: string;
+    end_time: string;
+    break: number;
+    comment: string;
+    updated_at: string;
+    status: string;
+    project?: unknown;
+    is_holiday: boolean;
+    is_on_time_off: boolean;
+  };
+};
+export type PersonioApiAttendance = {
+  success: boolean;
+  metadata: {
+    total_elements: number;
+    current_page: number;
+    total_pages: number;
+  };
+  data: PersonioAttendancePeriod[];
+  offset: string;
+  limit: string;
+};
 export async function getAttendances(
   employeeId: number,
 ): Promise<PersonioAttendance[]> {
@@ -123,8 +171,7 @@ export async function getAttendances(
     url.searchParams.set("offset", offset.toString());
     url.searchParams.set("limit", limit.toString());
 
-    const response = await fetchWithPersonioAuth(url);
-    return (await response.json()) as PersonioApiAttendance;
+    return (await fetchWithPersonioAuth(url)) as PersonioApiAttendance;
   }
 
   const result = await _getAttendances(0);
@@ -156,17 +203,24 @@ export async function getAttendances(
   );
 }
 
+type PersonioPostResponse = {
+  success: boolean;
+  data: {
+    message: string;
+    id: number[];
+  };
+};
 export async function postAttendance(
   request: Request,
   date: string,
   startTime: Time,
   endTime: Time,
-  breakTime: Time,
+  breakTime: number,
 ) {
   const session = await getSessionAndThrowIfInvalid(request);
   const employee = session.get("personioEmployee")?.personioId;
 
-  const response = await fetchWithPersonioAuth(PERSONIO_ATTENDANCES_URL, {
+  const data = (await fetchWithPersonioAuth(PERSONIO_ATTENDANCES_URL, {
     method: "POST",
     headers: {
       "content-type": "application/json",
@@ -178,15 +232,14 @@ export async function postAttendance(
           date,
           start_time: startTime,
           end_time: endTime,
-          break: timeToMinutes(breakTime),
+          break: breakTime,
         },
       ],
     }),
-  });
+  })) as PersonioPostResponse;
 
-  const data = await response.json();
   if (!data.success) {
-    return response;
+    throw new Response("Failed to create attendance");
   }
 
   return json(
@@ -200,9 +253,9 @@ export async function patchAttendance(
   date: string,
   startTime: Time,
   endTime: Time,
-  breakTime: Time,
+  breakTime: number,
 ) {
-  const response = await fetchWithPersonioAuth(
+  const data = await fetchWithPersonioAuth(
     `${PERSONIO_ATTENDANCES_URL}/${attendanceId}`,
     {
       method: "PATCH",
@@ -213,14 +266,13 @@ export async function patchAttendance(
         date,
         start_time: startTime,
         end_time: endTime,
-        break: timeToMinutes(breakTime),
+        break: breakTime,
       }),
     },
   );
 
-  const data = await response.json();
   if (!data.success) {
-    return response;
+    throw new Response("Failed to update attendance");
   }
 
   return json(
@@ -237,16 +289,15 @@ export async function patchAttendance(
 }
 
 export async function deleteAttendance(attendanceId: string) {
-  const response = await fetchWithPersonioAuth(
+  const data = await fetchWithPersonioAuth(
     `${PERSONIO_ATTENDANCES_URL}/${attendanceId}`,
     {
       method: "DELETE",
     },
   );
 
-  const data = await response.json();
   if (!data.success) {
-    return response;
+    throw new Response("Failed to delete attendance");
   }
 
   return json({ success: true, id: parseInt(attendanceId) }, { status: 200 });

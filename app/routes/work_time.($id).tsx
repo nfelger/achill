@@ -1,4 +1,4 @@
-import { ActionFunctionArgs, json } from "@remix-run/node";
+import { ActionFunctionArgs, TypedResponse, json } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import moment from "moment";
 import type { Dispatch, SetStateAction } from "react";
@@ -24,7 +24,13 @@ function parseWorkTimeFormData(formData: FormData) {
   }
 }
 
-export async function action({ request, params }: ActionFunctionArgs) {
+type ActionResponse =
+  | (PersonioAttendance & { success: boolean })
+  | { id: number; success: boolean };
+export async function action({
+  request,
+  params,
+}: ActionFunctionArgs): Promise<TypedResponse<ActionResponse>> {
   const formData = await request.formData();
   const id = params.id;
   const { date, startTime, breakTime, endTime, _action } =
@@ -120,14 +126,17 @@ export function WorkTimeForm({
       switch (fetcher.formData.get("_action")) {
         case "POST":
           setIsEdit(false);
-          setAttendances([...attendances, submittedAttendance]);
+          setAttendances([
+            ...attendances,
+            submittedAttendance as PersonioAttendance,
+          ]);
           break;
         case "PATCH":
           setIsEdit(false);
           setAttendances(
             attendances.map((attendance) =>
               attendance.id === submittedAttendance.id
-                ? submittedAttendance
+                ? (submittedAttendance as PersonioAttendance)
                 : attendance,
             ),
           );
