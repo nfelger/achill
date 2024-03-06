@@ -160,7 +160,7 @@ export default function TrackYourTime() {
             />
           </Section>
 
-          <Section title="Working hours (Personio)">
+          <Section title="Total working hours (Personio)">
             <WorkTimeForm
               key={selectedDate.toDateString()}
               selectedDate={selectedDate}
