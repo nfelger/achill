@@ -37,7 +37,7 @@ export function minutesToTime(minutes: number) {
     .set("minutes", 0)
     .set("hours", 0)
     .add(minutes, "minutes")
-    .format("HH:mm");
+    .format("HH:mm") as Time;
 }
 
 export function padLeadingZeros(num: string) {

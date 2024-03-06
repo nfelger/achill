@@ -2,6 +2,7 @@ import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import moment from "moment";
 import { useState } from "react";
+import { PersonioAttendance } from "~/apis/personio/Personio.types";
 import { getAttendances } from "~/apis/personio/PersonioApiController";
 import {
   loadPhases,
@@ -108,7 +109,7 @@ export default function TrackYourTime() {
   const loaderData = useLoaderData<typeof loader>();
 
   const [selectedDate, setSelectedDate] = useState(() => new Date());
-  const [attendances, setAttendances] = useState(
+  const [attendances, setAttendances] = useState<PersonioAttendance[]>(
     mergeAttendendancesForDays(loaderData.attendances),
   );
   const [projectTimes, setProjectTimes] = useState(loaderData.projectTimes);

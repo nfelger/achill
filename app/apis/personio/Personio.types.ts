@@ -1,3 +1,5 @@
+import { Time } from "~/utils/dateTimeUtils";
+
 export type WorkingHours = {
   monday: number;
   tuesday: number;
@@ -22,7 +24,7 @@ export type PersonioEmployee = {
 export interface PersonioAttendance {
   id: number;
   date: string;
-  startTime: string;
-  endTime: string;
+  startTime: Time;
+  endTime: Time;
   breakTime: number;
 }

@@ -1,52 +1,49 @@
 import type { PersonioAttendance } from "../apis/personio/Personio.types";
+import { type Time, minutesToTime, timeToMinutes } from "./dateTimeUtils";
 
-export function mergeAttendendancesForDays(dates: Array<PersonioAttendance>) {
-  const mergedData = [];
-  const attendancesForDates = dates.reduce(
-    (acc, date) => {
-      const dateKey = date.date;
-      if (acc[dateKey]) {
-        acc[dateKey].push(date);
+type MergedAttendance = {
+  id: number;
+  date: string;
+  startTime: Time;
+  endTime: Time;
+  breakTime: number;
+  ids: number[];
+  workTime: number;
+  comment?: string;
+};
+export function mergeAttendendancesForDays(attendances: PersonioAttendance[]) {
+  const mergedData = attendances
+    .map((attendance) => ({
+      ...attendance,
+      ids: [attendance.id],
+      workTime:
+        timeToMinutes(attendance.endTime) -
+        timeToMinutes(attendance.startTime) -
+        attendance.breakTime,
+    }))
+    .reduce<MergedAttendance[]>((merged, attendance) => {
+      const existing = merged.find((item) => item.date === attendance.date);
+      if (existing) {
+        const startMinutes = timeToMinutes(attendance.startTime);
+        const oldStartMinutes = timeToMinutes(existing.startTime);
+        const newStartMinutes = Math.min(startMinutes, oldStartMinutes);
+        existing.startTime = minutesToTime(newStartMinutes);
+
+        const endMinutes = timeToMinutes(attendance.endTime);
+        const oldEndMinutes = timeToMinutes(existing.endTime);
+        const newEndMinutes = Math.max(endMinutes, oldEndMinutes);
+        existing.endTime = minutesToTime(newEndMinutes);
+
+        existing.workTime += attendance.workTime;
+        existing.breakTime =
+          newEndMinutes - newStartMinutes - existing.workTime;
+        existing.ids.push(attendance.id);
+        existing.comment = `Merged ${existing.ids.length} attendances`;
       } else {
-        acc[dateKey] = [date];
+        merged.push(attendance);
       }
-      return acc;
-    },
-    {} as Record<string, PersonioAttendance[]>,
-  );
 
-  for (let date in attendancesForDates) {
-    let totalDuration = 0;
-    const sortedData = attendancesForDates[date].sort((a, b) => {
-      return (
-        +new Date(`1970-01-01T${a.startTime}:00`) -
-        +new Date(`1970-01-01T${b.startTime}:00`)
-      );
-    });
-    sortedData.forEach((slot) => {
-      const start = new Date(`1970-01-01T${slot.startTime}:00`);
-      const end = new Date(`1970-01-01T${slot.endTime}:00`);
-      const duration = (end.getTime() - start.getTime()) / (1000 * 60); // duration in minutes
-      totalDuration += duration - slot.breakTime; // subtract breakTime
-    });
-    const startOfDay = new Date(
-      `1970-01-01T${attendancesForDates[date][0].startTime}:00`,
-    );
-    const endOfDay = new Date(
-      `1970-01-01T${attendancesForDates[date][attendancesForDates[date].length - 1].endTime}:00`,
-    );
-    const totalDayDuration =
-      (endOfDay.getTime() - startOfDay.getTime()) / (1000 * 60);
-    const breakTime = totalDayDuration - totalDuration;
-    mergedData.push({
-      id: attendancesForDates[date][0].id,
-      date: attendancesForDates[date][0].date,
-      startTime: `${attendancesForDates[date][0].startTime}`,
-      endTime: `${attendancesForDates[date][attendancesForDates[date].length - 1].endTime}`,
-      breakTime: breakTime,
-      ids: attendancesForDates[date].map((slot) => slot.id),
-      comment: `Merged ${attendancesForDates[date].length} attendances`,
-    });
-  }
+      return merged;
+    }, []);
   return mergedData;
 }
