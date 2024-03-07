@@ -34,7 +34,7 @@
 
   input[type="text"],
   input[type="time"] {
-    @apply sm:py-1 sm:px-2 md:px-3 md:py-2;
+    @apply py-1 px-2 lg:px-3 lg:py-2;
   }
 }
 
@@ -45,6 +45,10 @@
 
   .danger {
     @apply bg-red-600 hover:bg-red-700 focus:bg-red-700 active:bg-red-800;
+  }
+
+  .change-time-btn {
+    @apply m-1 lg:m-2 border rounded-full border-gray-800;
   }
 }
 

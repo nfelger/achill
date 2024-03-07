@@ -17,28 +17,26 @@ export function TimeInput({
   readOnly = false,
   hasError = false,
 }: WorkingTimeInputProps) {
-  function addMinutesToTime(minutes: number, time: string) {
+  function addMinutesToTime(minutes: number) {
     return moment(time, "HH:mm").add(minutes, "minutes").format("HH:mm");
   }
 
   return (
-    <div className="w-44">
-      <label className="inline-block mb-1 ml-9" htmlFor={name}>
+    <div className="flex items-end">
+      <button
+        type="button"
+        className={`material-symbols-outlined change-time-btn${readOnly ? " invisible" : ""}`}
+        onClick={() => {
+          onChange(addMinutesToTime(-15));
+        }}
+        disabled={readOnly}
+      >
+        Remove
+      </button>
+      <label htmlFor={name} className="flex flex-col">
         {label}
-      </label>
-      <div className="flex items-center justify-around">
-        {!readOnly && (
-          <span
-            className="material-symbols-outlined cursor-pointer select-none border rounded-full border-gray-800"
-            onClick={() => {
-              onChange(addMinutesToTime(-15, time));
-            }}
-          >
-            Remove
-          </span>
-        )}
         <input
-          className={`read-only:bg-gray-200 read-only:cursor-not-allowed read-only:border-gray-200${hasError ? " error" : ""}`}
+          className={`read-only:bg-gray-200 read-only:cursor-not-allowed read-only:border-gray-200 ${hasError ? " error" : ""}`}
           id={name}
           name={name}
           type="time"
@@ -49,17 +47,17 @@ export function TimeInput({
             onChange(e.target.value);
           }}
         />
-        {!readOnly && (
-          <span
-            className="material-symbols-outlined cursor-pointer select-none border rounded-full border-gray-800"
-            onClick={() => {
-              onChange(addMinutesToTime(15, time));
-            }}
-          >
-            Add
-          </span>
-        )}
-      </div>
+      </label>
+      <button
+        type="button"
+        className={`material-symbols-outlined change-time-btn${readOnly ? " invisible" : ""}`}
+        onClick={() => {
+          onChange(addMinutesToTime(15));
+        }}
+        disabled={readOnly}
+      >
+        Add
+      </button>
     </div>
   );
 }

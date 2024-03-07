@@ -199,7 +199,7 @@ export function WorkTimeForm({
       {fetcher.state === "submitting" && (
         <div className="disabled-overlay"></div>
       )}
-      <div className="flex flex-col gap-3 sm:flex-row sm:gap-0 justify-between basis-2/3">
+      <div className="flex flex-col md:flex-row gap-3 md:gap-0 md:flex-grow justify-between self-start">
         <TimeInput
           name="startTime"
           time={startTime}
@@ -238,7 +238,7 @@ export function WorkTimeForm({
           ))}
         </ul>
       )}
-      <div className="flex flex-col sm:flex-row gap-2 sm:flex-grow mt-4 self-end justify-end">
+      <div className="flex flex-col lg:flex-row gap-2 self-end justify-end items-end basis-40 lg:basis-60">
         {attendanceOfSelectedDate ? (
           isEdit ? (
             <>
