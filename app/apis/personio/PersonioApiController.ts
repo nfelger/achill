@@ -199,7 +199,15 @@ export async function getAttendances(
         break: breakTime,
         comment,
       },
-    }) => ({ id, date, startTime, endTime, breakTime, comment }),
+    }) =>
+      ({
+        id,
+        date,
+        startTime,
+        endTime,
+        breakTime,
+        comment,
+      }) as PersonioAttendance,
   );
 }
 

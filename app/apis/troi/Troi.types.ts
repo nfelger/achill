@@ -11,6 +11,7 @@ export type ProjectTime = {
   hours: number;
   description: string;
   isBillable: boolean;
+  isInvoiced: boolean;
   calculationPositionId: number;
 };
 

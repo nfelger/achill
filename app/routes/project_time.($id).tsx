@@ -21,6 +21,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
   const formDataObject = Object.fromEntries(formData.entries());
 
+  if (formDataObject.isInvoiced === "true") {
+    throw new Response("Invoiced project times cannot be modified.", {
+      status: 400,
+    });
+  }
+
   try {
     switch (formDataObject._action) {
       case "POST": {
@@ -66,6 +72,7 @@ interface Props {
         hours: number;
         description: string;
         isBillable: boolean;
+        isInvoiced: boolean;
       };
   recurringTasks: TrackyTask[];
   phaseTasks: TrackyTask[];
@@ -81,6 +88,7 @@ export function ProjectTimeForm({
     hours: 0,
     description: "",
     isBillable: calculationPosition.isBillable,
+    isInvoiced: false,
   },
   recurringTasks,
   phaseTasks,
@@ -185,6 +193,11 @@ export function ProjectTimeForm({
         name="date"
         value={moment(date).format("YYYY-MM-DD")}
       />
+      <input
+        type="hidden"
+        name="isInvoiced"
+        value={projectTime.isInvoiced.toString()}
+      />
       {isEdit ? (
         <>
           <div className="flex w-full items-center mb-5">
@@ -248,18 +261,24 @@ export function ProjectTimeForm({
         <div data-testid="projectTime-card-content">
           <b>{projectTime.hours} Hour(s)</b>
           <p>{projectTime.description}</p>
-          <div className="mt-2 flex space-x-2">
-            <button name="_action" value="DELETE" className="tracky-btn danger">
-              Delete
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsEdit(true)}
-              className="tracky-btn"
-            >
-              Edit
-            </button>
-          </div>
+          {!projectTime.isInvoiced && (
+            <div className="mt-2 flex space-x-2">
+              <button
+                name="_action"
+                value="DELETE"
+                className="tracky-btn danger"
+              >
+                Delete
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsEdit(true)}
+                className="tracky-btn"
+              >
+                Edit
+              </button>
+            </div>
+          )}
         </div>
       )}
     </fetcher.Form>

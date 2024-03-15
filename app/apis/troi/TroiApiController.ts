@@ -132,6 +132,7 @@ type TroiProjectTime = {
   Quantity: string;
   Remark: string;
   IsBillable: boolean;
+  IsInvoiced: boolean;
   CalculationPosition: {
     id: number;
   };
@@ -150,6 +151,7 @@ export async function getProjectTimes(session: Session) {
       hours: parseFloat(projectTime.Quantity),
       description: projectTime.Remark,
       isBillable: projectTime.IsBillable,
+      isInvoiced: projectTime.IsInvoiced,
       calculationPositionId: projectTime.CalculationPosition.id,
     }),
     {},
