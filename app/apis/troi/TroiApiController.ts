@@ -161,7 +161,14 @@ export async function getProjectTimes(session: Session) {
 
 export async function addProjectTime(
   session: Session,
-  { calculationPositionId, date, hours, description }: ProjectTimeSaveFormData,
+  {
+    calculationPositionId,
+    date,
+    hours,
+    description,
+    isBillable,
+    isInvoiced,
+  }: ProjectTimeSaveFormData,
 ) {
   const data = await fetchWithTroiAuth<{ id: number }>(
     session,
@@ -177,6 +184,7 @@ export async function addProjectTime(
         Date: date,
         Quantity: hours,
         Remark: description,
+        IsBillable: isBillable,
       }),
     },
   );
@@ -189,6 +197,8 @@ export async function addProjectTime(
       hours,
       description,
       calculationPositionId,
+      isBillable,
+      isInvoiced,
     },
     { status: 200 },
   );
@@ -197,7 +207,14 @@ export async function addProjectTime(
 export async function updateProjectTime(
   session: Session,
   id: number,
-  { calculationPositionId, date, hours, description }: ProjectTimeSaveFormData,
+  {
+    calculationPositionId,
+    date,
+    hours,
+    description,
+    isBillable,
+    isInvoiced,
+  }: ProjectTimeSaveFormData,
 ) {
   await fetchWithTroiAuth(session, `${BASE_URL}/billings/hours/${id}`, {
     method: "PUT",
@@ -210,6 +227,7 @@ export async function updateProjectTime(
       Date: date,
       Quantity: hours,
       Remark: description,
+      IsBillable: isBillable,
     }),
   });
 
@@ -220,6 +238,8 @@ export async function updateProjectTime(
       hours,
       description,
       calculationPositionId,
+      isBillable,
+      isInvoiced,
     },
     { status: 200 },
   );

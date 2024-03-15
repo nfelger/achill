@@ -21,12 +21,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
   const formDataObject = Object.fromEntries(formData.entries());
 
-  if (formDataObject.isInvoiced === "true") {
-    throw new Response("Invoiced project times cannot be modified.", {
-      status: 400,
-    });
-  }
-
   try {
     switch (formDataObject._action) {
       case "POST": {
@@ -192,6 +186,11 @@ export function ProjectTimeForm({
         type="hidden"
         name="date"
         value={moment(date).format("YYYY-MM-DD")}
+      />
+      <input
+        type="hidden"
+        name="isBillable"
+        value={projectTime.isBillable.toString()}
       />
       <input
         type="hidden"

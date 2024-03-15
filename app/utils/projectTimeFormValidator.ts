@@ -7,6 +7,8 @@ export type ProjectTimeSaveFormData = {
   date: string;
   hours: number;
   description: string;
+  isBillable: boolean;
+  isInvoiced: false;
 };
 
 // matches the following formats: 8, 8:30, 8.5, 8,5
@@ -23,4 +25,11 @@ export const projectTimeSaveFormSchema = z.object({
       message: "You can't book more than 10 hours.",
     }),
   description: z.string().min(1, "Description is required."),
+  isBillable: z.string().transform((value) => value === "true"),
+  isInvoiced: z
+    .string()
+    .refine((value) => value === "false", {
+      message: "Invoiced project times cannot be modified.",
+    })
+    .transform(() => false) as ZodSchema<false, ZodTypeDef, unknown>,
 }) satisfies ZodSchema<ProjectTimeSaveFormData, ZodTypeDef, unknown>;
