@@ -194,6 +194,7 @@ export function WorkTimeForm({
     <fetcher.Form
       method="POST"
       action={`/work_time/${attendanceOfSelectedDate?.id ?? ""}`}
+      id="work-time-form"
       className="relative flex justify-between rounded-lg bg-gray-100 p-4 shadow-lg"
     >
       {fetcher.state === "submitting" && (

@@ -169,6 +169,7 @@ export function ProjectTimeForm({
       ref={formRef}
       method="POST"
       action={`/project_time/${isCreate ? "" : projectTime.id}`}
+      id="project-time-form"
       className="relative w-full mb-5 rounded-lg bg-gray-100 p-4 shadow-lg"
     >
       {fetcher.state === "submitting" && (
