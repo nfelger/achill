@@ -3,7 +3,7 @@ import { Api } from "nocodb-sdk";
 const api = new Api({
   baseURL: process.env.NOCODB_BASE_URL,
   headers: {
-    "xc-auth": process.env.NOCODB_AUTH_TOKEN,
+    "xc-token": process.env.NOCODB_API_TOKEN,
   },
 });
 

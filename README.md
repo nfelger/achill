@@ -69,7 +69,7 @@ Canonical: https://<<PROJECT_URL>>/.well-known/security.txt
 
 ## Development
 
-You need to create an `.env` file based on the [example](.env.example) and fill it in with the secrets from 1Password.
+You need to create an `.env` file based on the [example](.env.example) and fill it in with the Personio secrets from 1Password and the NocoDB API token.
 
 From your terminal:
 
