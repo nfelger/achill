@@ -19,6 +19,7 @@ const baseURL = useDefaultBaseUrl
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
+  timeout: 10000,
   testDir: ".",
   /* Run tests in files in parallel */
   fullyParallel: true,
