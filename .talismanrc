@@ -4,7 +4,7 @@ fileignoreconfig:
   - filename: .github/workflows/scan.yml
     checksum: 14fd20b334e55e9f6ee23d13fa82d2c17d94cb59928b7dd5828e8adca40cf1d8
   - filename: README.md
-    checksum: 7420902b2398edae580fd51b1043019441b4c3c78fc5495e0bc065a24fbefb95
+    checksum: ecec42b5b9c25c12a3abf46a263da6374201fcdf1bc3f47009afa229297e9c7e
   - filename: public/fonts/BundesSerifWeb-Italic.woff
     checksum: 2cad03dd85939c73e892cce6d994a89046677e94ceb11dd1cde5a23a3b35c392
   - filename: public/fonts/BundesSansWeb-BoldItalic.woff
