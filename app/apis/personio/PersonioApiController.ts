@@ -46,15 +46,17 @@ async function getAuthToken(): Promise<string> {
 
 let authToken: Promise<string> | undefined;
 async function fetchWithPersonioAuth(
-  input: RequestInfo | URL,
+  input: string | URL,
   init?: RequestInit | undefined,
 ) {
   if (authToken === undefined) {
     authToken = getAuthToken();
   }
 
+  const url = new URL(input);
+
   const fetchData = async (authToken: string) => {
-    const response = await fetch(input, {
+    const response = await fetch(url, {
       ...init,
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -65,7 +67,7 @@ async function fetchWithPersonioAuth(
     console.log(
       "[Personio]",
       init?.method ?? "GET",
-      input.toString(),
+      url.pathname,
       response.status,
     );
     return response;

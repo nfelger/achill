@@ -12,9 +12,10 @@ const END_DATE_YYYYMMDD = moment(END_DATE).format("YYYYMMDD");
 
 async function fetchWithTroiAuth<T>(
   session: Session,
-  url: URL | string,
+  input: URL | string,
   init?: RequestInit,
 ): Promise<T> {
+  const url = new URL(input);
   const username = session.get("username");
   const password = session.get("troiPassword");
 
@@ -26,7 +27,7 @@ async function fetchWithTroiAuth<T>(
     },
   });
 
-  console.log("[Troi]", init?.method ?? "GET", url.toString(), response.status);
+  console.log("[Troi]", init?.method ?? "GET", url.pathname, response.status);
 
   if (!response.ok) {
     if (response.status === 401 || response.status === 403) {
