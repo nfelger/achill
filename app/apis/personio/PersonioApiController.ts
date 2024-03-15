@@ -134,24 +134,19 @@ export async function initializePersonioApi(
   };
 }
 
+export type PersonioAttendanceAttributes = {
+  employee: number;
+  date: string;
+  start_time: string;
+  end_time: string;
+  break: number;
+};
 type PersonioAttendancePeriod = {
   id: number;
   type: "AttendancePeriod";
-  attributes: {
-    employee: number;
-    date: string;
-    start_time: string;
-    end_time: string;
-    break: number;
-    comment: string;
-    updated_at: string;
-    status: string;
-    project?: unknown;
-    is_holiday: boolean;
-    is_on_time_off: boolean;
-  };
+  attributes: PersonioAttendanceAttributes;
 };
-export type PersonioApiAttendance = {
+export type PersonioApiAttendances = {
   success: boolean;
   metadata: {
     total_elements: number;
@@ -173,7 +168,7 @@ export async function getAttendances(
     url.searchParams.set("offset", offset.toString());
     url.searchParams.set("limit", limit.toString());
 
-    return (await fetchWithPersonioAuth(url)) as PersonioApiAttendance;
+    return (await fetchWithPersonioAuth(url)) as PersonioApiAttendances;
   }
 
   const result = await _getAttendances(0);
@@ -199,7 +194,6 @@ export async function getAttendances(
         start_time: startTime,
         end_time: endTime,
         break: breakTime,
-        comment,
       },
     }) =>
       ({
@@ -208,7 +202,6 @@ export async function getAttendances(
         startTime,
         endTime,
         breakTime,
-        comment,
       }) as PersonioAttendance,
   );
 }
